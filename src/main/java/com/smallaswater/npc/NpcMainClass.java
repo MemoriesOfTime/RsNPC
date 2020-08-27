@@ -176,6 +176,7 @@ public class NpcMainClass extends PluginBase implements Listener {
                         map.put("x", player.getX());
                         map.put("y", player.getY());
                         map.put("z", player.getZ());
+                        map.put("yaw", Util.getYaw(player));
                         map.put("level", player.getLevel().getName());
                         config.set("坐标", map);
                         config.save();
@@ -240,7 +241,7 @@ public class NpcMainClass extends PluginBase implements Listener {
         String names = config.getString("name");
         Item hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
         String skinName = config.getString("皮肤", "尸鬼");
-        Location location = getLocationByMap((Map) config.get("坐标"));
+        Location location = getLocationByMap((Map<String, Object>) config.get("坐标"));
         if (location != null) {
             Skin skin;
             for (Entity entity : location.level.getEntities()) {
@@ -282,8 +283,8 @@ public class NpcMainClass extends PluginBase implements Listener {
         return items;
     }
 
-    private CompoundTag getTag(Location player, String name) {
-        CompoundTag tag = Entity.getDefaultNBT(new Vector3(player.x, player.y, player.z));
+    private CompoundTag getTag(Location location, String name) {
+        CompoundTag tag = Entity.getDefaultNBT(location);
         tag.putString("rsnpcName", name);
         return tag;
     }
@@ -325,15 +326,11 @@ public class NpcMainClass extends PluginBase implements Listener {
                     for (String cmd : cmds) {
                         String[] c = cmd.split("&");
                         String cm = c[0];
-                        if (c.length > 1) {
-                            if ("con".equals(c[1])) {
-                                Server.getInstance().dispatchCommand(new ConsoleCommandSender(), cm.replace("@p", damage.getName()));
-                                continue;
-                            }
-                            Server.getInstance().dispatchCommand((CommandSender) damage, cm.replace("@p", damage.getName()));
-                            continue;
+                        if (c.length > 1 && "con".equals(c[1])) {
+                            this.getServer().dispatchCommand(this.getServer().getConsoleSender(), cm.replace("@p", damage.getName()));
+                        }else {
+                            this.getServer().dispatchCommand((CommandSender) damage, cm.replace("@p", damage.getName()));
                         }
-                        Server.getInstance().dispatchCommand((CommandSender) damage, cm.replace("@p", damage.getName()));
                     }
                 }
             }
@@ -341,14 +338,15 @@ public class NpcMainClass extends PluginBase implements Listener {
     }
 
 
-    private Location getLocationByMap(Map map) {
-        double x = (Double) map.get("x");
-        double y = (Double) map.get("y");
-        double z = (Double) map.get("z");
+    public Location getLocationByMap(Map<String, Object> map) {
+        double x = (double) map.get("x");
+        double y = (double) map.get("y");
+        double z = (double) map.get("z");
+        double yaw = (double) map.getOrDefault("yaw", 0D);
         String level = (String) map.get("level");
         Level level1 = Server.getInstance().getLevelByName(level);
         if (level1 != null) {
-            return new Location(x, y, z, level1);
+            return new Location(x, y, z, yaw, 0, level1);
         }
         return null;
     }

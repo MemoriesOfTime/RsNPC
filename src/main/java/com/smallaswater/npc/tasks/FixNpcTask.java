@@ -14,12 +14,8 @@ public class FixNpcTask extends PluginTask<NpcMainClass> {
     @Override
     public void onRun(int i) {
         for (String name : owner.npcs.keySet()) {
-            if (!owner.spawns.containsKey(name)) {
-                owner.spawnNPC(name);
-                continue;
-            }
             RsNpc rsNpc = owner.spawns.get(name);
-            if (rsNpc.isClosed()) {
+            if (rsNpc == null || rsNpc.isClosed()) {
                 owner.spawnNPC(name);
             }
         }

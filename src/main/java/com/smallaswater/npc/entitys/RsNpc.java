@@ -57,10 +57,7 @@ public class RsNpc extends EntityHuman {
                 });
                 String name = npd.get(0).split("@")[0];
                 Player player = getServer().getPlayer(name);
-                if (player == null) {
-                    return;
-                }
-                if (player.getLevel().getName().equals(getLevel().getName()) && getServer().getOnlinePlayers().containsValue(player)) {
+                if (player != null && player.isOnline() && player.getLevel() == this.getLevel()) {
                     double npcx = this.x - player.x;
                     double npcy = this.y - player.y;
                     double npcz = this.z - player.z;

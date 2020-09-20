@@ -262,7 +262,6 @@ public class NpcMainClass extends PluginBase implements Listener {
             npc.setItemHand(hand);
             npc.setScale(1.0F);
             npc.setArmor(getArmor(config));
-            skin.setTrusted(true);
             npc.setSkin(skin);
             npc.spawnToAll();
             this.spawns.put(name, npc);

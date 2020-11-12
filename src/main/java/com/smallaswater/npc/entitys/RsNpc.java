@@ -3,32 +3,39 @@ package com.smallaswater.npc.entitys;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.EmotePacket;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.NpcMainClass;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class RsNpc extends EntityHuman {
 
     private boolean lookAtThePlayer;
 
-    public RsNpc(FullChunk chunk, CompoundTag nbt, String name) {
+    private boolean enableEmote;
+    private ArrayList<String> emoteIDs = new ArrayList<>();
+    private int setEmoteSecond;
+    private int emoteSecond = 0;
+
+    public RsNpc(FullChunk chunk, CompoundTag nbt, String name, Config config) {
         super(chunk, nbt);
-        setNameTagAlwaysVisible();
-        setNameTagVisible();
-        setNameTag(name);
+        this.setNameTagAlwaysVisible();
+        this.setNameTagVisible();
+        this.setNameTag(name);
         //setDataFlag(37, -1);
-        setHealth(20.0F);
-        setMaxHealth(20);
+        this.setMaxHealth(20);
+        this.setHealth(20.0F);
         //判断是否看向玩家
-        String rsnpcName = this.namedTag.getString("rsnpcName");
-        Config config = NpcMainClass.getInstance().npcs.get(rsnpcName);
         this.lookAtThePlayer = config.getBoolean("看向玩家", true);
+        //表情动作
+        this.enableEmote = config.getBoolean("表情动作.启用");
+        this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
+        this.setEmoteSecond = config.getInt("表情动作.间隔(秒)", 10);
     }
 
 
@@ -42,11 +49,22 @@ public class RsNpc extends EntityHuman {
 
     @Override
     public boolean onUpdate(int currentTick) {
+        if (currentTick%20 == 0) {
+            this.emoteSecond++;
+        }
+        if (this.emoteSecond == this.setEmoteSecond && !this.emoteIDs.isEmpty()) {
+            this.emoteSecond = 0;
+            EmotePacket packet = new EmotePacket();
+            packet.runtimeId = this.getId();
+            packet.emoteID = this.emoteIDs.get(NpcMainClass.RANDOM.nextInt(this.emoteIDs.size()));
+            packet.flags = 0;
+            this.getLevel().getPlayers().values().forEach(player -> player.dataPacket(packet));
+        }
         if (this.lookAtThePlayer && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             CompletableFuture.runAsync(() -> {
                 LinkedList<String> npd = new LinkedList<>();
-                for (Player player : getLevel().getPlayers().values()) {
-                    double distance = player.x - this.x + player.y - this.y + player.z - this.z;
+                for (Player player : this.getLevel().getPlayers().values()) {
+                    double distance = this.distance(player);
                     npd.add(player.getName() + "@" + distance);
                 }
                 npd.sort((mapping1, mapping2) -> {

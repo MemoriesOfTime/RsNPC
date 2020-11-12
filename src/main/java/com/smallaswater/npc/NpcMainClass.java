@@ -11,11 +11,14 @@ import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.EmoteListPacket;
+import cn.nukkit.network.protocol.EmotePacket;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.smallaswater.village.api.VillageGuiAPI;
@@ -34,6 +37,7 @@ import java.util.*;
 
 public class NpcMainClass extends PluginBase implements Listener {
 
+    public final static Random RANDOM = new Random();
     private static NpcMainClass npcMainClass;
     public HashMap<String, Skin> loadSkins = new HashMap<>();
     public final HashMap<String, Config> npcs = new HashMap<>();
@@ -258,7 +262,7 @@ public class NpcMainClass extends PluginBase implements Listener {
             }
             RsNpc npc = new RsNpc(location.getChunk(), getTag(location, name).putString("rsnpcName", name).putCompound("Skin", (new CompoundTag())
                     .putByteArray("Data", (skin.getSkinData()).data)
-                    .putString("ModelId", skin.getSkinId())), names);
+                    .putString("ModelId", skin.getSkinId())), names, config);
             npc.setItemHand(hand);
             npc.setScale(1.0F);
             npc.setArmor(getArmor(config));

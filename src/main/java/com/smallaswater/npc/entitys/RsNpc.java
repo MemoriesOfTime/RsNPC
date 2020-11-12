@@ -49,17 +49,6 @@ public class RsNpc extends EntityHuman {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if (currentTick%20 == 0) {
-            this.emoteSecond++;
-        }
-        if (this.emoteSecond == this.setEmoteSecond && !this.emoteIDs.isEmpty()) {
-            this.emoteSecond = 0;
-            EmotePacket packet = new EmotePacket();
-            packet.runtimeId = this.getId();
-            packet.emoteID = this.emoteIDs.get(NpcMainClass.RANDOM.nextInt(this.emoteIDs.size()));
-            packet.flags = 0;
-            this.getLevel().getPlayers().values().forEach(player -> player.dataPacket(packet));
-        }
         if (this.lookAtThePlayer && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             CompletableFuture.runAsync(() -> {
                 LinkedList<String> npd = new LinkedList<>();
@@ -88,6 +77,19 @@ public class RsNpc extends EntityHuman {
                     this.pitch = pitch;
                 }
             });
+        }
+        if (this.enableEmote) {
+            if (currentTick % 20 == 0) {
+                this.emoteSecond++;
+            }
+            if (this.emoteSecond == this.setEmoteSecond && !this.emoteIDs.isEmpty()) {
+                this.emoteSecond = 0;
+                EmotePacket packet = new EmotePacket();
+                packet.runtimeId = this.getId();
+                packet.emoteID = this.emoteIDs.get(NpcMainClass.RANDOM.nextInt(this.emoteIDs.size()));
+                packet.flags = 0;
+                this.getLevel().getPlayers().values().forEach(player -> player.dataPacket(packet));
+            }
         }
         return super.onUpdate(currentTick);
     }

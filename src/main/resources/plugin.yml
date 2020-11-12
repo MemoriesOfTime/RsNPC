@@ -2,15 +2,16 @@ name: RsNPCX
 main: com.smallaswater.npc.NpcMainClass
 version: 1.1.3
 api:
-  - 1.0.9
-author: 若水
+  - "1.0.9"
+  - "1.0.11"
+authors: ["若水", "LT_Name"]
 load: POSTWORLD
 commands:
   rnpc:
-    description: "NPC主命令"
+    description: "RSNPC插件主命令"
     usage: "rnpc help"
     permission: RsNPC.npc
 permissions:
   RsNPC.npc:
     default: op
-    description: "Npc主命令"
+    description: "RSNPC插件主命令"

@@ -330,6 +330,11 @@ public class NpcMainClass extends PluginBase implements Listener {
                             this.getServer().dispatchCommand((CommandSender) damage, cm.replace("@p", damage.getName()));
                         }
                     }
+                    List<String> messages = config.getStringList("发送消息");
+                    for (String message : messages) {
+
+                        ((Player) damage).sendMessage("[" + name + "] " + message.replace("@p", damage.getName()));
+                    }
                 }
             }
         }

@@ -1,55 +1,38 @@
 package com.smallaswater.npc.entitys;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
-import cn.nukkit.utils.Config;
-import com.smallaswater.npc.NpcMainClass;
+import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.data.RsNpcConfig;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
 
-public class RsNpc extends EntityHuman {
+public class EntityRsNpc extends EntityHuman {
 
-    private boolean lookAtThePlayer;
-
-    private boolean enableEmote;
-    private ArrayList<String> emoteIDs = new ArrayList<>();
-    private int setEmoteSecond;
+    private final RsNpcConfig config;
     private int emoteSecond = 0;
 
-    public RsNpc(FullChunk chunk, CompoundTag nbt, String name, Config config) {
+    public EntityRsNpc(FullChunk chunk, CompoundTag nbt, RsNpcConfig config) {
         super(chunk, nbt);
+        this.config = config;
         this.setNameTagAlwaysVisible();
         this.setNameTagVisible();
-        this.setNameTag(name);
+        this.setNameTag(config.getName());
         //setDataFlag(37, -1);
         this.setMaxHealth(20);
         this.setHealth(20.0F);
-        //判断是否看向玩家
-        this.lookAtThePlayer = config.getBoolean("看向玩家", true);
-        //表情动作
-        this.enableEmote = config.getBoolean("表情动作.启用");
-        this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
-        this.setEmoteSecond = config.getInt("表情动作.间隔(秒)", 10);
-    }
-
-
-    public void setItemHand(Item itemHand) {
-        this.getInventory().setItemInHand(itemHand);
-    }
-
-    public void setArmor(Item[] armor) {
-        this.getInventory().setArmorContents(armor);
+        this.getInventory().setItemInHand(config.getHand());
+        this.getInventory().setArmorContents(config.getArmor());
     }
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if (this.lookAtThePlayer && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
+        if (this.config.isLookAtThePlayer() && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             CompletableFuture.runAsync(() -> {
                 LinkedList<String> npd = new LinkedList<>();
                 for (Player player : this.getLevel().getPlayers().values()) {
@@ -78,17 +61,17 @@ public class RsNpc extends EntityHuman {
                 }
             });
         }
-        if (this.enableEmote) {
+        if (this.config.isEnableEmote() && !this.config.getEmoteIDs().isEmpty()) {
             if (currentTick % 20 == 0) {
                 this.emoteSecond++;
             }
-            if (this.emoteSecond == this.setEmoteSecond && !this.emoteIDs.isEmpty()) {
+            if (this.emoteSecond >= this.config.getShowEmoteInterval()) {
                 this.emoteSecond = 0;
                 EmotePacket packet = new EmotePacket();
                 packet.runtimeId = this.getId();
-                packet.emoteID = this.emoteIDs.get(NpcMainClass.RANDOM.nextInt(this.emoteIDs.size()));
+                packet.emoteID = this.config.getEmoteIDs().get(RsNpcX.RANDOM.nextInt(this.config.getEmoteIDs().size()));
                 packet.flags = 0;
-                this.getLevel().getPlayers().values().forEach(player -> player.dataPacket(packet));
+                Server.broadcastPacket(this.getViewers().values(), packet);
             }
         }
         return super.onUpdate(currentTick);

@@ -70,7 +70,10 @@ public class RsNpcConfig {
             this.entityRsNpc.setScale(1F);
             this.entityRsNpc.spawnToAll();
         }
-        this.entityRsNpc.setPositionAndRotation(this.location, this.location.yaw, this.location.pitch);
+        this.entityRsNpc.setPosition(this.location);
+        if (!this.lookAtThePlayer) {
+            this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
+        }
         this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.name));
     }
 

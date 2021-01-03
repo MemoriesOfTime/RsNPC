@@ -22,6 +22,7 @@ public class RsNpcConfig {
 
     private final Config config;
     private final String name;
+    private final String showName;
     private final Location location;
 
     private final Item hand;
@@ -37,9 +38,10 @@ public class RsNpcConfig {
 
     private EntityRsNpc entityRsNpc;
 
-    public RsNpcConfig(Config config) {
+    public RsNpcConfig(String name, Config config) {
         this.config = config;
-        this.name = config.getString("name");
+        this.name = name;
+        this.showName = config.getString("name");
         HashMap<String, Object> map = config.get("坐标", new HashMap<>());
         Level level = Server.getInstance().getLevelByName((String) map.get("level"));
         this.location = new Location((double) map.get("x"), (double) map.get("y"), (double) map.get("z"),
@@ -62,7 +64,7 @@ public class RsNpcConfig {
     public void checkEntity() {
         if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
             this.entityRsNpc = new EntityRsNpc(location.getChunk(), Entity.getDefaultNBT(location)
-                    .putString("rsnpcName", name)
+                    .putString("rsnpcName", this.name)
                     .putCompound("Skin", (new CompoundTag())
                             .putByteArray("Data", (skin.getSkinData()).data)
                             .putString("ModelId", skin.getSkinId())), this);
@@ -74,7 +76,7 @@ public class RsNpcConfig {
         if (!this.lookAtThePlayer) {
             this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
         }
-        this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.name));
+        this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName));
     }
 
     public Config getConfig() {
@@ -83,6 +85,10 @@ public class RsNpcConfig {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getShowName() {
+        return this.showName;
     }
 
     public Location getLocation() {

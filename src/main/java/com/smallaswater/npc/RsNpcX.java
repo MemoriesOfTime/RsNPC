@@ -76,7 +76,7 @@ public class RsNpcX extends PluginBase implements Listener {
             for (File file : files) {
                 String npcName = file.getName().split("\\.")[0];
                 Config config = new Config(file, Config.YAML);
-                this.npcs.put(npcName, new RsNpcConfig(config));
+                this.npcs.put(npcName, new RsNpcConfig(npcName, config));
             }
         }
     }
@@ -149,10 +149,10 @@ public class RsNpcX extends PluginBase implements Listener {
         if (command.getName().equals("rsnpcx") && sender instanceof Player && args.length > 0) {
             switch (args[0]) {
                 case "help":
-                    sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
-                    sender.sendMessage("§a§l/rnpc create <名称> §7创建NPC");
-                    sender.sendMessage("§a§l/rnpc delete <名称> §7移除NPC");
-                    sender.sendMessage("§a§l/rnpc reload §7重载NPC");
+                    sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
+                    sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
+                    sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
+                    sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
                     sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
                     return true;
                 case "create":
@@ -174,8 +174,12 @@ public class RsNpcX extends PluginBase implements Listener {
                         map.put("level", player.getLevel().getName());
                         config.set("坐标", map);
                         config.save(true);
-                        this.npcs.put(name, new RsNpcConfig(config));
+                        RsNpcConfig rsNpcConfig = new RsNpcConfig(name, config);
+                        this.npcs.put(name, rsNpcConfig);
+                        rsNpcConfig.checkEntity();
                         sender.sendMessage("§a§lNPC " + name + "创建成功!!");
+                    }else {
+                        sender.sendMessage("§c§l请输入要创建的NPC的名字！");
                     }
                     return true;
                 case "delete":
@@ -191,6 +195,8 @@ public class RsNpcX extends PluginBase implements Listener {
                             sender.sendMessage("§c§lNPC " + name + "文件删除失败");
                         }
                         sender.sendMessage("§a§lNPC " + name + "移除成功 ");
+                    }else {
+                        sender.sendMessage("§c§l请输入要删除的NPC的名字！");
                     }
                     return true;
                 case "reload":

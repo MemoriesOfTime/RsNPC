@@ -22,7 +22,7 @@ public class EntityRsNpc extends EntityHuman {
         this.config = config;
         this.setNameTagAlwaysVisible();
         this.setNameTagVisible();
-        this.setNameTag(config.getName());
+        this.setNameTag(config.getShowName());
         //setDataFlag(37, -1);
         this.setMaxHealth(20);
         this.setHealth(20.0F);

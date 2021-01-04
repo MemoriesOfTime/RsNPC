@@ -77,4 +77,8 @@ public class EntityRsNpc extends EntityHuman {
         return super.onUpdate(currentTick);
     }
 
+    public RsNpcConfig getConfig() {
+        return this.config;
+    }
+
 }

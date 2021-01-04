@@ -62,21 +62,23 @@ public class RsNpcConfig {
     }
 
     public void checkEntity() {
-        if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-            this.entityRsNpc = new EntityRsNpc(location.getChunk(), Entity.getDefaultNBT(location)
-                    .putString("rsnpcName", this.name)
-                    .putCompound("Skin", (new CompoundTag())
-                            .putByteArray("Data", (skin.getSkinData()).data)
-                            .putString("ModelId", skin.getSkinId())), this);
-            this.entityRsNpc.setSkin(this.skin);
-            this.entityRsNpc.setScale(1F);
-            this.entityRsNpc.spawnToAll();
+        if (this.location.getChunk() != null && this.location.getChunk().isLoaded()) {
+            if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
+                this.entityRsNpc = new EntityRsNpc(location.getChunk(), Entity.getDefaultNBT(location)
+                        .putString("rsnpcName", this.name)
+                        .putCompound("Skin", (new CompoundTag())
+                                .putByteArray("Data", (skin.getSkinData()).data)
+                                .putString("ModelId", skin.getSkinId())), this);
+                this.entityRsNpc.setSkin(this.skin);
+                this.entityRsNpc.setScale(1F);
+                this.entityRsNpc.spawnToAll();
+            }
+            this.entityRsNpc.setPosition(this.location);
+            if (!this.lookAtThePlayer) {
+                this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
+            }
+            this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName));
         }
-        this.entityRsNpc.setPosition(this.location);
-        if (!this.lookAtThePlayer) {
-            this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
-        }
-        this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName));
     }
 
     public Config getConfig() {

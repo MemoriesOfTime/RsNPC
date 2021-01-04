@@ -6,10 +6,6 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.event.EventHandler;
-import cn.nukkit.event.Listener;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
@@ -30,7 +26,7 @@ import java.util.Map;
 import java.util.Random;
 
 
-public class RsNpcX extends PluginBase implements Listener {
+public class RsNpcX extends PluginBase {
 
     public final static Random RANDOM = new Random();
     private static RsNpcX rsNpcX;
@@ -57,7 +53,7 @@ public class RsNpcX extends PluginBase implements Listener {
         this.loadSkins();
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
-        this.getServer().getPluginManager().registerEvents(this, this);
+        this.getServer().getPluginManager().registerEvents(new OnListener(), this);
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
         this.getLogger().info("RsNpcX加载完成");
     }
@@ -227,34 +223,6 @@ public class RsNpcX extends PluginBase implements Listener {
 
     public HashMap<String, RsNpcConfig> getNpcs() {
         return this.npcs;
-    }
-
-    @EventHandler
-    public void onDamage(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNpc) {
-            event.setCancelled();
-            if (event instanceof EntityDamageByEntityEvent) {
-                Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
-                if (damage instanceof Player) {
-                    Player player = (Player) damage;
-                    String name = entity.namedTag.getString("rsnpcName");
-                    RsNpcConfig config = this.npcs.get(name);
-                    for (String cmd : config.getCmds()) {
-                        String[] c = cmd.split("&");
-                        String cm = c[0];
-                        if (c.length > 1 && "con".equals(c[1])) {
-                            this.getServer().dispatchCommand(this.getServer().getConsoleSender(), VariableManage.stringReplace(player, cm));
-                        }else {
-                            this.getServer().dispatchCommand(player, VariableManage.stringReplace(player, cm));
-                        }
-                    }
-                    for (String message : config.getMessages()) {
-                        player.sendMessage("[" + name + "] " + VariableManage.stringReplace(player, message));
-                    }
-                }
-            }
-        }
     }
 
 }

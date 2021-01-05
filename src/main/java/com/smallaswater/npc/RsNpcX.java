@@ -41,7 +41,7 @@ public class RsNpcX extends PluginBase {
     @Override
     public void onLoad() {
         rsNpcX = this;
-        VariableManage.addVariable("default", new DefaultVariable());
+        VariableManage.addVariable("default", DefaultVariable.class);
     }
 
     @Override

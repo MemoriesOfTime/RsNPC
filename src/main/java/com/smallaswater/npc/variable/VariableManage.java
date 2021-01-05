@@ -15,8 +15,13 @@ public class VariableManage {
 
     }
 
-    public static void addVariable(String name, BaseVariable variable) {
-        variables.put(name, variable);
+    public static void addVariable(String name, Class<? extends BaseVariable> variableClass) {
+        try {
+            BaseVariable variable = variableClass.newInstance();
+            variables.put(name, variable);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String stringReplace(Player player, String inString) {

@@ -61,7 +61,9 @@ public class RsNpcX extends PluginBase {
     @Override
     public void onDisable() {
         for (RsNpcConfig config : this.npcs.values()) {
-            config.getEntityRsNpc().close();
+            if (config.getEntityRsNpc() != null) {
+                config.getEntityRsNpc().close();
+            }
         }
         this.npcs.clear();
     }
@@ -71,8 +73,9 @@ public class RsNpcX extends PluginBase {
         if (files != null && files.length > 0) {
             for (File file : files) {
                 String npcName = file.getName().split("\\.")[0];
-                Config config = new Config(file, Config.YAML);
-                this.npcs.put(npcName, new RsNpcConfig(npcName, config));
+                RsNpcConfig rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
+                this.npcs.put(npcName, rsNpcConfig);
+                rsNpcConfig.checkEntity();
             }
         }
     }

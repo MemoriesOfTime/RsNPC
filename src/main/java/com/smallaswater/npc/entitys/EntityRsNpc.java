@@ -17,9 +17,17 @@ public class EntityRsNpc extends EntityHuman {
     private final RsNpcConfig config;
     private int emoteSecond = 0;
 
+    public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
+        this(chunk, nbt, null);
+    }
+
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt, RsNpcConfig config) {
         super(chunk, nbt);
         this.config = config;
+        if (this.config == null) {
+            this.close();
+            return;
+        }
         this.setNameTagAlwaysVisible();
         this.setNameTagVisible();
         this.setNameTag(config.getShowName());
@@ -32,6 +40,10 @@ public class EntityRsNpc extends EntityHuman {
 
     @Override
     public boolean onUpdate(int currentTick) {
+        if (this.config == null) {
+            this.close();
+            return false;
+        }
         if (this.config.isLookAtThePlayer() && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             CompletableFuture.runAsync(() -> {
                 LinkedList<String> npd = new LinkedList<>();

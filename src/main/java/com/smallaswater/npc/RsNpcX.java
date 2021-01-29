@@ -12,6 +12,7 @@ import cn.nukkit.utils.Config;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
+import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Util;
 import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
@@ -72,10 +73,20 @@ public class RsNpcX extends PluginBase {
         File[] files = (new File(getDataFolder() + "/Npcs")).listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
+                if (!file.isFile()) {
+                    continue;
+                }
                 String npcName = file.getName().split("\\.")[0];
-                RsNpcConfig rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
+                RsNpcConfig rsNpcConfig;
+                try {
+                    rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
+                } catch (RsNpcLoadException e) {
+                    this.getLogger().error("加载NPC出现错误！", e);
+                    continue;
+                }
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
+                this.getLogger().info("NPC: " + rsNpcConfig.getName() + " 加载完成！");
             }
         }
     }
@@ -173,7 +184,14 @@ public class RsNpcX extends PluginBase {
                         map.put("level", player.getLevel().getName());
                         config.set("坐标", map);
                         config.save(true);
-                        RsNpcConfig rsNpcConfig = new RsNpcConfig(name, config);
+                        RsNpcConfig rsNpcConfig;
+                        try {
+                            rsNpcConfig = new RsNpcConfig(name, config);
+                        } catch (RsNpcLoadException e) {
+                            sender.sendMessage("创建NPC失败！");
+                            this.getLogger().error("创建NPC失败！", e);
+                            return true;
+                        }
                         this.npcs.put(name, rsNpcConfig);
                         rsNpcConfig.checkEntity();
                         sender.sendMessage("§a§lNPC " + name + "创建成功!!");

@@ -25,12 +25,24 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 public class RsNpcX extends PluginBase {
 
-    public final static Random RANDOM = new Random();
+    public static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
+            Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().availableProcessors() * 4,
+            30,
+            TimeUnit.SECONDS,
+            new SynchronousQueue<>(),
+            new ThreadPoolExecutor.DiscardOldestPolicy());
+    public static final Random RANDOM = new Random();
+
     private static RsNpcX rsNpcX;
+
     private final HashMap<String, Skin> skins = new HashMap<>();
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
     private final String[] defaultSkins = new String[]{"小丸子", "小埋", "小黑苦力怕", "尸鬼", "拉姆", "熊孩子", "狂三", "米奇", "考拉", "黑岩射手"};

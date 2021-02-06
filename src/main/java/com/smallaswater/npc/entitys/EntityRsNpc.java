@@ -10,7 +10,6 @@ import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.data.RsNpcConfig;
 
 import java.util.LinkedList;
-import java.util.concurrent.CompletableFuture;
 
 public class EntityRsNpc extends EntityHuman {
 
@@ -46,7 +45,7 @@ public class EntityRsNpc extends EntityHuman {
             return false;
         }
         if (this.config.isLookAtThePlayer() && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
-            CompletableFuture.runAsync(() -> {
+            RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
                 LinkedList<String> npd = new LinkedList<>();
                 for (Player player : this.getLevel().getPlayers().values()) {
                     double distance = this.distance(player);
@@ -92,10 +91,6 @@ public class EntityRsNpc extends EntityHuman {
 
     public RsNpcConfig getConfig() {
         return this.config;
-    }
-
-    public boolean isCanProjectilesTrigger() {
-        return this.config.isCanProjectilesTrigger();
     }
 
 }

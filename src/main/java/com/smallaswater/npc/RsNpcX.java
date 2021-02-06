@@ -242,6 +242,10 @@ public class RsNpcX extends PluginBase {
         return this.skins;
     }
 
+    public Skin getSkinByName(String name) {
+        return this.getSkins().getOrDefault(name, RsNpcX.getInstance().getSkins().get("尸鬼"));
+    }
+
     public HashMap<String, RsNpcConfig> getNpcs() {
         return this.npcs;
     }

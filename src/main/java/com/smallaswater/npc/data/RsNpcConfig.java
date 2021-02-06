@@ -12,6 +12,8 @@ import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
+import lombok.Getter;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,23 +26,30 @@ public class RsNpcConfig {
     private final Config config;
     private final String name;
     private final String showName;
+
     private final String levelName;
     private final Location location;
 
     private final Item hand;
     private final Item[] armor = new Item[4];
+
     private final Skin skin;
+
     private final boolean lookAtThePlayer;
+
     private final boolean enableEmote;
     private final ArrayList<String> emoteIDs = new ArrayList<>();
     private final int showEmoteInterval;
 
-    private final ArrayList<String> cmds = new ArrayList<>(),
-            messages = new ArrayList<>();
+    @Getter
+    private final boolean canProjectilesTrigger;
+
+    private final ArrayList<String> cmds = new ArrayList<>();
+    private final ArrayList<String> messages = new ArrayList<>();
 
     private EntityRsNpc entityRsNpc;
 
-    public RsNpcConfig(String name, Config config) throws RsNpcLoadException {
+    public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
         this.config = config;
         this.name = name;
         this.showName = config.getString("name");
@@ -55,22 +64,39 @@ public class RsNpcConfig {
                 (double) map.getOrDefault("yaw", 0D), 0, level);
 
         this.hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
+        config.set("手持", this.hand.getId() + ":" + this.hand.getDamage());
         this.armor[0] = Item.fromString("".equals(config.getString("头部")) ? "0:0" : config.getString("头部"));
+        config.set("头部", this.armor[0].getId() + ":" + this.armor[0].getDamage());
         this.armor[1] = Item.fromString("".equals(config.getString("胸部")) ? "0:0" : config.getString("胸部"));
+        config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
         this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
+        config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
         this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
+        config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
 
         String skinName = config.getString("皮肤", "尸鬼");
-        this.skin = RsNpcX.getInstance().getSkins().getOrDefault(skinName, RsNpcX.getInstance().getSkins().get("尸鬼"));
+        config.set("皮肤", skinName);
+        this.skin = RsNpcX.getInstance().getSkinByName(skinName);
 
         this.lookAtThePlayer = config.getBoolean("看向玩家", true);
+        config.set("看向玩家", this.lookAtThePlayer);
 
         this.enableEmote = config.getBoolean("表情动作.启用");
+        config.set("表情动作.启用", this.enableEmote);
         this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
+        config.set("表情动作.表情ID", this.emoteIDs);
         this.showEmoteInterval = config.getInt("表情动作.间隔(秒)", 10);
+        config.set("表情动作.间隔(秒)", this.showEmoteInterval);
+
+        this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
+        config.set("允许抛射物触发", this.canProjectilesTrigger);
 
         this.cmds.addAll(config.getStringList("点击执行指令"));
+        config.set("点击执行指令", this.cmds);
         this.messages.addAll(config.getStringList("发送消息"));
+        config.set("发送消息", this.messages);
+
+        config.save();
     }
 
     public void checkEntity() {

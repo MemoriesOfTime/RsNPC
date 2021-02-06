@@ -17,6 +17,7 @@ public class EntityRsNpc extends EntityHuman {
     private final RsNpcConfig config;
     private int emoteSecond = 0;
 
+    @Deprecated
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
@@ -91,6 +92,10 @@ public class EntityRsNpc extends EntityHuman {
 
     public RsNpcConfig getConfig() {
         return this.config;
+    }
+
+    public boolean isCanProjectilesTrigger() {
+        return this.config.isCanProjectilesTrigger();
     }
 
 }

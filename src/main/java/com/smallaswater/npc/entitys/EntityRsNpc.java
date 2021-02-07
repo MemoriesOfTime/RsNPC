@@ -46,19 +46,10 @@ public class EntityRsNpc extends EntityHuman {
         }
         if (this.config.isLookAtThePlayer() && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
-                LinkedList<String> npd = new LinkedList<>();
-                for (Player player : this.getLevel().getPlayers().values()) {
-                    double distance = this.distance(player);
-                    npd.add(player.getName() + "@" + distance);
-                }
-                npd.sort((mapping1, mapping2) -> {
-                    String[] nameMapNum1 = mapping1.split("@");
-                    String[] nameMapNum2 = mapping2.split("@");
-                    double compare = Double.parseDouble(nameMapNum1[1]) - Double.parseDouble(nameMapNum2[1]);
-                    return Double.compare(compare, 0.0D);
-                });
-                String name = npd.get(0).split("@")[0];
-                Player player = getServer().getPlayer(name);
+                LinkedList<Player> npd = new LinkedList<>(this.getLevel().getPlayers().values());
+                npd.sort((mapping1, mapping2) ->
+                        Double.compare(this.distance(mapping1) - this.distance(mapping2), 0.0D));
+                Player player = npd.get(0);
                 if (player != null && player.isOnline() && player.getLevel() == this.getLevel()) {
                     double npcx = this.x - player.x;
                     double npcy = this.y - player.y;

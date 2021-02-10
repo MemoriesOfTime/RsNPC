@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +37,7 @@ public class RsNpcX extends PluginBase {
             Runtime.getRuntime().availableProcessors() * 4,
             30,
             TimeUnit.SECONDS,
-            new SynchronousQueue<>(),
+            new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors()),
             new ThreadPoolExecutor.DiscardOldestPolicy());
     public static final Random RANDOM = new Random();
 

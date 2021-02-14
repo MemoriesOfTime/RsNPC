@@ -34,10 +34,10 @@ public class RsNpcX extends PluginBase {
 
     public static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors() * 4,
-            30,
+            Runtime.getRuntime().availableProcessors() * 2,
+            5,
             TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors()),
+            new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * 4),
             new ThreadPoolExecutor.DiscardOldestPolicy());
     public static final Random RANDOM = new Random();
 

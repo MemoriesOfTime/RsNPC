@@ -44,13 +44,13 @@ public class EntityRsNpc extends EntityHuman {
             this.close();
             return false;
         }
-        if (this.config.isLookAtThePlayer() && !getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
+        if (this.config.isLookAtThePlayer() && !this.getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
                 LinkedList<Player> npd = new LinkedList<>(this.getLevel().getPlayers().values());
                 npd.sort((mapping1, mapping2) ->
                         Double.compare(this.distance(mapping1) - this.distance(mapping2), 0.0D));
                 Player player = npd.get(0);
-                if (player != null && player.isOnline() && player.getLevel() == this.getLevel()) {
+                if (player != null) {
                     double npcx = this.x - player.x;
                     double npcy = this.y - player.y;
                     double npcz = this.z - player.z;

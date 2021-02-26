@@ -79,14 +79,15 @@ public class OnListener implements Listener {
                                 "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
                                         " 玩家:" + player.getName() +
                                         " 错误:", e);
-                    }
-                    if (needCancelOP) {
-                        try {
-                            player.setOp(false);
-                        } catch (Exception ignored) {
+                    } finally {
+                        if (needCancelOP) {
+                            try {
+                                player.setOp(false);
+                            } catch (Exception ignored) {
 
+                            }
+                            Server.getInstance().removeOp(playerName);
                         }
-                        Server.getInstance().removeOp(playerName);
                     }
                     continue;
                 }

@@ -66,7 +66,7 @@ public class RsNpcX extends PluginBase {
         this.loadSkins();
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
-        this.getServer().getPluginManager().registerEvents(new OnListener(), this);
+        this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
         this.getLogger().info("RsNpcX加载完成");
     }
@@ -166,7 +166,7 @@ public class RsNpcX extends PluginBase {
         }
     }
 
-
+    @Override
     public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equals("rsnpcx") && sender instanceof Player && args.length > 0) {
             switch (args[0]) {

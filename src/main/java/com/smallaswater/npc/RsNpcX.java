@@ -168,86 +168,99 @@ public class RsNpcX extends PluginBase {
 
     @Override
     public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equals("rsnpcx") && sender instanceof Player && args.length > 0) {
-            switch (args[0]) {
-                case "help":
-                    sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
-                    sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
-                    sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
-                    sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
-                    sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
-                    return true;
-                case "create":
-                    if (args.length > 1) {
-                        String name = args[1];
-                        if (this.npcs.containsKey(name)) {
-                            sender.sendMessage("§c§lNPC " + name + "已经存在...");
+        if (command.getName().equals("rsnpcx")) {
+            if (args.length > 0) {
+                switch (args[0]) {
+                    case "create":
+                        if (!(sender instanceof Player)) {
+                            sender.sendMessage("§c请在游戏内使用此命令！");
                             return true;
                         }
-                        this.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
-                        Config config = new Config(getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
-                        config.set("name", name);
-                        Player player = (Player) sender;
-                        LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                        map.put("x", player.getX());
-                        map.put("y", player.getY());
-                        map.put("z", player.getZ());
-                        map.put("yaw", Util.getYaw(player));
-                        map.put("level", player.getLevel().getName());
-                        config.set("坐标", map);
-                        config.save(true);
-                        RsNpcConfig rsNpcConfig;
-                        try {
-                            rsNpcConfig = new RsNpcConfig(name, config);
-                        } catch (RsNpcLoadException e) {
-                            sender.sendMessage("创建NPC失败！");
-                            this.getLogger().error("创建NPC失败！", e);
-                            return true;
+                        if (args.length > 1) {
+                            String name = args[1];
+                            if (this.npcs.containsKey(name)) {
+                                sender.sendMessage("§c§lNPC " + name + "已经存在...");
+                                return true;
+                            }
+                            this.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
+                            Config config = new Config(this.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
+                            config.set("name", name);
+                            Player player = (Player) sender;
+                            LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                            map.put("x", player.getX());
+                            map.put("y", player.getY());
+                            map.put("z", player.getZ());
+                            map.put("yaw", Util.getYaw(player));
+                            map.put("level", player.getLevel().getName());
+                            config.set("坐标", map);
+                            config.save();
+                            RsNpcConfig rsNpcConfig;
+                            try {
+                                rsNpcConfig = new RsNpcConfig(name, config);
+                            } catch (RsNpcLoadException e) {
+                                sender.sendMessage("创建NPC失败！");
+                                this.getLogger().error("创建NPC失败！", e);
+                                return true;
+                            }
+                            this.npcs.put(name, rsNpcConfig);
+                            rsNpcConfig.checkEntity();
+                            sender.sendMessage("§a§lNPC " + name + "创建成功!!");
+                        } else {
+                            sender.sendMessage("§c§l请输入要创建的NPC的名字！");
                         }
-                        this.npcs.put(name, rsNpcConfig);
-                        rsNpcConfig.checkEntity();
-                        sender.sendMessage("§a§lNPC " + name + "创建成功!!");
-                    }else {
-                        sender.sendMessage("§c§l请输入要创建的NPC的名字！");
-                    }
-                    return true;
-                case "delete":
-                    if (args.length > 1) {
-                        String name = args[1];
-                        if (!this.npcs.containsKey(name)) {
-                            sender.sendMessage("§c§lNPC " + name + "不存在...");
-                            return true;
+                        return true;
+                    case "delete":
+                        if (args.length > 1) {
+                            String name = args[1];
+                            if (!this.npcs.containsKey(name)) {
+                                sender.sendMessage("§c§lNPC " + name + "不存在...");
+                                return true;
+                            }
+                            this.npcs.get(name).getEntityRsNpc().close();
+                            this.npcs.remove(name);
+                            if (!(new File(getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
+                                sender.sendMessage("§c§lNPC " + name + "文件删除失败");
+                            }
+                            sender.sendMessage("§a§lNPC " + name + "移除成功 ");
+                        } else {
+                            sender.sendMessage("§c§l请输入要删除的NPC的名字！");
                         }
-                        this.npcs.get(name).getEntityRsNpc().close();
-                        this.npcs.remove(name);
-                        if (!(new File(getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
-                            sender.sendMessage("§c§lNPC " + name + "文件删除失败");
+                        return true;
+                    case "reload":
+                        if (!(new File(getDataFolder() + "/Npcs")).exists() && !(new File(getDataFolder() + "/Npcs")).mkdirs()) {
+                            this.getLogger().error("Npcs文件夹创建失败");
                         }
-                        sender.sendMessage("§a§lNPC " + name + "移除成功 ");
-                    }else {
-                        sender.sendMessage("§c§l请输入要删除的NPC的名字！");
-                    }
-                    return true;
-                case "reload":
-                    if (!(new File(getDataFolder() + "/Npcs")).exists() && !(new File(getDataFolder() + "/Npcs")).mkdirs()) {
-                        this.getLogger().error("Npcs文件夹创建失败");
-                    }
-                    for (Level level : Server.getInstance().getLevels().values()) {
-                        for (Entity entity : level.getEntities()) {
-                            if (entity instanceof EntityRsNpc) {
-                                entity.close();
+                        for (Level level : Server.getInstance().getLevels().values()) {
+                            for (Entity entity : level.getEntities()) {
+                                if (entity instanceof EntityRsNpc) {
+                                    entity.close();
+                                }
                             }
                         }
-                    }
-                    this.npcs.clear();
-                    this.saveDefaultSkin();
-                    this.loadSkins();
-                    this.loadNpcs();
-                    sender.sendMessage("§a§l成功重载配置.. ");
-                    return true;
+                        this.npcs.clear();
+                        this.saveDefaultSkin();
+                        this.loadSkins();
+                        this.loadNpcs();
+                        sender.sendMessage("§a§l成功重载配置.. ");
+                        return true;
+                    default:
+                        this.sendCommandHelp(sender);
+                        return true;
+                }
+            } else {
+                this.sendCommandHelp(sender);
             }
+            return true;
         }
         return false;
+    }
+
+    public void sendCommandHelp(CommandSender sender) {
+        sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
+        sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
+        sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
+        sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
     }
 
     public HashMap<String, Skin> getSkins() {

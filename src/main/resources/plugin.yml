@@ -1,6 +1,6 @@
 name: RsNPCX
 main: com.smallaswater.npc.RsNpcX
-version: "1.5.0"
+version: "1.5.1"
 api:
   - "1.0.9"
   - "1.0.11"
@@ -9,7 +9,7 @@ load: POSTWORLD
 commands:
   rsnpcx:
     description: "RSNPCX插件主命令"
-    usage: "rnpcx help"
+    usage: "/rnpcx help"
     permission: RsNPCX.npc
 permissions:
   RsNPCX.npc:

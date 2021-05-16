@@ -238,7 +238,7 @@ public class RsNpcX extends PluginBase {
                             list.add(player.getX() + ":" + player.getY() + ":" + player.getZ());
                             rsNpcConfig.getConfig().set("route", list);
                             rsNpcConfig.getConfig().save();
-                            sender.sendMessage("已添加到路径");
+                            sender.sendMessage("§a§l已添加到路径");
                         }else {
                             sender.sendMessage("§c§l请输入要设置的NPC的名字！");
                         }
@@ -274,8 +274,9 @@ public class RsNpcX extends PluginBase {
 
     public void sendCommandHelp(CommandSender sender) {
         sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
-        sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
-        sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx create <NPC名称> §7在当前位置创建NPC");
+        sender.sendMessage("§a§l/rsnpcx delete <NPC名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx addroute <NPC名称> §7将当前位置添加到NPC路径");
         sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
         sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
     }

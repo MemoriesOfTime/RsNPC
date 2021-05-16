@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.entitys.EntityRsNpc;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -22,21 +23,23 @@ public class RouteFinder {
     private final Level level;
     private final Vector3 start;
     private final Vector3 end;
-    private final double distance;
+    private final int distance;
     
     LinkedList<Node> nodes = new LinkedList<>();
     
-    public RouteFinder(Level level, Vector3 start, Vector3 end) {
+    public RouteFinder(Level level, Vector3 start, Vector3 end, EntityRsNpc entityRsNpc) {
         this.level = level;
-        this.start = start;
-        this.end = end;
+        this.start = start.floor();
+        this.end = end.floor();
     
-        this.distance = start.distance(end);
+        this.distance = (int) start.distance(end);
     
         Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
             @Override
             public void onRun() {
                 process();
+                entityRsNpc.getNodes().addAll(nodes);
+                entityRsNpc.setLockRoute(false);
             }
         });
         
@@ -45,7 +48,7 @@ public class RouteFinder {
     private void process() {
         LinkedList<Node> needChecks = new LinkedList<>();
         LinkedList<Node> needChecksLow = new LinkedList<>(); //低优先级
-        ArrayList<Node> completeList = new ArrayList<>();
+        ArrayList<Vector3> completeList = new ArrayList<>();
         needChecks.add(new Node(this.start));
         
         Node nowNode;
@@ -53,25 +56,22 @@ public class RouteFinder {
             //到达终点，保存路径
             if (nowNode.getVector3().distance(this.getEnd()) < 0.5) {
                 Node parent = nowNode;
+                parent.setVector3(parent.getVector3().add(0.5, 0, 0.5));
                 this.nodes.add(parent);
                 while ((parent = parent.getParent()) != null) {
+                    parent.setVector3(parent.getVector3().add(0.5, 0, 0.5));
                     this.nodes.addFirst(parent);
                 }
                 break;
             }
-            
-            if (completeList.contains(nowNode)) {
-                continue;
-            }
-            completeList.add(nowNode);
     
             LinkedList<Node> nextNodes = new LinkedList<>();
     
             for (int y = -1; y <= 1; y++) {
-                this.check(nowNode, nextNodes, 0, y, 1);
-                this.check(nowNode, nextNodes, 1, y, 0);
-                this.check(nowNode, nextNodes, 0, y, -1);
-                this.check(nowNode, nextNodes, -1, y, 0);
+                this.check(nowNode, nextNodes, completeList, 0, y, 1);
+                this.check(nowNode, nextNodes, completeList, 1, y, 0);
+                this.check(nowNode, nextNodes, completeList, 0, y, -1);
+                this.check(nowNode, nextNodes, completeList, -1, y, 0);
             }
     
             if (nextNodes.isEmpty()) {
@@ -92,22 +92,30 @@ public class RouteFinder {
             for (Node node : nextNodes) {
                 needChecksLow.addFirst(node);
             }
-    
-            //TODO remove
-            Server.getInstance().getLogger().info("=============================================");
-            Server.getInstance().getLogger().info("needChecks size:" + needChecks.size());
-            Server.getInstance().getLogger().info("needChecksLow size:" + needChecksLow.size());
-            Server.getInstance().getLogger().info("=============================================");
+            needChecksLow.sort((o1, o2) -> {
+                double d1 = o1.getVector3().distance(this.getEnd());
+                double d2 = o2.getVector3().distance(this.getEnd());
+                if (d1 == d2) {
+                    return 0;
+                }
+                return d1 > d2 ? 1 : -1;
+            });
             
             //TODO 寻路失败时跳出
-    
+            /*if (completeList.size() > this.getDistance() * this.getDistance() * Math.abs(this.getStart().getY() - this.getEnd().getY())) {
+                break;
+            }*/
         }
         
         this.processingComplete = true;
     }
     
-    private void check(Node nowNode, LinkedList<Node> nextNodes, int x, int y, int z) {
+    private void check(Node nowNode, LinkedList<Node> nextNodes, ArrayList<Vector3> completeList, int x, int y, int z) {
         Node nextNode = new Node(nowNode.getVector3().add(x, y, z), nowNode);
+        if (completeList.contains(nextNode.getVector3())) {
+            return;
+        }
+        completeList.add(nextNode.getVector3());
         if (this.canMoveTo(nowNode, nextNode)) {
             nextNodes.add(nextNode);
         }

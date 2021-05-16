@@ -4,10 +4,15 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
 import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.route.Node;
+import com.smallaswater.npc.route.RouteFinder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.LinkedList;
 
@@ -15,6 +20,12 @@ public class EntityRsNpc extends EntityHuman {
 
     private final RsNpcConfig config;
     private int emoteSecond = 0;
+    private int nextRouteIndex = 0;
+    @Getter
+    private LinkedList<Node> nodes = new LinkedList<>();
+    private Node nowNode;
+    @Setter
+    private boolean lockRoute = false;
 
     @Deprecated
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
@@ -31,7 +42,6 @@ public class EntityRsNpc extends EntityHuman {
         this.setNameTagAlwaysVisible();
         this.setNameTagVisible();
         this.setNameTag(config.getShowName());
-        //setDataFlag(37, -1);
         this.setMaxHealth(20);
         this.setHealth(20.0F);
         this.getInventory().setItemInHand(config.getHand());
@@ -44,7 +54,9 @@ public class EntityRsNpc extends EntityHuman {
             this.close();
             return false;
         }
-        if (this.config.isLookAtThePlayer() && !this.getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
+        if (this.config.isLookAtThePlayer() &&
+                this.config.getRoute().isEmpty() &&
+                !this.getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
             RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
                 LinkedList<Player> npd = new LinkedList<>(this.getLevel().getPlayers().values());
                 npd.sort((mapping1, mapping2) ->
@@ -77,6 +89,31 @@ public class EntityRsNpc extends EntityHuman {
                 Server.broadcastPacket(this.getViewers().values(), packet);
             }
         }
+        
+        if (currentTick%10 == 0) {
+            if (!this.config.getRoute().isEmpty()) {
+                if (this.nodes.isEmpty() && !this.lockRoute) {
+                    this.lockRoute = true;
+                    Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
+                    this.nextRouteIndex++;
+                    if (this.nextRouteIndex >= this.config.getRoute().size()) {
+                        this.nextRouteIndex = 0;
+                    }
+                    new RouteFinder(this.getLevel(), this, next, this);
+                }
+                
+                if (!this.nodes.isEmpty()) {
+                    if (this.nowNode == null || this.distance(nowNode.getVector3()) < 0.5) {
+                        this.nowNode = this.nodes.poll();
+                    }
+                    if (this.nowNode != null) {
+                        Vector3 vector3 = this.nowNode.getVector3();
+                        this.setPosition(vector3);
+                    }
+                }
+            }
+        }
+        
         return super.onUpdate(currentTick);
     }
 

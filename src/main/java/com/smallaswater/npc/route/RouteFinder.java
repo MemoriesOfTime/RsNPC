@@ -1,13 +1,18 @@
 package com.smallaswater.npc.route;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.ParticleEffect;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
 import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,25 +29,40 @@ public class RouteFinder {
     private final Vector3 start;
     private final Vector3 end;
     private final int distance;
+    private Entity entity;
     
     LinkedList<Node> nodes = new LinkedList<>();
     
-    public RouteFinder(Level level, Vector3 start, Vector3 end, EntityRsNpc entityRsNpc) {
+    public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end) {
+        this(level, start, end, null);
+    }
+    
+    public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end, Entity entity) {
         this.level = level;
         this.start = start.floor();
         this.end = end.floor();
     
         this.distance = (int) start.distance(end);
+        
+        this.entity = entity;
+        if (this.entity == null) {
+            Position position = Position.fromObject(start, level);
+            this.entity = new EntityHuman(position.getChunk(),
+                    Entity.getDefaultNBT(position).putCompound("Skin", new CompoundTag()));
+        }
     
         Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
             @Override
             public void onRun() {
                 process();
-                entityRsNpc.getNodes().addAll(nodes);
-                entityRsNpc.setLockRoute(false);
+                if (entity instanceof EntityRsNpc) {
+                    ((EntityRsNpc) entity).getNodes().addAll(nodes);
+                    ((EntityRsNpc) entity).setLockRoute(false);
+                }
+                //TODO
+                show();
             }
         });
-        
     }
     
     private void process() {
@@ -129,19 +149,39 @@ public class RouteFinder {
      * @return 是否可以移动到目标节点
      */
     private boolean canMoveTo(Node nowNode, Node target) {
-        if (this.getLevel().getBlock(target.getVector3()).getId() != BlockID.AIR ||
+        if (!this.getLevel().getBlock(target.getVector3()).canPassThrough() ||
+                !this.getLevel().getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
                 !this.getLevel().getBlock(target.getVector3().add(0, -1, 0)).isNormalBlock()) {
             return false;
         }
         
         //跳跃检查
         if (target.getVector3().getY() > nowNode.getVector3().getY() &&
-                this.getLevel().getBlock(nowNode.getVector3().add(0, 2, 0)).getId() != BlockID.AIR) {
+                !this.getLevel().getBlock(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
-        return this.getLevel().getBlock(target.getVector3().add(0, 1, 0)).getId() == BlockID.AIR;
+        if (target.getVector3().getY() < nowNode.getVector3().getY() &&
+                !this.getLevel().getBlock(target.getVector3().add(0, 2, 0)).canPassThrough()) {
+            return false;
+        }
+        
+        return true;
     }
     
+    public void show() {
+        Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
+            @Override
+            public void onRun() {
+                for (Node node : nodes) {
+                    level.addParticleEffect(node.getVector3(), ParticleEffect.REDSTONE_TORCH_DUST);
+                    level.addParticleEffect(node.getVector3().add(0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+                    level.addParticleEffect(node.getVector3().add(0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+                    level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+                    level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+                }
+            }
+        });
+    }
     
 }

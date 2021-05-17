@@ -94,57 +94,55 @@ public class EntityRsNpc extends EntityHuman {
             }
         }
         
-        if (currentTick%4 == 0) {
-            if (!this.config.getRoute().isEmpty()) {
-                if (this.nodes.isEmpty() && !this.lockRoute) {
-                    this.lockRoute = true;
-                    Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
-                    this.nextRouteIndex++;
-                    if (this.nextRouteIndex >= this.config.getRoute().size()) {
-                        this.nextRouteIndex = 0;
-                    }
-                    routeFinder = new RouteFinder(this.getLevel(), this, next, this);
+        if (currentTick%4 == 0 && !this.config.getRoute().isEmpty()) {
+            if (this.nodes.isEmpty() && !this.lockRoute) {
+                this.lockRoute = true;
+                Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
+                this.nextRouteIndex++;
+                if (this.nextRouteIndex >= this.config.getRoute().size()) {
+                    this.nextRouteIndex = 0;
                 }
-                
-                //TODO
-                if (routeFinder != null) {
-                    routeFinder.show();
+                routeFinder = new RouteFinder(this.getLevel(), this, next, this);
+            }
+            
+            //TODO
+            if (routeFinder != null) {
+                routeFinder.show();
+            }
+            
+            if (!this.nodes.isEmpty()) {
+                if (this.nowNode == null || this.distance(nowNode.getVector3()) < 0.3) {
+                    this.nowNode = this.nodes.poll();
+                    this.lastUpdateNodeTick = currentTick;
                 }
-                
-                if (!this.nodes.isEmpty()) {
-                    if (this.nowNode == null || this.distance(nowNode.getVector3()) < 0.3) {
-                        this.nowNode = this.nodes.poll();
+                if (this.nowNode != null) {
+                    Vector3 vector3 = this.nowNode.getVector3();
+
+                    if (currentTick - this.lastUpdateNodeTick > 100) {
+                        this.setPosition(vector3);
                         this.lastUpdateNodeTick = currentTick;
+                    }else {
+                        double x = vector3.x - this.x;
+                        double z = vector3.z - this.z;
+                        double diff = Math.abs(x) + Math.abs(z);
+                        if (vector3.y < this.y) {
+                            diff *= 2;
+                        }
+                        this.move(x / diff * 0.35, vector3.y - this.y, z / diff * 0.35);
                     }
-                    if (this.nowNode != null) {
-                        Vector3 vector3 = this.nowNode.getVector3();
-    
-                        if (currentTick - this.lastUpdateNodeTick > 100) {
-                            this.setPosition(vector3);
-                            this.lastUpdateNodeTick = currentTick;
-                        }else {
-                            double x = vector3.x - this.x;
-                            double z = vector3.z - this.z;
-                            double diff = Math.abs(x) + Math.abs(z);
-                            if (vector3.y < this.y) {
-                                diff *= 2;
-                            }
-                            this.move(x / diff * 0.5, vector3.y - this.y, z / diff * 0.5);
-                        }
-    
-                        //视角计算
-                        if (this.nodes.size() > 1) {
-                            vector3 = this.nodes.get(1).getVector3();
-                        }
-                        double npcx = this.x - vector3.x;
-                        double npcz = this.z - vector3.z;
-                        double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
-                        if (npcz > 0.0D) {
-                            yaw = -yaw + 180.0D;
-                        }
-                        this.yaw = yaw;
-                        this.pitch = 0;
+
+                    //视角计算
+                    if (this.nodes.size() > 1) {
+                        vector3 = this.nodes.get(1).getVector3();
                     }
+                    double npcx = this.x - vector3.x;
+                    double npcz = this.z - vector3.z;
+                    double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
+                    if (npcz > 0.0D) {
+                        yaw = -yaw + 180.0D;
+                    }
+                    this.yaw = yaw;
+                    this.pitch = 0;
                 }
             }
         }

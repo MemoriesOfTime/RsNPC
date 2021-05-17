@@ -23,6 +23,8 @@ import java.util.LinkedList;
 @Getter
 public class RouteFinder {
     
+    private int startTick;
+    
     private boolean processingComplete = false;
     
     private final Level level;
@@ -38,6 +40,7 @@ public class RouteFinder {
     }
     
     public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end, Entity entity) {
+        this.startTick = Server.getInstance().getTick();
         this.level = level;
         this.start = start.floor();
         this.end = end.floor();
@@ -59,8 +62,6 @@ public class RouteFinder {
                     ((EntityRsNpc) entity).getNodes().addAll(nodes);
                     ((EntityRsNpc) entity).setLockRoute(false);
                 }
-                //TODO
-                show();
             }
         });
     }
@@ -74,7 +75,7 @@ public class RouteFinder {
         Node nowNode;
         while ((nowNode = needChecks.poll()) != null || (nowNode = needChecksLow.poll()) != null) {
             //到达终点，保存路径
-            if (nowNode.getVector3().distance(this.getEnd()) < 0.5) {
+            if (nowNode.getVector3().equals(this.getEnd())) {
                 Node parent = nowNode;
                 parent.setVector3(parent.getVector3().add(0.5, 0, 0.5));
                 this.nodes.add(parent);
@@ -104,14 +105,12 @@ public class RouteFinder {
                 if (d1 == d2) {
                     return 0;
                 }
-                return d1 > d2 ? -1 : 1;
+                return d1 > d2 ? 1 : -1;
             });
             
+            needChecks.add(nextNodes.poll());
             
-            needChecks.add(nextNodes.pollLast());
-            for (Node node : nextNodes) {
-                needChecksLow.addFirst(node);
-            }
+            needChecksLow.addAll(nextNodes);
             needChecksLow.sort((o1, o2) -> {
                 double d1 = o1.getVector3().distance(this.getEnd());
                 double d2 = o2.getVector3().distance(this.getEnd());
@@ -121,10 +120,10 @@ public class RouteFinder {
                 return d1 > d2 ? 1 : -1;
             });
             
-            //TODO 寻路失败时跳出
-            /*if (completeList.size() > this.getDistance() * this.getDistance() * Math.abs(this.getStart().getY() - this.getEnd().getY())) {
+            //超时跳出 (60s)
+            if (Server.getInstance().getTick() - this.startTick > 20 * 60) {
                 break;
-            }*/
+            }
         }
         
         this.processingComplete = true;

@@ -1,11 +1,13 @@
 package com.smallaswater.npc.route;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -86,13 +88,32 @@ public class RouteFinder {
                 break;
             }
     
+            //超时跳出 (60s)
+            if (Server.getInstance().getTick() - this.startTick > 20 * 60) {
+                break;
+            }
+    
             LinkedList<Node> nextNodes = new LinkedList<>();
     
+            boolean N, E, S, W;
             for (int y = -1; y <= 1; y++) {
-                this.check(nowNode, nextNodes, completeList, 0, y, 1);
-                this.check(nowNode, nextNodes, completeList, 1, y, 0);
-                this.check(nowNode, nextNodes, completeList, 0, y, -1);
-                this.check(nowNode, nextNodes, completeList, -1, y, 0);
+                N = this.check(nowNode, nextNodes, completeList, 0, y, -1);
+                E = this.check(nowNode, nextNodes, completeList, 1, y, 0);
+                S = this.check(nowNode, nextNodes, completeList, 0, y, 1);
+                W = this.check(nowNode, nextNodes, completeList, -1, y, 0);
+                
+                if (N && E) {
+                    this.check(nowNode, nextNodes, completeList, 1, y, -1);
+                }
+                if (E && S) {
+                    this.check(nowNode, nextNodes, completeList, 1, y, 1);
+                }
+                if (W && S) {
+                    this.check(nowNode, nextNodes, completeList, -1, y, 1);
+                }
+                if (W && N) {
+                    this.check(nowNode, nextNodes, completeList, -1, y, -1);
+                }
             }
     
             if (nextNodes.isEmpty()) {
@@ -119,25 +140,22 @@ public class RouteFinder {
                 }
                 return d1 > d2 ? 1 : -1;
             });
-            
-            //超时跳出 (60s)
-            if (Server.getInstance().getTick() - this.startTick > 20 * 60) {
-                break;
-            }
         }
         
         this.processingComplete = true;
     }
     
-    private void check(Node nowNode, LinkedList<Node> nextNodes, ArrayList<Vector3> completeList, int x, int y, int z) {
+    private boolean check(Node nowNode, LinkedList<Node> nextNodes, ArrayList<Vector3> completeList, int x, int y, int z) {
         Node nextNode = new Node(nowNode.getVector3().add(x, y, z), nowNode);
         if (completeList.contains(nextNode.getVector3())) {
-            return;
+            return false;
         }
         completeList.add(nextNode.getVector3());
         if (this.canMoveTo(nowNode, nextNode)) {
             nextNodes.add(nextNode);
+            return true;
         }
+        return false;
     }
     
     /**
@@ -148,20 +166,20 @@ public class RouteFinder {
      * @return 是否可以移动到目标节点
      */
     private boolean canMoveTo(Node nowNode, Node target) {
-        if (!this.getLevel().getBlock(target.getVector3()).canPassThrough() ||
-                !this.getLevel().getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                !this.getLevel().getBlock(target.getVector3().add(0, -1, 0)).isNormalBlock()) {
+        if (!this.getBlock(target.getVector3()).canPassThrough() ||
+                !this.getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
+                !this.getBlock(target.getVector3().add(0, -1, 0)).isNormalBlock()) {
             return false;
         }
         
         //跳跃检查
         if (target.getVector3().getY() > nowNode.getVector3().getY() &&
-                !this.getLevel().getBlock(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.getBlock(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
         if (target.getVector3().getY() < nowNode.getVector3().getY() &&
-                !this.getLevel().getBlock(target.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.getBlock(target.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
@@ -181,6 +199,38 @@ public class RouteFinder {
                 }
             }
         });
+    }
+    
+    public Block getBlock(Node node) {
+        return this.getBlock(node.getVector3());
+    }
+    
+    public Block getBlock(Vector3 vector3) {
+        return this.getBlock(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
+    }
+    
+    public Block getBlock(int x, int y, int z) {
+        int fullState;
+        if (y >= 0 && y < 256) {
+            int cx = x >> 4;
+            int cz = z >> 4;
+            BaseFullChunk chunk = this.getLevel().getChunk(cx, cz);
+            
+            if (chunk != null) {
+                fullState = chunk.getFullBlock(x & 15, y, z & 15);
+            } else {
+                fullState = 0;
+            }
+        } else {
+            fullState = 0;
+        }
+        
+        Block block = Block.fullList[fullState & 4095].clone();
+        block.x = x;
+        block.y = y;
+        block.z = z;
+        block.level = this.getLevel();
+        return block;
     }
     
 }

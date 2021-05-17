@@ -27,6 +27,7 @@ public class EntityRsNpc extends EntityHuman {
     @Setter
     private boolean lockRoute = false;
     private int lastUpdateNodeTick;
+    private RouteFinder nowRouteFinder;
 
     @Deprecated
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
@@ -48,8 +49,6 @@ public class EntityRsNpc extends EntityHuman {
         this.getInventory().setItemInHand(config.getHand());
         this.getInventory().setArmorContents(config.getArmor());
     }
-
-    private RouteFinder routeFinder;
     
     @Override
     public boolean onUpdate(int currentTick) {
@@ -102,12 +101,7 @@ public class EntityRsNpc extends EntityHuman {
                 if (this.nextRouteIndex >= this.config.getRoute().size()) {
                     this.nextRouteIndex = 0;
                 }
-                routeFinder = new RouteFinder(this.getLevel(), this, next, this);
-            }
-            
-            //TODO
-            if (routeFinder != null) {
-                routeFinder.show();
+                this.nowRouteFinder = new RouteFinder(this.getLevel(), this, next, this);
             }
             
             if (!this.nodes.isEmpty()) {
@@ -132,7 +126,7 @@ public class EntityRsNpc extends EntityHuman {
                     }
 
                     //视角计算
-                    if (this.nodes.size() > 1) {
+                    if (this.nodes.size() >= 2) {
                         vector3 = this.nodes.get(1).getVector3();
                     }
                     double npcx = this.x - vector3.x;

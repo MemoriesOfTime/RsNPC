@@ -6,6 +6,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNpcX;
@@ -46,6 +47,9 @@ public class RsNpcConfig {
 
     private final ArrayList<String> cmds = new ArrayList<>();
     private final ArrayList<String> messages = new ArrayList<>();
+    
+    @Getter
+    private final ArrayList<Vector3> route = new ArrayList<>();
 
     private EntityRsNpc entityRsNpc;
 
@@ -95,6 +99,18 @@ public class RsNpcConfig {
         config.set("点击执行指令", this.cmds);
         this.messages.addAll(config.getStringList("发送消息"));
         config.set("发送消息", this.messages);
+        
+        for (String string : config.getStringList("route")) {
+            String[] s = string.split(":");
+            this.route.add(new Vector3(Double.parseDouble(s[0]),
+                    Double.parseDouble(s[1]),
+                    Double.parseDouble(s[2])));
+        }
+        ArrayList<String> list = new ArrayList<>();
+        for (Vector3 vector3 : this.route) {
+            list.add(vector3.getX() + ":" + vector3.getY() + ":" + vector3.getZ());
+        }
+        config.set("route", list);
 
         config.save();
     }
@@ -114,7 +130,9 @@ public class RsNpcConfig {
                 this.entityRsNpc.setScale(1F);
                 this.entityRsNpc.spawnToAll();
             }
-            this.entityRsNpc.setPosition(this.location);
+            if (this.getRoute().isEmpty()) {
+                this.entityRsNpc.setPosition(this.location);
+            }
             if (!this.lookAtThePlayer) {
                 this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
             }

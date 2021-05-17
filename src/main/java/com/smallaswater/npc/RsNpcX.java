@@ -21,10 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -226,6 +223,26 @@ public class RsNpcX extends PluginBase {
                             sender.sendMessage("§c§l请输入要删除的NPC的名字！");
                         }
                         return true;
+                    case "addroute":
+                        Player player = (Player) sender;
+        
+                        if (args.length > 1) {
+                            String name = args[1];
+                            if (!this.npcs.containsKey(name)) {
+                                sender.sendMessage("§c§lNPC " + name + " 不存在！");
+                                return true;
+                            }
+                            RsNpcConfig rsNpcConfig = this.npcs.get(name);
+                            rsNpcConfig.getRoute().add(player.clone());
+                            List<String> list = rsNpcConfig.getConfig().getStringList("route");
+                            list.add(player.getX() + ":" + player.getY() + ":" + player.getZ());
+                            rsNpcConfig.getConfig().set("route", list);
+                            rsNpcConfig.getConfig().save();
+                            sender.sendMessage("§a§l已添加到路径");
+                        }else {
+                            sender.sendMessage("§c§l请输入要设置的NPC的名字！");
+                        }
+                        return true;
                     case "reload":
                         if (!(new File(getDataFolder() + "/Npcs")).exists() && !(new File(getDataFolder() + "/Npcs")).mkdirs()) {
                             this.getLogger().error("Npcs文件夹创建失败");
@@ -257,8 +274,9 @@ public class RsNpcX extends PluginBase {
 
     public void sendCommandHelp(CommandSender sender) {
         sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
-        sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
-        sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx create <NPC名称> §7在当前位置创建NPC");
+        sender.sendMessage("§a§l/rsnpcx delete <NPC名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx addroute <NPC名称> §7将当前位置添加到NPC路径");
         sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
         sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
     }

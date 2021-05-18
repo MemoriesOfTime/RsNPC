@@ -68,37 +68,25 @@ public class RsNpcConfig {
                 (double) map.getOrDefault("yaw", 0D), 0, level);
 
         this.hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
-        config.set("手持", this.hand.getId() + ":" + this.hand.getDamage());
         this.armor[0] = Item.fromString("".equals(config.getString("头部")) ? "0:0" : config.getString("头部"));
-        config.set("头部", this.armor[0].getId() + ":" + this.armor[0].getDamage());
         this.armor[1] = Item.fromString("".equals(config.getString("胸部")) ? "0:0" : config.getString("胸部"));
-        config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
         this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
-        config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
         this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
-        config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
 
         String skinName = config.getString("皮肤", "尸鬼");
-        config.set("皮肤", skinName);
         this.skin = RsNpcX.getInstance().getSkinByName(skinName);
-
+        
         this.lookAtThePlayer = config.getBoolean("看向玩家", true);
-        config.set("看向玩家", this.lookAtThePlayer);
-
+        
         this.enableEmote = config.getBoolean("表情动作.启用");
-        config.set("表情动作.启用", this.enableEmote);
         this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
-        config.set("表情动作.表情ID", this.emoteIDs);
         this.showEmoteInterval = config.getInt("表情动作.间隔(秒)", 10);
-        config.set("表情动作.间隔(秒)", this.showEmoteInterval);
-
+        
         this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
-        config.set("允许抛射物触发", this.canProjectilesTrigger);
 
         this.cmds.addAll(config.getStringList("点击执行指令"));
-        config.set("点击执行指令", this.cmds);
+        
         this.messages.addAll(config.getStringList("发送消息"));
-        config.set("发送消息", this.messages);
         
         for (String string : config.getStringList("route")) {
             String[] s = string.split(":");
@@ -106,13 +94,46 @@ public class RsNpcConfig {
                     Double.parseDouble(s[1]),
                     Double.parseDouble(s[2])));
         }
+        
+        //更新配置文件
+        this.save();
+    }
+    
+    public void save() {
+        this.config.set("name", this.showName);
+    
+        HashMap<String, Object> map = this.config.get("坐标", new HashMap<>());
+        map.put("level", this.levelName);
+        map.put("x", this.location.getX());
+        map.put("y", this.location.getY());
+        map.put("z", this.location.getZ());
+        map.put("yaw", this.location.getYaw());
+        this.config.set("坐标", map);
+        
+        this.config.set("手持", this.hand.getId() + ":" + this.hand.getDamage());
+        this.config.set("头部", this.armor[0].getId() + ":" + this.armor[0].getDamage());
+        this.config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
+        this.config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
+        this.config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
+    
+        this.config.set("看向玩家", this.lookAtThePlayer);
+    
+        this.config.set("表情动作.启用", this.enableEmote);
+        this.config.set("表情动作.表情ID", this.emoteIDs);
+        this.config.set("表情动作.间隔(秒)", this.showEmoteInterval);
+    
+        this.config.set("允许抛射物触发", this.canProjectilesTrigger);
+    
+        this.config.set("点击执行指令", this.cmds);
+        this.config.set("发送消息", this.messages);
+        
         ArrayList<String> list = new ArrayList<>();
         for (Vector3 vector3 : this.route) {
             list.add(vector3.getX() + ":" + vector3.getY() + ":" + vector3.getZ());
         }
-        config.set("route", list);
-
-        config.save();
+        this.config.set("route", list);
+        
+        this.config.save();
     }
 
     public void checkEntity() {
@@ -136,7 +157,7 @@ public class RsNpcConfig {
             if (!this.lookAtThePlayer) {
                 this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
             }
-            this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName));
+            this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName, this));
         }
     }
 

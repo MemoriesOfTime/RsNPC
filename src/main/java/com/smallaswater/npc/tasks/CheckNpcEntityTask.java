@@ -1,4 +1,3 @@
-
 package com.smallaswater.npc.tasks;
 
 import cn.nukkit.scheduler.PluginTask;

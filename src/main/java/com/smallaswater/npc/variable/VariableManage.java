@@ -1,6 +1,8 @@
 package com.smallaswater.npc.variable;
 
 import cn.nukkit.Player;
+import com.smallaswater.npc.data.RsNpcConfig;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -15,7 +17,7 @@ public class VariableManage {
 
     }
 
-    public static void addVariable(String name, Class<? extends BaseVariable> variableClass) {
+    public static void addVariable(@NotNull String name, @NotNull Class<? extends BaseVariable> variableClass) {
         try {
             BaseVariable variable = variableClass.newInstance();
             variables.put(name, variable);
@@ -24,9 +26,9 @@ public class VariableManage {
         }
     }
 
-    public static String stringReplace(Player player, String inString) {
+    public static String stringReplace(Player player, @NotNull String inString, RsNpcConfig rsNpcConfig) {
         for (BaseVariable variable : variables.values()) {
-            inString = variable.stringReplace(player, inString);
+            inString = variable.stringReplace(player, inString, rsNpcConfig);
         }
         return inString;
     }

@@ -70,12 +70,11 @@ public class RouteFinder {
     
     private void process() {
         LinkedList<Node> needChecks = new LinkedList<>();
-        LinkedList<Node> needChecksLow = new LinkedList<>(); //低优先级
         ArrayList<Vector3> completeList = new ArrayList<>();
         needChecks.add(new Node(this.start));
         
         Node nowNode;
-        while ((nowNode = needChecks.poll()) != null || (nowNode = needChecksLow.poll()) != null) {
+        while ((nowNode = needChecks.poll()) != null) {
             //到达终点，保存路径
             if (nowNode.getVector3().equals(this.getEnd())) {
                 Node parent = nowNode;
@@ -94,13 +93,12 @@ public class RouteFinder {
             }
     
             LinkedList<Node> nextNodes = new LinkedList<>();
-    
-            boolean N, E, S, W;
+            
             for (int y = -1; y <= 1; y++) {
-                N = this.check(nowNode, nextNodes, completeList, 0, y, -1);
-                E = this.check(nowNode, nextNodes, completeList, 1, y, 0);
-                S = this.check(nowNode, nextNodes, completeList, 0, y, 1);
-                W = this.check(nowNode, nextNodes, completeList, -1, y, 0);
+                boolean N = this.check(nowNode, nextNodes, completeList, 0, y, -1);
+                boolean E = this.check(nowNode, nextNodes, completeList, 1, y, 0);
+                boolean S = this.check(nowNode, nextNodes, completeList, 0, y, 1);
+                boolean W = this.check(nowNode, nextNodes, completeList, -1, y, 0);
                 
                 if (N && E) {
                     this.check(nowNode, nextNodes, completeList, 1, y, -1);
@@ -120,19 +118,8 @@ public class RouteFinder {
                 continue;
             }
             
-            nextNodes.sort((o1, o2) -> {
-                double d1 = o1.getVector3().distance(this.getEnd());
-                double d2 = o2.getVector3().distance(this.getEnd());
-                if (d1 == d2) {
-                    return 0;
-                }
-                return d1 > d2 ? 1 : -1;
-            });
-            
-            needChecks.add(nextNodes.poll());
-            
-            needChecksLow.addAll(nextNodes);
-            needChecksLow.sort((o1, o2) -> {
+            needChecks.addAll(nextNodes);
+            needChecks.sort((o1, o2) -> {
                 double d1 = o1.getVector3().distance(this.getEnd());
                 double d2 = o2.getVector3().distance(this.getEnd());
                 if (d1 == d2) {
@@ -187,18 +174,13 @@ public class RouteFinder {
     }
     
     public void show() {
-        Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
-            @Override
-            public void onRun() {
-                for (Node node : nodes) {
-                    level.addParticleEffect(node.getVector3(), ParticleEffect.REDSTONE_TORCH_DUST);
-                    level.addParticleEffect(node.getVector3().add(0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-                    level.addParticleEffect(node.getVector3().add(0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-                    level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-                    level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-                }
-            }
-        });
+        for (Node node : nodes) {
+            level.addParticleEffect(node.getVector3(), ParticleEffect.REDSTONE_TORCH_DUST);
+            level.addParticleEffect(node.getVector3().add(0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            level.addParticleEffect(node.getVector3().add(0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+        }
     }
     
     public Block getBlock(Node node) {

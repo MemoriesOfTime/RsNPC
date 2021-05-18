@@ -13,7 +13,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.RsNpcLoadException;
-import com.smallaswater.npc.utils.Util;
+import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -55,6 +55,11 @@ public class RsNpcX extends PluginBase {
     public void onLoad() {
         rsNpcX = this;
         VariableManage.addVariable("default", DefaultVariable.class);
+    
+        File file = new File(getDataFolder() + "/Npcs");
+        if (!file.exists() && !file.mkdirs()) {
+            this.getLogger().error("Npcs文件夹创建失败");
+        }
     }
 
     @Override
@@ -161,7 +166,7 @@ public class RsNpcX extends PluginBase {
                             geometryName = entry1.getKey();
                         }
                         skin.setGeometryName(geometryName);
-                        skin.setGeometryData(Util.readFile(skinJsonFile));
+                        skin.setGeometryData(Utils.readFile(skinJsonFile));
                     }
                     this.skins.put(skinName, skin);
                     this.getLogger().info("皮肤 " + skinName + " 读取完成");
@@ -196,7 +201,7 @@ public class RsNpcX extends PluginBase {
                             map.put("x", player.getX());
                             map.put("y", player.getY());
                             map.put("z", player.getZ());
-                            map.put("yaw", Util.getYaw(player));
+                            map.put("yaw", Utils.getYaw(player));
                             map.put("level", player.getLevel().getName());
                             config.set("坐标", map);
                             config.save();
@@ -252,9 +257,6 @@ public class RsNpcX extends PluginBase {
                         }
                         return true;
                     case "reload":
-                        if (!(new File(getDataFolder() + "/Npcs")).exists() && !(new File(getDataFolder() + "/Npcs")).mkdirs()) {
-                            this.getLogger().error("Npcs文件夹创建失败");
-                        }
                         for (Level level : Server.getInstance().getLevels().values()) {
                             for (Entity entity : level.getEntities()) {
                                 if (entity instanceof EntityRsNpc) {

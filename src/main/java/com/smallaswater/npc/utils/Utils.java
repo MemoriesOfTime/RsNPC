@@ -3,22 +3,21 @@ package com.smallaswater.npc.utils;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Util {
+public class Utils {
 
-    private Util() {
+    private Utils() {
 
     }
 
     public static String readFile(@NotNull File file) {
         String content = "";
         try {
-            content = Utils.readFile(file);
+            content = cn.nukkit.utils.Utils.readFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

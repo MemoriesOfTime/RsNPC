@@ -155,7 +155,7 @@ public class RouteFinder {
     private boolean canMoveTo(Node nowNode, Node target) {
         if (!this.getBlock(target.getVector3()).canPassThrough() ||
                 !this.getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                !this.getBlock(target.getVector3().add(0, -1, 0)).isNormalBlock()) {
+                this.getBlock(target.getVector3().add(0, -1, 0)).canPassThrough()) {
             return false;
         }
         

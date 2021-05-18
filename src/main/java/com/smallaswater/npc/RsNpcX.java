@@ -13,18 +13,16 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.RsNpcLoadException;
-import com.smallaswater.npc.utils.Util;
+import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +41,9 @@ public class RsNpcX extends PluginBase {
 
     private static RsNpcX rsNpcX;
 
+    @Getter
     private final HashMap<String, Skin> skins = new HashMap<>();
+    @Getter
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
     private final String[] defaultSkins = new String[]{"小丸子", "小埋", "小黑苦力怕", "尸鬼", "拉姆", "熊孩子", "狂三", "米奇", "考拉", "黑岩射手"};
 
@@ -55,19 +55,29 @@ public class RsNpcX extends PluginBase {
     public void onLoad() {
         rsNpcX = this;
         VariableManage.addVariable("default", DefaultVariable.class);
+    
+        File file = new File(getDataFolder() + "/Npcs");
+        if (!file.exists() && !file.mkdirs()) {
+            this.getLogger().error("Npcs文件夹创建失败");
+        }
     }
 
     @Override
     public void onEnable() {
         this.getLogger().info("RsNpcX开始加载");
         Entity.registerEntity("EntityRsNpc", EntityRsNpc.class);
+        
         this.getLogger().info("开始加载皮肤");
         this.saveDefaultSkin();
         this.loadSkins();
+        
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
+        
         this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
+        
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
+        
         this.getLogger().info("RsNpcX加载完成");
     }
 
@@ -104,20 +114,21 @@ public class RsNpcX extends PluginBase {
     }
 
     private void saveDefaultSkin() {
-        if (!(new File(getDataFolder() + "/Skins")).exists()) {
-            getLogger().info("未检测到Skins文件夹，正在创建");
-            if (!(new File(getDataFolder() + "/Skins")).mkdirs()) {
-                getLogger().info("Skins文件夹创建失败");
+        File file = new File(this.getDataFolder() + "/Skins");
+        if (!file.exists()) {
+            this.getLogger().info("未检测到Skins文件夹，正在创建");
+            if (!file.mkdirs()) {
+                this.getLogger().info("Skins文件夹创建失败");
             } else {
-                getLogger().info("Skins 文件夹创建完成，正在保存预设皮肤");
+                this.getLogger().info("Skins 文件夹创建完成，正在保存预设皮肤");
                 for (String s : this.defaultSkins) {
-                    if (!(new File(getDataFolder() + "/Skins/" + s)).exists() &&
-                            !(new File(getDataFolder() + "/Skins/" + s)).mkdirs()) {
-                        getLogger().info("载入 " + s + "失败");
+                    File f = new File(this.getDataFolder() + "/Skins/" + s);
+                    if (!f.exists() && !f.mkdirs()) {
+                        this.getLogger().info("载入 " + s + "失败");
                     } else {
-                        saveResource("skin/" + s + "/skin.json", "/Skins/" + s + "/skin.json", false);
-                        saveResource("skin/" + s + "/skin.png", "/Skins/" + s + "/skin.png", false);
-                        getLogger().info("成功保存 " + s + " 皮肤");
+                        this.saveResource("Skins/" + s + "/skin.json");
+                        this.saveResource("Skins/" + s + "/skin.png");
+                        this.getLogger().info("成功保存 " + s + " 皮肤");
                     }
                 }
             }
@@ -125,7 +136,7 @@ public class RsNpcX extends PluginBase {
     }
 
     private void loadSkins() {
-        File[] files = (new File(getDataFolder() + "/Skins")).listFiles();
+        File[] files = (new File(this.getDataFolder() + "/Skins")).listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
                 String skinName = file.getName();
@@ -155,7 +166,7 @@ public class RsNpcX extends PluginBase {
                             geometryName = entry1.getKey();
                         }
                         skin.setGeometryName(geometryName);
-                        skin.setGeometryData(Util.readFile(skinJsonFile));
+                        skin.setGeometryData(Utils.readFile(skinJsonFile));
                     }
                     this.skins.put(skinName, skin);
                     this.getLogger().info("皮肤 " + skinName + " 读取完成");
@@ -190,7 +201,7 @@ public class RsNpcX extends PluginBase {
                             map.put("x", player.getX());
                             map.put("y", player.getY());
                             map.put("z", player.getZ());
-                            map.put("yaw", Util.getYaw(player));
+                            map.put("yaw", Utils.getYaw(player));
                             map.put("level", player.getLevel().getName());
                             config.set("坐标", map);
                             config.save();
@@ -226,10 +237,26 @@ public class RsNpcX extends PluginBase {
                             sender.sendMessage("§c§l请输入要删除的NPC的名字！");
                         }
                         return true;
-                    case "reload":
-                        if (!(new File(getDataFolder() + "/Npcs")).exists() && !(new File(getDataFolder() + "/Npcs")).mkdirs()) {
-                            this.getLogger().error("Npcs文件夹创建失败");
+                    case "addroute":
+                        Player player = (Player) sender;
+                        if (args.length > 1) {
+                            String name = args[1];
+                            if (!this.npcs.containsKey(name)) {
+                                sender.sendMessage("§c§lNPC " + name + " 不存在！");
+                                return true;
+                            }
+                            RsNpcConfig rsNpcConfig = this.npcs.get(name);
+                            rsNpcConfig.getRoute().add(player.clone());
+                            List<String> list = rsNpcConfig.getConfig().getStringList("route");
+                            list.add(player.getX() + ":" + player.getY() + ":" + player.getZ());
+                            rsNpcConfig.getConfig().set("route", list);
+                            rsNpcConfig.getConfig().save();
+                            sender.sendMessage("§a§l已添加到路径");
+                        }else {
+                            sender.sendMessage("§c§l请输入要设置的NPC的名字！");
                         }
+                        return true;
+                    case "reload":
                         for (Level level : Server.getInstance().getLevels().values()) {
                             for (Entity entity : level.getEntities()) {
                                 if (entity instanceof EntityRsNpc) {
@@ -257,22 +284,15 @@ public class RsNpcX extends PluginBase {
 
     public void sendCommandHelp(CommandSender sender) {
         sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
-        sender.sendMessage("§a§l/rsnpcx create <名称> §7创建NPC");
-        sender.sendMessage("§a§l/rsnpcx delete <名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx create <NPC名称> §7在当前位置创建NPC");
+        sender.sendMessage("§a§l/rsnpcx delete <NPC名称> §7移除NPC");
+        sender.sendMessage("§a§l/rsnpcx addroute <NPC名称> §7将当前位置添加到NPC路径");
         sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
         sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
     }
 
-    public HashMap<String, Skin> getSkins() {
-        return this.skins;
-    }
-
     public Skin getSkinByName(String name) {
         return this.getSkins().getOrDefault(name, RsNpcX.getInstance().getSkins().get("尸鬼"));
-    }
-
-    public HashMap<String, RsNpcConfig> getNpcs() {
-        return this.npcs;
     }
 
 }

@@ -15,6 +15,7 @@ import com.smallaswater.npc.variable.VariableManage;
 /**
  * @author lt_name
  */
+@SuppressWarnings("unused")
 public class OnListener implements Listener {
 
     private final RsNpcX rsNpcX;
@@ -39,7 +40,7 @@ public class OnListener implements Listener {
                     }
                     this.executeCommand(player, config);
                     for (String message : config.getMessages()) {
-                        player.sendMessage("[" + config.getName() + "] " + VariableManage.stringReplace(player, message));
+                        player.sendMessage(VariableManage.stringReplace(player, message, config));
                     }
                 }
             }
@@ -54,7 +55,7 @@ public class OnListener implements Listener {
                 if ("con".equals(c[1])) {
                     try {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
-                                VariableManage.stringReplace(player, cm));
+                                VariableManage.stringReplace(player, cm, rsNpcConfig));
                     } catch (Exception e) {
                         this.rsNpcX.getLogger().error(
                                 "控制台权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
@@ -73,7 +74,7 @@ public class OnListener implements Listener {
                     }
                     try {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
-                                VariableManage.stringReplace(player, cm));
+                                VariableManage.stringReplace(player, cm, rsNpcConfig));
                     } catch (Exception e) {
                         this.rsNpcX.getLogger().error(
                                 "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
@@ -93,7 +94,7 @@ public class OnListener implements Listener {
                 }
             }
             try {
-                Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, cm));
+                Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, cm, rsNpcConfig));
             } catch (Exception e) {
                 this.rsNpcX.getLogger().error(
                         "玩家权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +

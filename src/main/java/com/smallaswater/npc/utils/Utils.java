@@ -3,34 +3,34 @@ package com.smallaswater.npc.utils;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 
-public class Util {
+public class Utils {
 
-    private Util() {
+    private Utils() {
 
     }
 
-    public static String readFile(File file) {
+    public static String readFile(@NotNull File file) {
         String content = "";
         try {
-            content = Utils.readFile(file);
+            content = cn.nukkit.utils.Utils.readFile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return content;
     }
 
-    public static CompoundTag getTag(Location location, String name) {
+    public static CompoundTag getTag(@NotNull Location location, @NotNull String name) {
         CompoundTag tag = Entity.getDefaultNBT(location);
         tag.putString("rsnpcName", name);
         return tag;
     }
 
-    public static double getYaw(Location location) {
+    public static double getYaw(@NotNull Location location) {
         if (location.getYaw() > 315 || location.getYaw() <= 45) {
             return 0D;
         }else if (location.getYaw() > 45 && location.getYaw() <= 135) {

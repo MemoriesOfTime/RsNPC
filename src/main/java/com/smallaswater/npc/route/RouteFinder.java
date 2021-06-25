@@ -74,7 +74,7 @@ public class RouteFinder {
         needChecks.add(new Node(this.start));
         
         Node nowNode;
-        while ((nowNode = needChecks.poll()) != null) {
+        while ((nowNode = needChecks.poll()) != null && Server.getInstance().isRunning()) {
             //到达终点，保存路径
             if (nowNode.getVector3().equals(this.getEnd())) {
                 Node parent = nowNode;
@@ -120,8 +120,8 @@ public class RouteFinder {
             
             needChecks.addAll(nextNodes);
             needChecks.sort((o1, o2) -> {
-                double d1 = o1.getVector3().distance(this.getEnd());
-                double d2 = o2.getVector3().distance(this.getEnd());
+                double d1 = o1.getF();
+                double d2 = o2.getF();
                 if (d1 == d2) {
                     return 0;
                 }
@@ -133,11 +133,13 @@ public class RouteFinder {
     }
     
     private boolean check(Node nowNode, LinkedList<Node> nextNodes, ArrayList<Vector3> completeList, int x, int y, int z) {
-        Node nextNode = new Node(nowNode.getVector3().add(x, y, z), nowNode);
-        if (completeList.contains(nextNode.getVector3())) {
+        Vector3 vector3 = nowNode.getVector3().add(x, y, z);
+        if (completeList.contains(vector3)) {
             return false;
         }
-        completeList.add(nextNode.getVector3());
+        completeList.add(vector3);
+
+        Node nextNode = new Node(vector3, nowNode, vector3.distance(this.start), vector3.distance(this.end));
         if (this.canMoveTo(nowNode, nextNode)) {
             nextNodes.add(nextNode);
             return true;

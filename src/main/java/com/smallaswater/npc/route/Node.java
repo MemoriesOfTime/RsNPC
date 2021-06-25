@@ -18,14 +18,24 @@ public class Node {
 
     private Vector3 vector3;
     private Node parent;
+    private double G;
+    private double H;
+    private double F;
     
     public Node(@NotNull Vector3 vector3) {
         this(vector3, null);
     }
     
     public Node(@NotNull Vector3 vector3, Node parent) {
+        this(vector3, parent, 0, 0);
+    }
+
+    public Node(@NotNull Vector3 vector3, Node parent, double G, double H) {
         this.vector3 = vector3;
         this.parent = parent;
+        this.G = G;
+        this.H = H;
+        this.F = G + H;
     }
     
     @Override

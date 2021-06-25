@@ -168,8 +168,12 @@ public class RsNpcX extends PluginBase {
                         skin.setGeometryName(geometryName);
                         skin.setGeometryData(Utils.readFile(skinJsonFile));
                     }
-                    this.skins.put(skinName, skin);
-                    this.getLogger().info("皮肤 " + skinName + " 读取完成");
+                    if (skin.isValid()) {
+                        this.skins.put(skinName, skin);
+                        this.getLogger().info("皮肤 " + skinName + " 读取完成");
+                    }else {
+                        this.getLogger().error("皮肤 " + skinName + "验证失败");
+                    }
                 } else {
                     this.getLogger().error("错误的皮肤名称格式 请将皮肤文件命名为 skin.png");
                 }
@@ -292,7 +296,7 @@ public class RsNpcX extends PluginBase {
     }
 
     public Skin getSkinByName(String name) {
-        return this.getSkins().getOrDefault(name, RsNpcX.getInstance().getSkins().get("尸鬼"));
+        return this.getSkins().getOrDefault(name, this.getSkins().get("尸鬼"));
     }
 
 }

@@ -2,17 +2,12 @@ package com.smallaswater.npc.route;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.level.Position;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
 import com.smallaswater.npc.RsNpcX;
-import com.smallaswater.npc.entitys.EntityRsNpc;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,39 +28,31 @@ public class RouteFinder {
     private final Vector3 start;
     private final Vector3 end;
     private final int distance;
-    private Entity entity;
     
     LinkedList<Node> nodes = new LinkedList<>();
     
     public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end) {
-        this(level, start, end, null);
+        this(level, start, end, true);
     }
     
-    public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end, Entity entity) {
+    public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end, boolean async) {
         this.startTick = Server.getInstance().getTick();
         this.level = level;
         this.start = start.floor();
         this.end = end.floor();
     
         this.distance = (int) start.distance(end);
-        
-        this.entity = entity;
-        if (this.entity == null) {
-            Position position = Position.fromObject(start, level);
-            this.entity = new EntityHuman(position.getChunk(),
-                    Entity.getDefaultNBT(position).putCompound("Skin", new CompoundTag()));
-        }
-    
-        Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
-            @Override
-            public void onRun() {
-                process();
-                if (entity instanceof EntityRsNpc) {
-                    ((EntityRsNpc) entity).getNodes().addAll(nodes);
-                    ((EntityRsNpc) entity).setLockRoute(false);
+
+        if (async) {
+            Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
+                @Override
+                public void onRun() {
+                    process();
                 }
-            }
-        });
+            });
+        }else {
+            this.process();
+        }
     }
     
     private void process() {

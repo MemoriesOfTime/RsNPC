@@ -94,14 +94,20 @@ public class EntityRsNpc extends EntityHuman {
         }
         
         if (currentTick%4 == 0 && !this.config.getRoute().isEmpty()) {
-            if (this.nodes.isEmpty() && !this.lockRoute) {
-                this.lockRoute = true;
-                Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
-                this.nextRouteIndex++;
-                if (this.nextRouteIndex >= this.config.getRoute().size()) {
-                    this.nextRouteIndex = 0;
+            if (this.nodes.isEmpty()) {
+                if (!this.lockRoute) {
+                    this.setLockRoute(true);
+                    Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
+                    this.nextRouteIndex++;
+                    if (this.nextRouteIndex >= this.config.getRoute().size()) {
+                        this.nextRouteIndex = 0;
+                    }
+                    this.nowRouteFinder = new RouteFinder(this.getLevel(), this, next);
+                }else if (this.nowRouteFinder != null && this.nowRouteFinder.isProcessingComplete()) {
+                    this.nodes.clear();
+                    this.nodes.addAll(this.nowRouteFinder.getNodes());
+                    this.setLockRoute(false);
                 }
-                this.nowRouteFinder = new RouteFinder(this.getLevel(), this, next, this);
             }
             
             if (!this.nodes.isEmpty()) {

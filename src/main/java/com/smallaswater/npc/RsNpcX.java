@@ -36,7 +36,7 @@ public class RsNpcX extends PluginBase {
             5,
             TimeUnit.SECONDS,
             new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * 4),
-            new ThreadPoolExecutor.DiscardOldestPolicy());
+            new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
 
     private static RsNpcX rsNpcX;

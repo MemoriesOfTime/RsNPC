@@ -36,6 +36,8 @@ public class RsNpcConfig {
 
     private final Skin skin;
 
+    private final float scale;
+
     private final boolean lookAtThePlayer;
 
     private final boolean enableEmote;
@@ -75,6 +77,8 @@ public class RsNpcConfig {
 
         String skinName = config.getString("皮肤", "尸鬼");
         this.skin = RsNpcX.getInstance().getSkinByName(skinName);
+
+        this.scale = (float) config.getDouble("实体大小", 1D);
         
         this.lookAtThePlayer = config.getBoolean("看向玩家", true);
         
@@ -115,6 +119,8 @@ public class RsNpcConfig {
         this.config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
         this.config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
         this.config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
+
+        this.config.set("实体大小", this.scale);
     
         this.config.set("看向玩家", this.lookAtThePlayer);
     
@@ -148,7 +154,7 @@ public class RsNpcConfig {
                                 .putByteArray("Data", (skin.getSkinData()).data)
                                 .putString("ModelId", skin.getSkinId())), this);
                 this.entityRsNpc.setSkin(this.skin);
-                this.entityRsNpc.setScale(1F);
+                this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();
             }
             if (this.getRoute().isEmpty()) {

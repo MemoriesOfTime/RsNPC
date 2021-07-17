@@ -144,17 +144,19 @@ public class RsNpcX extends PluginBase {
                 if (skinDataFile.exists()) {
                     Skin skin = new Skin();
                     skin.setTrusted(true);
+
                     BufferedImage skindata;
                     try {
                         skindata = ImageIO.read(skinDataFile);
                     } catch (IOException var19) {
                         this.getLogger().error("皮肤 " + skinName + " 读取错误");
-                        break;
+                        continue;
                     }
                     if (skindata != null) {
                         skin.setSkinData(skindata);
                         skin.setSkinId(skinName);
                     }
+
                     File skinJsonFile = new File(getDataFolder() + "/Skins/" + skinName + "/skin.json");
                     if (skinJsonFile.exists()) {
                         Map<String, Object> skinJson = (new Config(skinJsonFile, Config.JSON)).getAll();
@@ -168,6 +170,7 @@ public class RsNpcX extends PluginBase {
                         skin.setGeometryName(geometryName);
                         skin.setGeometryData(Utils.readFile(skinJsonFile));
                     }
+
                     if (skin.isValid()) {
                         this.skins.put(skinName, skin);
                         this.getLogger().info("皮肤 " + skinName + " 读取完成");

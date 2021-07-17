@@ -4,10 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
+import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.variable.VariableManage;
@@ -22,6 +24,14 @@ public class OnListener implements Listener {
 
     public OnListener(RsNpcX rsNpcX) {
         this.rsNpcX = rsNpcX;
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
+        if (event.getEntity() instanceof EntityRsNpc ||
+                event.getVehicle() instanceof EntityRsNpc) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler

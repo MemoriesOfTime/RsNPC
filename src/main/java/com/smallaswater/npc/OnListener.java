@@ -10,6 +10,7 @@ import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityVehicleEnterEvent;
+import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.variable.VariableManage;
@@ -31,6 +32,20 @@ public class OnListener implements Listener {
         if (event.getEntity() instanceof EntityRsNpc ||
                 event.getVehicle() instanceof EntityRsNpc) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof EntityRsNpc) {
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            RsNpcConfig config = ((EntityRsNpc) entity).getConfig();
+            this.executeCommand(player, config);
+            for (String message : config.getMessages()) {
+                player.sendMessage(VariableManage.stringReplace(player, message, config));
+            }
         }
     }
 

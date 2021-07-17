@@ -2,6 +2,7 @@ package com.smallaswater.npc.entitys;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -93,7 +94,7 @@ public class EntityRsNpc extends EntityHuman {
             }
         }
         
-        if (currentTick%4 == 0 && !this.config.getRoute().isEmpty()) {
+        if (!this.config.getRoute().isEmpty()) {
             if (this.nodes.isEmpty()) {
                 if (!this.lockRoute) {
                     this.setLockRoute(true);
@@ -111,7 +112,7 @@ public class EntityRsNpc extends EntityHuman {
             }
             
             if (!this.nodes.isEmpty()) {
-                if (this.nowNode == null || this.distance(nowNode.getVector3()) < 0.3) {
+                if (this.nowNode == null || this.distance(this.nowNode.getVector3()) <= ((this.getWidth()) / 2 + 0.05) /*this.distance(this.nowNode.getVector3()) < 0.3*/) {
                     this.nowNode = this.nodes.poll();
                     this.lastUpdateNodeTick = currentTick;
                 }
@@ -125,10 +126,22 @@ public class EntityRsNpc extends EntityHuman {
                         double x = vector3.x - this.x;
                         double z = vector3.z - this.z;
                         double diff = Math.abs(x) + Math.abs(z);
-                        if (vector3.y < this.y) {
-                            diff *= 2;
+
+                        this.motionY = vector3.y - this.y;
+                        Block levelBlock = this.getLevelBlock();
+                        if (levelBlock.getId() == 8) {
+                            this.motionX = 0.05 * (x / diff);
+                            this.motionZ = 0.05 * (z / diff);
+                            this.motionY += 0.2;
+                        } else if (levelBlock.getId() == 9) {
+                            this.motionX = 0.05 * (x / diff);
+                            this.motionZ = 0.05 * (z / diff);
+                        } else {
+                            this.motionX = 0.15 * (x / diff);
+                            this.motionZ = 0.15 * (z / diff);
                         }
-                        this.move(x / diff * 0.35, vector3.y - this.y, z / diff * 0.35);
+
+                        this.move(this.motionX, this.motionY, this.motionZ);
                     }
 
                     //视角计算

@@ -186,7 +186,7 @@ public class RsNpcX extends PluginBase {
 
     @Override
     public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equals("rsnpcx")) {
+        if ("rsnpcx".equals(command.getName())) {
             if (args.length > 0) {
                 switch (args[0]) {
                     case "create":
@@ -245,6 +245,10 @@ public class RsNpcX extends PluginBase {
                         }
                         return true;
                     case "addroute":
+                        if (!(sender instanceof Player)) {
+                            sender.sendMessage("§c请在游戏内使用此命令！");
+                            return true;
+                        }
                         Player player = (Player) sender;
                         if (args.length > 1) {
                             String name = args[1];

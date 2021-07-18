@@ -49,7 +49,10 @@ public class RsNpcConfig {
 
     private final ArrayList<String> cmds = new ArrayList<>();
     private final ArrayList<String> messages = new ArrayList<>();
-    
+
+    @Getter
+    private final int baseMoveSpeed;
+
     @Getter
     private final ArrayList<Vector3> route = new ArrayList<>();
 
@@ -89,9 +92,10 @@ public class RsNpcConfig {
         this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
 
         this.cmds.addAll(config.getStringList("点击执行指令"));
-        
         this.messages.addAll(config.getStringList("发送消息"));
-        
+
+        this.baseMoveSpeed = config.getInt("基础移动速度", 1);
+
         for (String string : config.getStringList("route")) {
             String[] s = string.split(":");
             this.route.add(new Vector3(Double.parseDouble(s[0]),
@@ -132,6 +136,8 @@ public class RsNpcConfig {
     
         this.config.set("点击执行指令", this.cmds);
         this.config.set("发送消息", this.messages);
+
+        this.config.set("基础移动速度", this.baseMoveSpeed);
         
         ArrayList<String> list = new ArrayList<>();
         for (Vector3 vector3 : this.route) {

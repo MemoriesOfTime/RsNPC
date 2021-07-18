@@ -2,7 +2,7 @@ package com.smallaswater.npc.entitys;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
@@ -57,9 +57,11 @@ public class EntityRsNpc extends EntityHuman {
             this.close();
             return false;
         }
-        if (this.config.isLookAtThePlayer() &&
+        //看向玩家
+        if (currentTick%2 == 0 &&
+                this.config.isLookAtThePlayer() &&
                 this.config.getRoute().isEmpty() &&
-                !this.getLevel().getPlayers().isEmpty() && currentTick%2 == 0) {
+                !this.getLevel().getPlayers().isEmpty()) {
             RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
                 LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
                 npd.sort((mapping1, mapping2) ->
@@ -79,7 +81,8 @@ public class EntityRsNpc extends EntityHuman {
                 }
             });
         }
-        
+
+        //表情
         if (this.config.isEnableEmote() && !this.config.getEmoteIDs().isEmpty()) {
             if (currentTick % 20 == 0) {
                 this.emoteSecond++;
@@ -93,7 +96,8 @@ public class EntityRsNpc extends EntityHuman {
                 Server.broadcastPacket(this.getViewers().values(), packet);
             }
         }
-        
+
+        //寻路
         if (!this.config.getRoute().isEmpty()) {
             if (this.nodes.isEmpty()) {
                 if (!this.lockRoute) {
@@ -112,7 +116,7 @@ public class EntityRsNpc extends EntityHuman {
             }
             
             if (!this.nodes.isEmpty()) {
-                if (this.nowNode == null || this.distance(this.nowNode.getVector3()) <= ((this.getWidth()) / 2 + 0.05) /*this.distance(this.nowNode.getVector3()) < 0.3*/) {
+                if (this.nowNode == null || this.distance(this.nowNode.getVector3()) <= 0.35/*((this.getWidth()) / 2 + 0.05)*/) {
                     this.nowNode = this.nodes.poll();
                     this.lastUpdateNodeTick = currentTick;
                 }
@@ -128,34 +132,31 @@ public class EntityRsNpc extends EntityHuman {
                         double diff = Math.abs(x) + Math.abs(z);
 
                         this.motionY = vector3.y - this.y;
-                        Block levelBlock = this.getLevelBlock();
-                        if (levelBlock.getId() == 8) {
-                            this.motionX = 0.05 * (x / diff);
-                            this.motionZ = 0.05 * (z / diff);
-                            this.motionY += 0.2;
-                        } else if (levelBlock.getId() == 9) {
-                            this.motionX = 0.05 * (x / diff);
-                            this.motionZ = 0.05 * (z / diff);
+                        if (this.getLevelBlock() instanceof BlockLiquid) {
+                            this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
+                            this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);
                         } else {
-                            this.motionX = 0.15 * (x / diff);
-                            this.motionZ = 0.15 * (z / diff);
+                            this.motionX = this.config.getBaseMoveSpeed() * 0.15 * (x / diff);
+                            this.motionZ = this.config.getBaseMoveSpeed() * 0.15 * (z / diff);
                         }
 
                         this.move(this.motionX, this.motionY, this.motionZ);
                     }
 
                     //视角计算
-                    if (this.nodes.size() >= 2) {
-                        vector3 = this.nodes.get(1).getVector3();
+                    if (currentTick%4 == 0) {
+                        if (this.nodes.size() >= 2) {
+                            vector3 = this.nodes.get(1).getVector3();
+                        }
+                        double npcx = this.x - vector3.x;
+                        double npcz = this.z - vector3.z;
+                        double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
+                        if (npcz > 0.0D) {
+                            yaw = -yaw + 180.0D;
+                        }
+                        this.yaw = yaw;
+                        this.pitch = 0;
                     }
-                    double npcx = this.x - vector3.x;
-                    double npcz = this.z - vector3.z;
-                    double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
-                    if (npcz > 0.0D) {
-                        yaw = -yaw + 180.0D;
-                    }
-                    this.yaw = yaw;
-                    this.pitch = 0;
                 }
             }
         }

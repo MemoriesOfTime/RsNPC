@@ -51,7 +51,7 @@ public class RsNpcConfig {
     private final ArrayList<String> messages = new ArrayList<>();
 
     @Getter
-    private final int baseMoveSpeed;
+    private final double baseMoveSpeed;
 
     @Getter
     private final ArrayList<Vector3> route = new ArrayList<>();
@@ -94,7 +94,10 @@ public class RsNpcConfig {
         this.cmds.addAll(config.getStringList("点击执行指令"));
         this.messages.addAll(config.getStringList("发送消息"));
 
-        this.baseMoveSpeed = config.getInt("基础移动速度", 1);
+        if (this.config.get("基础移动速度") instanceof Integer) {
+            this.config.set("基础移动速度", this.config.getInt("基础移动速度") * 1.0D);
+        }
+        this.baseMoveSpeed = config.getDouble("基础移动速度", 1.0D);
 
         for (String string : config.getStringList("route")) {
             String[] s = string.split(":");

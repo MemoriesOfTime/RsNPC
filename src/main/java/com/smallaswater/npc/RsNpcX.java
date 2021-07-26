@@ -299,7 +299,7 @@ public class RsNpcX extends PluginBase {
         sender.sendMessage("§a§l/rsnpcx delete <NPC名称> §7移除NPC");
         sender.sendMessage("§a§l/rsnpcx addroute <NPC名称> §7将当前位置添加到NPC路径");
         sender.sendMessage("§a§l/rsnpcx reload §7重载NPC");
-        sender.sendMessage("§a§l >> §eHelp for RsNPC §a<<");
+        sender.sendMessage("§a§l >> §eHelp for RsNPCX §a<<");
     }
 
     public Skin getSkinByName(String name) {

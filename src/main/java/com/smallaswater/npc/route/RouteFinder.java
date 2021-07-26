@@ -20,7 +20,7 @@ import java.util.LinkedList;
 @Getter
 public class RouteFinder {
     
-    private int startTick;
+    private final int startTick;
     
     private boolean processingComplete = false;
     
@@ -54,10 +54,14 @@ public class RouteFinder {
             this.process();
         }
     }
-    
+
+    /**
+     * 寻路
+     */
     private void process() {
         LinkedList<Node> needChecks = new LinkedList<>();
         ArrayList<Vector3> completeList = new ArrayList<>();
+
         needChecks.add(new Node(this.start));
         
         Node nowNode;
@@ -142,46 +146,69 @@ public class RouteFinder {
      * @return 是否可以移动到目标节点
      */
     private boolean canMoveTo(Node nowNode, Node target) {
-        if (!this.getBlock(target.getVector3()).canPassThrough() ||
-                !this.getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                this.getBlock(target.getVector3().add(0, -1, 0)).canPassThrough()) {
+        if (!this.getBlockFast(target).canPassThrough() ||
+                !this.getBlockFast(target.getVector3().add(0, 1, 0)).canPassThrough() ||
+                this.getBlockFast(target.getVector3().add(0, -1, 0)).canPassThrough()) {
             return false;
         }
         
         //跳跃检查
         if (target.getVector3().getY() > nowNode.getVector3().getY() &&
-                !this.getBlock(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.getBlockFast(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
         if (target.getVector3().getY() < nowNode.getVector3().getY() &&
-                !this.getBlock(target.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.getBlockFast(target.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
         return true;
     }
-    
+
+    /**
+     * 用粒子显示路径
+     */
     public void show() {
-        for (Node node : nodes) {
-            level.addParticleEffect(node.getVector3(), ParticleEffect.REDSTONE_TORCH_DUST);
-            level.addParticleEffect(node.getVector3().add(0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-            level.addParticleEffect(node.getVector3().add(0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-            level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
-            level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+        for (Node node : this.nodes) {
+            this.level.addParticleEffect(node.getVector3(), ParticleEffect.REDSTONE_TORCH_DUST);
+            this.level.addParticleEffect(node.getVector3().add(0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            this.level.addParticleEffect(node.getVector3().add(0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            this.level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
+            this.level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
         }
     }
-    
-    public Block getBlock(Node node) {
-        return this.getBlock(node.getVector3());
+
+    /**
+     * 快速获取方块
+     *
+     * @param node 节点
+     * @return 方块
+     */
+    public Block getBlockFast(Node node) {
+        return this.getBlockFast(node.getVector3());
     }
-    
-    public Block getBlock(Vector3 vector3) {
-        return this.getBlock(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
+
+    /**
+     * 快速获取方块
+     *
+     * @param vector3 位置
+     * @return 方块
+     */
+    public Block getBlockFast(Vector3 vector3) {
+        return this.getBlockFast(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
     }
-    
-    public Block getBlock(int x, int y, int z) {
-        int fullState;
+
+    /**
+     * 快速获取方块
+     *
+     * @param x 坐标x
+     * @param y 坐标y
+     * @param z 坐标z
+     * @return 方块
+     */
+    public Block getBlockFast(int x, int y, int z) {
+        int fullState = 0;
         if (y >= 0 && y < 256) {
             int cx = x >> 4;
             int cz = z >> 4;
@@ -189,11 +216,7 @@ public class RouteFinder {
             
             if (chunk != null) {
                 fullState = chunk.getFullBlock(x & 15, y, z & 15);
-            } else {
-                fullState = 0;
             }
-        } else {
-            fullState = 0;
         }
         
         Block block = Block.fullList[fullState & 4095].clone();

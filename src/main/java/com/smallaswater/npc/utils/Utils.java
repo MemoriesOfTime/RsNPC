@@ -1,8 +1,6 @@
 package com.smallaswater.npc.utils;
 
-import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Location;
-import cn.nukkit.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -22,12 +20,6 @@ public class Utils {
             e.printStackTrace();
         }
         return content;
-    }
-
-    public static CompoundTag getTag(@NotNull Location location, @NotNull String name) {
-        CompoundTag tag = Entity.getDefaultNBT(location);
-        tag.putString("rsnpcName", name);
-        return tag;
     }
 
     public static double getYaw(@NotNull Location location) {

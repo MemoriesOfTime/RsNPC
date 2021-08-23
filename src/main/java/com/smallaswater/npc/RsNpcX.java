@@ -54,7 +54,7 @@ public class RsNpcX extends PluginBase {
     public void onLoad() {
         rsNpcX = this;
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
-        VariableManage.addVariable("@p", (player, rsNpcConfig) -> player != null ? player.getName() : null);
+        VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
     
         File file = new File(getDataFolder() + "/Npcs");
         if (!file.exists() && !file.mkdirs()) {

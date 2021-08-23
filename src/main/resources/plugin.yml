@@ -6,11 +6,7 @@ api:
   - "1.0.11"
 authors: ["若水", "LT_Name"]
 load: POSTWORLD
-commands:
-  rsnpcx:
-    description: "RSNPCX插件主命令"
-    usage: "/rnpcx help"
-    permission: RsNPCX.npc
+
 permissions:
   RsNPCX.npc:
     default: op

@@ -23,7 +23,7 @@ public class EntityRsNpc extends EntityHuman {
     private int emoteSecond = 0;
     private int nextRouteIndex = 0;
     @Getter
-    private LinkedList<Node> nodes = new LinkedList<>();
+    private final LinkedList<Node> nodes = new LinkedList<>();
     private Node nowNode;
     @Setter
     private boolean lockRoute = false;
@@ -68,12 +68,12 @@ public class EntityRsNpc extends EntityHuman {
                         Double.compare(this.distance(mapping1) - this.distance(mapping2), 0.0D));
                 Player player = npd.poll();
                 if (player != null) {
-                    double npcx = this.x - player.x;
-                    double npcy = this.y - player.y;
-                    double npcz = this.z - player.z;
-                    double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
-                    double pitch = Math.round(Math.asin(npcy / Math.sqrt(npcx * npcx + npcz * npcz + npcy * npcy)) / 3.14D * 180.0D);
-                    if (npcz > 0.0D) {
+                    double dx = this.x - player.x;
+                    double dy = this.y - player.y;
+                    double dz = this.z - player.z;
+                    double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
+                    double pitch = Math.round(Math.asin(dy / Math.sqrt(dx * dx + dz * dz + dy * dy)) / Math.PI * 180.0D);
+                    if (dz > 0.0D) {
                         yaw = -yaw + 180.0D;
                     }
                     this.yaw = yaw;
@@ -148,10 +148,10 @@ public class EntityRsNpc extends EntityHuman {
                         if (this.nodes.size() >= 2) {
                             vector3 = this.nodes.get(1).getVector3();
                         }
-                        double npcx = this.x - vector3.x;
-                        double npcz = this.z - vector3.z;
-                        double yaw = Math.asin(npcx / Math.sqrt(npcx * npcx + npcz * npcz)) / 3.14D * 180.0D;
-                        if (npcz > 0.0D) {
+                        double dx = this.x - vector3.x;
+                        double dz = this.z - vector3.z;
+                        double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / 3.14D * 180.0D;
+                        if (dz > 0.0D) {
                             yaw = -yaw + 180.0D;
                         }
                         this.yaw = yaw;

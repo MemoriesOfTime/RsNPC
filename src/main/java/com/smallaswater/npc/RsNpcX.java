@@ -14,7 +14,6 @@ import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -54,7 +53,8 @@ public class RsNpcX extends PluginBase {
     @Override
     public void onLoad() {
         rsNpcX = this;
-        VariableManage.addVariable("default", DefaultVariable.class);
+        VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
+        VariableManage.addVariable("@p", (player, rsNpcConfig) -> player != null ? player.getName() : null);
     
         File file = new File(getDataFolder() + "/Npcs");
         if (!file.exists() && !file.mkdirs()) {

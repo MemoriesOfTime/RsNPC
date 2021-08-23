@@ -6,9 +6,11 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
+import com.google.gson.Gson;
 import com.smallaswater.npc.command.RsNpcXCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
@@ -37,6 +39,7 @@ public class RsNpcX extends PluginBase {
             new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * 4),
             new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
+    public static final Gson GSON = new Gson();
 
     private static RsNpcX rsNpcX;
 
@@ -73,7 +76,8 @@ public class RsNpcX extends PluginBase {
         
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
-        
+
+        this.getServer().getPluginManager().registerEvents(new FormListener(), this);
         this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
         
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
@@ -91,6 +95,7 @@ public class RsNpcX extends PluginBase {
             }
         }
         this.npcs.clear();
+        this.getLogger().info("RsNpcX卸载完成");
     }
 
     private void loadNpcs() {
@@ -142,7 +147,7 @@ public class RsNpcX extends PluginBase {
         if (files != null && files.length > 0) {
             for (File file : files) {
                 String skinName = file.getName();
-                File skinDataFile = new File(getDataFolder() + "/Skins/" + skinName + "/skin.png");
+                File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
                 if (skinDataFile.exists()) {
                     Skin skin = new Skin();
                     skin.setTrusted(true);
@@ -159,7 +164,7 @@ public class RsNpcX extends PluginBase {
                         skin.setSkinId(skinName);
                     }
 
-                    File skinJsonFile = new File(getDataFolder() + "/Skins/" + skinName + "/skin.json");
+                    File skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
                     if (skinJsonFile.exists()) {
                         Map<String, Object> skinJson = (new Config(skinJsonFile, Config.JSON)).getAll();
                         String geometryName = null;

@@ -15,6 +15,7 @@ import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,26 +27,37 @@ public class RsNpcConfig {
 
     private final Config config;
     private final String name;
-    private final String showName;
+    @Setter
+    private String showName;
 
     private final String levelName;
     private final Location location;
 
-    private final Item hand;
-    private final Item[] armor = new Item[4];
+    @Setter
+    private Item hand;
+    @Setter
+    private Item[] armor = new Item[4];
 
-    private final Skin skin;
+    @Setter
+    @Getter
+    private String skinName;
+    @Setter
+    private Skin skin;
 
-    private final float scale;
+    @Setter
+    @Getter
+    private float scale;
 
-    private final boolean lookAtThePlayer;
+    @Setter
+    private boolean lookAtThePlayer;
 
     private final boolean enableEmote;
     private final ArrayList<String> emoteIDs = new ArrayList<>();
     private final int showEmoteInterval;
 
+    @Setter
     @Getter
-    private final boolean canProjectilesTrigger;
+    private boolean canProjectilesTrigger;
 
     private final ArrayList<String> cmds = new ArrayList<>();
     private final ArrayList<String> messages = new ArrayList<>();
@@ -78,8 +90,8 @@ public class RsNpcConfig {
         this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
         this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
 
-        String skinName = config.getString("皮肤", "尸鬼");
-        this.skin = RsNpcX.getInstance().getSkinByName(skinName);
+        this.skinName = config.getString("皮肤", "尸鬼");
+        this.skin = RsNpcX.getInstance().getSkinByName(this.skinName);
 
         this.scale = (float) config.getDouble("实体大小", 1D);
         
@@ -154,6 +166,7 @@ public class RsNpcConfig {
     public void checkEntity() {
         if (this.location.getLevel() == null && !Server.getInstance().loadLevel(this.levelName)) {
             RsNpcX.getInstance().getLogger().error("世界: " + this.levelName + " 不存在！NPC: " + this.name + "无法生成！");
+            return;
         }
         if (this.location.getChunk() != null && this.location.getChunk().isLoaded()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {

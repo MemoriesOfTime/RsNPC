@@ -34,7 +34,11 @@ public class CreateSubCommand extends BaseSubCommand {
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
-            String name = args[1];
+            String name = args[1].trim();
+            if ("".equals(name)) {
+                sender.sendMessage("§c§lNPC的名字不能是空格！");
+                return true;
+            }
             if (this.rsNpcX.getNpcs().containsKey(name)) {
                 sender.sendMessage("§c§lNPC " + name + "已经存在...");
                 return true;

@@ -71,9 +71,9 @@ public abstract class BaseCommand extends Command {
 
     /**
      * 发送UI
-     * @param sender 玩家
+     * @param player 玩家
      */
-    public abstract void sendUI(Player sender);
+    public abstract void sendUI(Player player);
 
     protected void addSubCommand(BaseSubCommand cmd) {
         this.subCommand.add(cmd);

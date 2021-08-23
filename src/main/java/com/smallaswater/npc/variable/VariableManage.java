@@ -58,10 +58,12 @@ public class VariableManage {
             inString = inString.replace(entry.getKey(), String.valueOf(entry.getValue().apply(player, rsNpcConfig)));
         }
 
+        Player p = null;
         if (player instanceof Player) {
-            for (BaseVariable variable : VARIABLE_CLASS.values()) {
-                inString = variable.stringReplace((Player) player, inString, rsNpcConfig);
-            }
+            p = (Player) player;
+        }
+        for (BaseVariable variable : VARIABLE_CLASS.values()) {
+            inString = variable.stringReplace(p, inString, rsNpcConfig);
         }
 
         return inString;

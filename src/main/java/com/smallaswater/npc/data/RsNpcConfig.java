@@ -51,9 +51,11 @@ public class RsNpcConfig {
     @Setter
     private boolean lookAtThePlayer;
 
-    private final boolean enableEmote;
+    @Setter
+    private boolean enableEmote;
     private final ArrayList<String> emoteIDs = new ArrayList<>();
-    private final int showEmoteInterval;
+    @Setter
+    private int showEmoteInterval;
 
     @Setter
     @Getter

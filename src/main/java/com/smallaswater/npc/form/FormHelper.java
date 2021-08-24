@@ -58,6 +58,7 @@ public class FormHelper {
 
     public static void sendAdminNpcAll(@NotNull Player player) {
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 管理NPC<<");
+        simple.setContent("请选择要设置的Npc");
 
         for (Map.Entry<String, RsNpcConfig> entry : RsNpcX.getInstance().getNpcs().entrySet()) {
             simple.addButton(new ResponseElementButton(entry.getKey())
@@ -117,7 +118,7 @@ public class FormHelper {
         }
 
         simple.setContent(
-                "\n名称: " + rsNpcConfig.getName() +
+                "名称: " + rsNpcConfig.getName() +
                 "\n显示名称: " + rsNpcConfig.getShowName() +
                 "\n坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
                 "\n  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
@@ -143,11 +144,13 @@ public class FormHelper {
                 "\n\n");
 
         simple.addButton(new ResponseElementButton("修改基础配置")
-                .onClicked(cp -> FormHelper.sendAdminNpcConfig(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("修改表情动作(TODO)"));
+                .onClicked(cp -> sendAdminNpcConfig(cp, rsNpcConfig)));
+        simple.addButton(new ResponseElementButton("修改表情动作")
+                .onClicked(cp -> sendAdminNpcConfigEmote(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton("修改点击命令")
-                .onClicked(cp -> FormHelper.sendAdminNpcConfigCommand(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("修改点击消息(TODO)"));
+                .onClicked(cp -> sendAdminNpcConfigCommand(cp, rsNpcConfig)));
+        simple.addButton(new ResponseElementButton("修改点击消息")
+                .onClicked(cp -> sendAdminNpcConfigMessage(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton("删除NPC")
                 .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpcx delete " + rsNpcConfig.getName())));
         simple.onClosed(FormHelper::sendAdminNpcAll);
@@ -155,6 +158,12 @@ public class FormHelper {
         player.showFormWindow(simple);
     }
 
+    /**
+     * 设置npc基础配置界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
     public static void sendAdminNpcConfig(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNpcX - 设置NPC<<");
 
@@ -224,6 +233,60 @@ public class FormHelper {
             AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
                     ">>RsNpcX - 设置NPC<<",
                     "Npc: " + rsNpcConfig.getName() + " 配置保存成功！",
+                    "返回",
+                    "关闭");
+            modal.onClickedTrue(cp2 -> sendAdminNpc(cp2, rsNpcConfig));
+            cp.showFormWindow(modal);
+        });
+        custom.onClosed(cp -> sendAdminNpc(cp, rsNpcConfig));
+
+        player.showFormWindow(custom);
+    }
+
+    /**
+     * 设置表情动作界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
+    public static void sendAdminNpcConfigEmote(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNpcX - 设置NPC表情动作<<");
+
+        custom.addElement(new ElementLabel("注意：Npc添加路径后此功能将无法正常工作！")); //0
+        custom.addElement(new ElementToggle("启用表情动作", rsNpcConfig.isEnableEmote())); //1
+
+        StringBuilder ids = new StringBuilder();
+        for (String id : rsNpcConfig.getEmoteIDs()) {
+            ids.append(id).append(";");
+        }
+        ids.deleteCharAt(ids.length() - 1);
+        custom.addElement(new ElementInput("表情动作ID(多个请使用 ; 分割)", "",ids.toString())); //2
+        custom.addElement(new ElementInput("间隔(秒)", "", rsNpcConfig.getShowEmoteInterval() + "")); //3
+
+        custom.onResponded((formResponseCustom, cp) -> {
+            rsNpcConfig.setEnableEmote(formResponseCustom.getToggleResponse(1));
+            rsNpcConfig.getEmoteIDs().clear();
+            String[] emoteIDs = formResponseCustom.getInputResponse(2).split(";");
+            for (String id : emoteIDs) {
+                if (!"".equals(id.trim())) {
+                    rsNpcConfig.getEmoteIDs().add(id);
+                }
+            }
+            int showEmoteInterval = rsNpcConfig.getShowEmoteInterval();
+            try {
+                showEmoteInterval = Integer.parseInt(formResponseCustom.getInputResponse(3));
+                if (showEmoteInterval <= 0) {
+                    throw new RuntimeException();
+                }
+            } catch (Exception e) {
+                cp.sendMessage("间隔必须是正整数");
+                return;
+            }
+            rsNpcConfig.setShowEmoteInterval(showEmoteInterval);
+            rsNpcConfig.save();
+            AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                    ">>RsNpcX - 设置NPC表情动作<<",
+                    "Npc: " + rsNpcConfig.getName() + " 表情动作设置保存成功！",
                     "返回",
                     "关闭");
             modal.onClickedTrue(cp2 -> sendAdminNpc(cp2, rsNpcConfig));
@@ -319,11 +382,91 @@ public class FormHelper {
         player.showFormWindow(simple);
     }
 
+    /**
+     * 管理点击消息界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
+    public static void sendAdminNpcConfigMessage(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 设置NPC消息<<");
+        simple.setContent("当前设置NPC: " + rsNpcConfig.getName());
+
+        simple.addButton(new ResponseElementButton("添加新的消息")
+                .onClicked(cp -> sendAdminNpcConfigMessageAdd(cp, rsNpcConfig)));
+        if (!rsNpcConfig.getMessages().isEmpty()) {
+            simple.addButton(new ResponseElementButton("删除现有消息")
+                    .onClicked(cp -> sendAdminNpcConfigMessageDelete(cp, rsNpcConfig)));
+        }
+
+        player.showFormWindow(simple);
+    }
+
+    public static void sendAdminNpcConfigMessageAdd(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNpcX - 添加新的消息<<");
+
+        custom.addElement(new ElementLabel("当前设置NPC: " + rsNpcConfig.getName())); //0
+        custom.addElement(new ElementInput("消息(可以用 @p 代表玩家)", "", "@p 你好！我是%npcName%")); //1
+
+        custom.onResponded((formResponseCustom, cp) -> {
+            String message = formResponseCustom.getInputResponse(1);
+            if ("".equals(message.trim())) {
+                cp.sendMessage("消息不能为空！");
+                return;
+            }
+            rsNpcConfig.getMessages().add(message);
+            rsNpcConfig.save();
+            AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                    ">>RsNpcX - 添加新的消息<<",
+                    "消息: " + message + " 添加成功！",
+                    "返回",
+                    "关闭");
+            modal.onClickedTrue(cp2 -> sendAdminNpcConfigMessage(cp2, rsNpcConfig));
+            cp.showFormWindow(modal);
+        });
+        custom.onClosed(cp -> sendAdminNpcConfigMessage(cp, rsNpcConfig));
+
+        player.showFormWindow(custom);
+    }
+
+    /**
+     * 删除现有命令界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
+    public static void sendAdminNpcConfigMessageDelete(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 删除现有消息<<");
+        simple.setContent("当前设置Npc: " + rsNpcConfig.getName() + "\n请选择要删除的消息");
+
+        for (String message : rsNpcConfig.getMessages()) {
+            simple.addButton(new ResponseElementButton(message)
+                    .onClicked(cp -> {
+                        rsNpcConfig.getMessages().remove(message);
+                        rsNpcConfig.save();
+
+                        AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                                ">>RsNpcX - 删除现有消息<<",
+                                "消息: " + message + " 删除成功！",
+                                "返回",
+                                "关闭");
+                        modal.onClickedTrue(cp2 -> sendAdminNpcConfigMessageDelete(cp2, rsNpcConfig));
+                        cp.showFormWindow(modal);
+                    })
+            );
+        }
+        simple.onClosed(cp -> sendAdminNpcConfigMessage(cp, rsNpcConfig));
+
+        player.showFormWindow(simple);
+    }
+
     private final static List<String> RANDOM_MESSAGE = Arrays.asList(
             "要快乐地面对一切挑战，哪怕恐惧渗入骨髓，因为就算我们是凡人，趁着还活在人世，就该绽放光彩。",
+            "听说LT_Name还写了很多小游戏插件！快去试试吧！",
             "我们所过的每个平凡的日常，也许就是连续发生的奇迹。",
             "我也不知道我怎么想的，就是想加入很多随机的内容",
             "Time waits for no one.",
+            "我的名字是LT_Name不是IT_Name！！！经常被误解的IT(划)LT_Name如是说",
             "愿你有一天，能与你最重要的人重逢",
             "相信奇迹的人本身就和奇迹一样了不起啊",
             "是的，RsNpcX终于添加GUI了！",
@@ -335,7 +478,8 @@ public class FormHelper {
             "人类的赞歌就是勇气的赞歌。",
             "RsNpcX是开源免费的插件！",
             "即使从梦中醒来，还会有回忆留下。",
-            "放火烧山可莉完蛋"
+            "放火烧山可莉完蛋",
+            "RsNpcX的寻路只是辅助性质的哦！"
     );
 
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd");

@@ -128,7 +128,7 @@ public class EntityRsNpc extends EntityHuman {
                         }
                         double dx = this.x - vector3.x;
                         double dz = this.z - vector3.z;
-                        double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / 3.14D * 180.0D;
+                        double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
                         if (dz > 0.0D) {
                             yaw = -yaw + 180.0D;
                         }
@@ -140,7 +140,7 @@ public class EntityRsNpc extends EntityHuman {
         }else {
             //看向玩家
             if (currentTick%2 == 0 &&
-                    this.config.isLookAtThePlayer() &&
+                    (this.config.isLookAtThePlayer() || this.pauseMoveTick > 0) &&
                     !this.getLevel().getPlayers().isEmpty()) {
                 RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
                     LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());

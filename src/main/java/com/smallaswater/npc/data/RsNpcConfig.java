@@ -70,6 +70,9 @@ public class RsNpcConfig {
     @Getter
     private final ArrayList<Vector3> route = new ArrayList<>();
 
+    @Getter
+    private final double whirling;
+
     private EntityRsNpc entityRsNpc;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
@@ -119,6 +122,8 @@ public class RsNpcConfig {
                     Double.parseDouble(s[1]),
                     Double.parseDouble(s[2])));
         }
+
+        this.whirling = config.getDouble("旋转", 0.0);
         
         //更新配置文件
         this.save();
@@ -161,6 +166,8 @@ public class RsNpcConfig {
             list.add(vector3.getX() + ":" + vector3.getY() + ":" + vector3.getZ());
         }
         this.config.set("route", list);
+
+        this.config.set("旋转", this.whirling);
         
         this.config.save();
     }

@@ -272,7 +272,7 @@ public class FormHelper {
                     rsNpcConfig.getEmoteIDs().add(id);
                 }
             }
-            int showEmoteInterval = rsNpcConfig.getShowEmoteInterval();
+            int showEmoteInterval;
             try {
                 showEmoteInterval = Integer.parseInt(formResponseCustom.getInputResponse(3));
                 if (showEmoteInterval <= 0) {

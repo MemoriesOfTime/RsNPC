@@ -41,7 +41,9 @@ public class OnListener implements Listener {
         if (entity instanceof EntityRsNpc) {
             event.setCancelled(true);
             Player player = event.getPlayer();
-            RsNpcConfig config = ((EntityRsNpc) entity).getConfig();
+            EntityRsNpc rsNpc = (EntityRsNpc) entity;
+            RsNpcConfig config = rsNpc.getConfig();
+            rsNpc.setPauseMoveTick(60);
             this.executeCommand(player, config);
             for (String message : config.getMessages()) {
                 player.sendMessage(VariableManage.stringReplace(player, message, config));
@@ -58,11 +60,13 @@ public class OnListener implements Listener {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
                 if (damage instanceof Player) {
                     Player player = (Player) damage;
-                    RsNpcConfig config = ((EntityRsNpc) entity).getConfig();
+                    EntityRsNpc rsNpc = (EntityRsNpc) entity;
+                    RsNpcConfig config = rsNpc.getConfig();
                     if (!config.isCanProjectilesTrigger() &&
                             event instanceof EntityDamageByChildEntityEvent) {
                         return;
                     }
+                    rsNpc.setPauseMoveTick(60);
                     this.executeCommand(player, config);
                     for (String message : config.getMessages()) {
                         player.sendMessage(VariableManage.stringReplace(player, message, config));

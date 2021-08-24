@@ -29,6 +29,8 @@ public class EntityRsNpc extends EntityHuman {
     private boolean lockRoute = false;
     private int lastUpdateNodeTick;
     private RouteFinder nowRouteFinder;
+    @Setter
+    private int pauseMoveTick = 0;
 
     @Deprecated
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
@@ -57,30 +59,6 @@ public class EntityRsNpc extends EntityHuman {
             this.close();
             return false;
         }
-        //看向玩家
-        if (currentTick%2 == 0 &&
-                this.config.isLookAtThePlayer() &&
-                this.config.getRoute().isEmpty() &&
-                !this.getLevel().getPlayers().isEmpty()) {
-            RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
-                LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
-                npd.sort((mapping1, mapping2) ->
-                        Double.compare(this.distance(mapping1) - this.distance(mapping2), 0.0D));
-                Player player = npd.poll();
-                if (player != null) {
-                    double dx = this.x - player.x;
-                    double dy = this.y - player.y;
-                    double dz = this.z - player.z;
-                    double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
-                    double pitch = Math.round(Math.asin(dy / Math.sqrt(dx * dx + dz * dz + dy * dy)) / Math.PI * 180.0D);
-                    if (dz > 0.0D) {
-                        yaw = -yaw + 180.0D;
-                    }
-                    this.yaw = yaw;
-                    this.pitch = pitch;
-                }
-            });
-        }
 
         //表情
         if (this.config.isEnableEmote() && !this.config.getEmoteIDs().isEmpty()) {
@@ -98,7 +76,7 @@ public class EntityRsNpc extends EntityHuman {
         }
 
         //寻路
-        if (!this.config.getRoute().isEmpty()) {
+        if (!this.config.getRoute().isEmpty() && this.pauseMoveTick <= 0) {
             if (this.nodes.isEmpty()) {
                 if (!this.lockRoute) {
                     this.setLockRoute(true);
@@ -158,6 +136,33 @@ public class EntityRsNpc extends EntityHuman {
                         this.pitch = 0;
                     }
                 }
+            }
+        }else {
+            //看向玩家
+            if (currentTick%2 == 0 &&
+                    this.config.isLookAtThePlayer() &&
+                    !this.getLevel().getPlayers().isEmpty()) {
+                RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
+                    LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
+                    npd.sort((p1, p2) -> Double.compare(this.distance(p1) - this.distance(p2), 0.0D));
+                    Player player = npd.poll();
+                    if (player != null) {
+                        double dx = this.x - player.x;
+                        double dy = this.y - player.y;
+                        double dz = this.z - player.z;
+                        double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
+                        double pitch = Math.round(Math.asin(dy / Math.sqrt(dx * dx + dz * dz + dy * dy)) / Math.PI * 180.0D);
+                        if (dz > 0.0D) {
+                            yaw = -yaw + 180.0D;
+                        }
+                        this.yaw = yaw;
+                        this.pitch = pitch;
+                    }
+                });
+            }
+
+            if (this.pauseMoveTick > 0) {
+                this.pauseMoveTick--;
             }
         }
         

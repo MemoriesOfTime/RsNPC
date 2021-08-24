@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.form.element.ElementDropdown;
 import cn.nukkit.form.element.ElementInput;
+import cn.nukkit.form.element.ElementLabel;
 import cn.nukkit.form.element.ElementToggle;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.NukkitMath;
@@ -12,6 +13,7 @@ import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.form.element.ResponseElementButton;
 import com.smallaswater.npc.form.windows.AdvancedFormWindowCustom;
+import com.smallaswater.npc.form.windows.AdvancedFormWindowModal;
 import com.smallaswater.npc.form.windows.AdvancedFormWindowSimple;
 import org.jetbrains.annotations.NotNull;
 
@@ -143,7 +145,8 @@ public class FormHelper {
         simple.addButton(new ResponseElementButton("修改基础配置")
                 .onClicked(cp -> FormHelper.sendAdminNpcConfig(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton("修改表情动作(TODO)"));
-        simple.addButton(new ResponseElementButton("修改点击命令(TODO)"));
+        simple.addButton(new ResponseElementButton("修改点击命令")
+                .onClicked(cp -> FormHelper.sendAdminNpcConfigCommand(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton("修改点击消息(TODO)"));
         simple.addButton(new ResponseElementButton("删除NPC")
                 .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpcx delete " + rsNpcConfig.getName())));
@@ -218,12 +221,103 @@ public class FormHelper {
                 rsNpcConfig.getEntityRsNpc().close();
             }
             rsNpcConfig.checkEntity();
+            AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                    ">>RsNpcX - 设置NPC<<",
+                    "Npc: " + rsNpcConfig.getName() + " 配置保存成功！",
+                    "返回",
+                    "关闭");
+            modal.onClickedTrue(cp2 -> sendAdminNpc(cp2, rsNpcConfig));
+            cp.showFormWindow(modal);
         });
         custom.onClosed(cp -> sendAdminNpc(cp, rsNpcConfig));
 
         player.showFormWindow(custom);
     }
 
+    /**
+     * 设置Npc命令界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
+    public static void sendAdminNpcConfigCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 设置NPC命令<<");
+        simple.setContent("当前设置NPC: " + rsNpcConfig.getName());
+
+        simple.addButton(new ResponseElementButton("添加新的命令")
+                .onClicked(cp -> sendAdminNpcConfigCommandAdd(cp, rsNpcConfig)));
+        if (!rsNpcConfig.getCmds().isEmpty()) {
+            simple.addButton(new ResponseElementButton("删除现有命令")
+                    .onClicked(cp -> sendAdminNpcConfigCommandDelete(cp, rsNpcConfig)));
+        }
+
+        player.showFormWindow(simple);
+    }
+
+    public static void sendAdminNpcConfigCommandAdd(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNpcX - 添加新的命令<<");
+
+        custom.addElement(new ElementLabel("当前设置NPC: " + rsNpcConfig.getName())); //0
+        custom.addElement(new ElementInput("命令(可以用 @p 代表玩家)", "", "me 萌萌哒~")); //1
+        custom.addElement(new ElementDropdown("执行权限", Arrays.asList("玩家", "OP", "控制台"))); //2
+
+        custom.onResponded((formResponseCustom, cp) -> {
+            String cmd = formResponseCustom.getInputResponse(1).replace("&", "");
+            if ("".equals(cmd.trim())) {
+                cp.sendMessage("命令不能为空！");
+                return;
+            }
+            int elementID = formResponseCustom.getDropdownResponse(2).getElementID();
+            if (elementID == 1) {
+                cmd += "&op";
+            }else if (elementID == 2) {
+                cmd += "&con";
+            }
+            rsNpcConfig.getCmds().add(cmd);
+            rsNpcConfig.save();
+            AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                    ">>RsNpcX - 添加新的命令<<",
+                    "命令: " + cmd + " 添加成功！",
+                    "返回",
+                    "关闭");
+            modal.onClickedTrue(cp2 -> sendAdminNpcConfigCommand(cp2, rsNpcConfig));
+            cp.showFormWindow(modal);
+        });
+        custom.onClosed(cp -> sendAdminNpcConfigCommand(cp, rsNpcConfig));
+
+        player.showFormWindow(custom);
+    }
+
+    /**
+     * 删除现有命令界面
+     *
+     * @param player 玩家
+     * @param rsNpcConfig npc配置
+     */
+    public static void sendAdminNpcConfigCommandDelete(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 删除现有命令<<");
+        simple.setContent("当前设置Npc: " + rsNpcConfig.getName() + "\n请选择要删除的命令");
+
+        for (String cmd : rsNpcConfig.getCmds()) {
+            simple.addButton(new ResponseElementButton(cmd)
+                    .onClicked(cp -> {
+                        rsNpcConfig.getCmds().remove(cmd);
+                        rsNpcConfig.save();
+
+                        AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                                ">>RsNpcX - 删除现有命令<<",
+                                "命令: " + cmd + " 删除成功！",
+                                "返回",
+                                "关闭");
+                        modal.onClickedTrue(cp2 -> sendAdminNpcConfigCommandDelete(cp2, rsNpcConfig));
+                        cp.showFormWindow(modal);
+                    })
+            );
+        }
+        simple.onClosed(cp -> sendAdminNpcConfigCommand(cp, rsNpcConfig));
+
+        player.showFormWindow(simple);
+    }
 
     private final static List<String> RANDOM_MESSAGE = Arrays.asList(
             "要快乐地面对一切挑战，哪怕恐惧渗入骨髓，因为就算我们是凡人，趁着还活在人世，就该绽放光彩。",

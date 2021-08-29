@@ -208,6 +208,9 @@ public class RouteFinder {
      * @return 方块
      */
     public Block getBlockFast(int x, int y, int z) {
+        if (!"Nukkit".equals(Server.getInstance().getName())) {
+            return this.level.getBlock(x, y, z);
+        }
         int fullState = 0;
         if (y >= 0 && y < 256) {
             int cx = x >> 4;

@@ -207,7 +207,7 @@ public class FormHelper {
             rsNpcConfig.setArmor(items);
             //皮肤
             String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(6).getElementID());
-            rsNpcConfig.setShowName(skinName);
+            rsNpcConfig.setSkinName(skinName);
             rsNpcConfig.setSkin(RsNpcX.getInstance().getSkinByName(skinName));
             //实体大小
             String scaleString = formResponseCustom.getInputResponse(7);

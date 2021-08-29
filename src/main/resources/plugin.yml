@@ -1,6 +1,6 @@
 name: RsNPCX
 main: com.smallaswater.npc.RsNpcX
-version: "1.8.0"
+version: "1.8.1"
 api:
   - "1.0.9"
   - "1.0.11"

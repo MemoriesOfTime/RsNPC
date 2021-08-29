@@ -37,12 +37,11 @@ public class VariableManage {
 
     @Deprecated
     public static void addVariable(@NotNull String name, @NotNull Class<? extends BaseVariable> variableClass) {
-        RsNpcX.getInstance().getLogger().warning("");
         try {
             BaseVariable variable = variableClass.newInstance();
             VariableManage.VARIABLE_CLASS.put(name, variable);
         } catch (Exception e) {
-            e.printStackTrace();
+            RsNpcX.getInstance().getLogger().error("添加变量时出错", e);
         }
     }
 

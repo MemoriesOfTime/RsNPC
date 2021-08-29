@@ -128,26 +128,8 @@ public class EntityRsNpc extends EntityHuman {
                 }
             } else {
                 //看向玩家
-                if (currentTick % 2 == 0 &&
-                        (this.config.isLookAtThePlayer() || this.pauseMoveTick > 0) &&
-                        !this.getLevel().getPlayers().isEmpty()) {
-                    RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
-                        LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
-                        npd.sort((p1, p2) -> Double.compare(this.distance(p1) - this.distance(p2), 0.0D));
-                        Player player = npd.poll();
-                        if (player != null) {
-                            double dx = this.x - player.x;
-                            double dy = this.y - player.y;
-                            double dz = this.z - player.z;
-                            double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
-                            double pitch = Math.round(Math.asin(dy / Math.sqrt(dx * dx + dz * dz + dy * dy)) / Math.PI * 180.0D);
-                            if (dz > 0.0D) {
-                                yaw = -yaw + 180.0D;
-                            }
-                            this.yaw = yaw;
-                            this.pitch = pitch;
-                        }
-                    });
+                if (currentTick%2 == 0 && this.config.isLookAtThePlayer() && !this.getLevel().getPlayers().isEmpty()) {
+                    this.seePlayer();
                 }
 
                 if (this.pauseMoveTick > 0) {
@@ -172,6 +154,26 @@ public class EntityRsNpc extends EntityHuman {
         }
         
         return super.onUpdate(currentTick);
+    }
+
+    private void seePlayer() {
+        RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
+            LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
+            npd.sort((p1, p2) -> Double.compare(this.distance(p1) - this.distance(p2), 0.0D));
+            Player player = npd.poll();
+            if (player != null) {
+                double dx = this.x - player.x;
+                double dy = this.y - player.y;
+                double dz = this.z - player.z;
+                double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
+                double pitch = Math.round(Math.asin(dy / Math.sqrt(dx * dx + dz * dz + dy * dy)) / Math.PI * 180.0D);
+                if (dz > 0.0D) {
+                    yaw = -yaw + 180.0D;
+                }
+                this.yaw = yaw;
+                this.pitch = pitch;
+            }
+        });
     }
 
     public RsNpcConfig getConfig() {

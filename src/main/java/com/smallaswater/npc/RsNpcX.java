@@ -12,7 +12,6 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
-import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -109,7 +108,7 @@ public class RsNpcX extends PluginBase {
                 RsNpcConfig rsNpcConfig;
                 try {
                     rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
-                } catch (RsNpcLoadException e) {
+                } catch (Exception e) {
                     this.getLogger().error("加载NPC出现错误！", e);
                     continue;
                 }

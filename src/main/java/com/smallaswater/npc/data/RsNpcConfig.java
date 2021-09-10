@@ -69,6 +69,9 @@ public class RsNpcConfig {
 
     @Getter
     private final ArrayList<Vector3> route = new ArrayList<>();
+    @Setter
+    @Getter
+    private boolean enablePathfinding;
 
     @Getter
     private final double whirling;
@@ -123,6 +126,8 @@ public class RsNpcConfig {
                     Double.parseDouble(s[2])));
         }
 
+        this.enablePathfinding = config.getBoolean("启用辅助寻路", true);
+
         this.whirling = config.getDouble("旋转", 0.0);
         
         //更新配置文件
@@ -166,6 +171,7 @@ public class RsNpcConfig {
             list.add(vector3.getX() + ":" + vector3.getY() + ":" + vector3.getZ());
         }
         this.config.set("route", list);
+        this.config.set("启用辅助寻路", this.enablePathfinding);
 
         this.config.set("旋转", this.whirling);
         
@@ -177,7 +183,9 @@ public class RsNpcConfig {
             RsNpcX.getInstance().getLogger().error("世界: " + this.levelName + " 不存在！NPC: " + this.name + "无法生成！");
             return;
         }
-        if (this.location.getChunk() != null && this.location.getChunk().isLoaded()) {
+        if (this.location.getChunk() != null &&
+                this.location.getChunk().isLoaded() &&
+                !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
                 this.entityRsNpc = new EntityRsNpc(location.getChunk(), Entity.getDefaultNBT(location)
                         .putString("rsnpcName", this.name)

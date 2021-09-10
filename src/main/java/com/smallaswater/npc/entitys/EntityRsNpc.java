@@ -27,10 +27,14 @@ public class EntityRsNpc extends EntityHuman {
     private Node nowNode;
     @Setter
     private boolean lockRoute = false;
+
+    private Vector3 lastPos;
     private int lastUpdateNodeTick;
+
     private RouteFinder nowRouteFinder;
     @Setter
     private int pauseMoveTick = 0;
+
 
     @Deprecated
     public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
@@ -66,66 +70,7 @@ public class EntityRsNpc extends EntityHuman {
         }else {
             //寻路
             if (!this.config.getRoute().isEmpty() && this.pauseMoveTick <= 0) {
-                if (this.nodes.isEmpty()) {
-                    if (!this.lockRoute) {
-                        this.setLockRoute(true);
-                        Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
-                        this.nextRouteIndex++;
-                        if (this.nextRouteIndex >= this.config.getRoute().size()) {
-                            this.nextRouteIndex = 0;
-                        }
-                        this.nowRouteFinder = new RouteFinder(this.getLevel(), this, next);
-                    } else if (this.nowRouteFinder != null && this.nowRouteFinder.isProcessingComplete()) {
-                        this.nodes.clear();
-                        this.nodes.addAll(this.nowRouteFinder.getNodes());
-                        this.setLockRoute(false);
-                    }
-                }
-
-                if (!this.nodes.isEmpty()) {
-                    if (this.nowNode == null || this.distance(this.nowNode.getVector3()) <= 0.35/*((this.getWidth()) / 2 + 0.05)*/) {
-                        this.nowNode = this.nodes.poll();
-                        this.lastUpdateNodeTick = currentTick;
-                    }
-                    if (this.nowNode != null) {
-                        Vector3 vector3 = this.nowNode.getVector3();
-
-                        if (currentTick - this.lastUpdateNodeTick > 100) {
-                            this.setPosition(vector3);
-                            this.lastUpdateNodeTick = currentTick;
-                        } else {
-                            double x = vector3.x - this.x;
-                            double z = vector3.z - this.z;
-                            double diff = Math.abs(x) + Math.abs(z);
-
-                            this.motionY = vector3.y - this.y;
-                            if (this.getLevelBlock() instanceof BlockLiquid) {
-                                this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
-                                this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);
-                            } else {
-                                this.motionX = this.config.getBaseMoveSpeed() * 0.15 * (x / diff);
-                                this.motionZ = this.config.getBaseMoveSpeed() * 0.15 * (z / diff);
-                            }
-
-                            this.move(this.motionX, this.motionY, this.motionZ);
-                        }
-
-                        //视角计算
-                        if (currentTick % 4 == 0) {
-                            if (this.nodes.size() >= 2) {
-                                vector3 = this.nodes.get(1).getVector3();
-                            }
-                            double dx = this.x - vector3.x;
-                            double dz = this.z - vector3.z;
-                            double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
-                            if (dz > 0.0D) {
-                                yaw = -yaw + 180.0D;
-                            }
-                            this.yaw = yaw;
-                            this.pitch = 0;
-                        }
-                    }
-                }
+                this.processMove(currentTick);
             } else {
                 //看向玩家
                 if (currentTick%2 == 0 && this.config.isLookAtThePlayer() && !this.getLevel().getPlayers().isEmpty()) {
@@ -154,6 +99,79 @@ public class EntityRsNpc extends EntityHuman {
         }
         
         return super.onUpdate(currentTick);
+    }
+
+    private void processMove(int currentTick) {
+        if (this.nodes.isEmpty()) {
+            Vector3 next = this.config.getRoute().get(this.nextRouteIndex);
+            if (this.config.isEnablePathfinding()) {
+                if (!this.lockRoute) {
+                    this.setLockRoute(true);
+                    this.nextRouteIndex++;
+                    if (this.nextRouteIndex >= this.config.getRoute().size()) {
+                        this.nextRouteIndex = 0;
+                    }
+                    this.nowRouteFinder = new RouteFinder(this.getLevel(), this, next);
+                } else if (this.nowRouteFinder != null && this.nowRouteFinder.isProcessingComplete()) {
+                    this.nodes.addAll(this.nowRouteFinder.getNodes());
+                    this.setLockRoute(false);
+                }
+            }else {
+                this.nodes.add(new Node(next));
+                this.nextRouteIndex++;
+                if (this.nextRouteIndex >= this.config.getRoute().size()) {
+                    this.nextRouteIndex = 0;
+                }
+            }
+        }
+
+        if (!this.nodes.isEmpty()) {
+            if (this.nowNode == null || this.distance(this.nowNode.getVector3()) <= 0.35/*((this.getWidth()) / 2 + 0.05)*/) {
+                this.nowNode = this.nodes.poll();
+                this.lastUpdateNodeTick = currentTick;
+            }
+            if (this.nowNode != null) {
+                Vector3 vector3 = this.nowNode.getVector3();
+
+                if (currentTick - this.lastUpdateNodeTick > 100) {
+                    if (this.distance(lastPos) < 0.1) {
+                        this.setPosition(vector3);
+                    }
+                    this.lastUpdateNodeTick = currentTick;
+                } else {
+                    this.lastPos = this.getLocation();
+                    double x = vector3.x - this.x;
+                    double z = vector3.z - this.z;
+                    double diff = Math.abs(x) + Math.abs(z);
+
+                    this.motionY = vector3.y - this.y;
+                    if (this.getLevelBlock() instanceof BlockLiquid) {
+                        this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
+                        this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);
+                    } else {
+                        this.motionX = this.config.getBaseMoveSpeed() * 0.15 * (x / diff);
+                        this.motionZ = this.config.getBaseMoveSpeed() * 0.15 * (z / diff);
+                    }
+
+                    this.move(this.motionX, this.motionY, this.motionZ);
+                }
+
+                //视角计算
+                if (currentTick % 4 == 0) {
+                    if (this.nodes.size() >= 2) {
+                        vector3 = this.nodes.get(1).getVector3();
+                    }
+                    double dx = this.x - vector3.x;
+                    double dz = this.z - vector3.z;
+                    double yaw = Math.asin(dx / Math.sqrt(dx * dx + dz * dz)) / Math.PI * 180.0D;
+                    if (dz > 0.0D) {
+                        yaw = -yaw + 180.0D;
+                    }
+                    this.yaw = yaw;
+                    this.pitch = 0;
+                }
+            }
+        }
     }
 
     private void seePlayer() {

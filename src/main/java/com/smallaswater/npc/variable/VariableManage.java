@@ -23,6 +23,8 @@ public class VariableManage {
 
     private static final ConcurrentHashMap<String, BaseVariable> VARIABLE_CLASS = new ConcurrentHashMap<>();
 
+    private static final ConcurrentHashMap<String, BaseVariableV2> VARIABLE_V2_CLASS = new ConcurrentHashMap<>();
+
     private VariableManage() {
 
     }
@@ -37,9 +39,19 @@ public class VariableManage {
 
     @Deprecated
     public static void addVariable(@NotNull String name, @NotNull Class<? extends BaseVariable> variableClass) {
+        Server.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
         try {
             BaseVariable variable = variableClass.newInstance();
             VariableManage.VARIABLE_CLASS.put(name, variable);
+        } catch (Exception e) {
+            RsNpcX.getInstance().getLogger().error("添加变量时出错", e);
+        }
+    }
+
+    public static void addVariableV2(@NotNull String name, @NotNull Class<? extends BaseVariableV2> variableClass) {
+        try {
+            BaseVariableV2 variable = variableClass.newInstance();
+            VariableManage.VARIABLE_V2_CLASS.put(name, variable);
         } catch (Exception e) {
             RsNpcX.getInstance().getLogger().error("添加变量时出错", e);
         }
@@ -63,6 +75,10 @@ public class VariableManage {
         }
         for (BaseVariable variable : VARIABLE_CLASS.values()) {
             inString = variable.stringReplace(p, inString, rsNpcConfig);
+        }
+        for (BaseVariableV2 variable : VARIABLE_V2_CLASS.values()) {
+            variable.onUpdate(p, rsNpcConfig);
+            inString = variable.stringReplace(inString);
         }
 
         return inString;

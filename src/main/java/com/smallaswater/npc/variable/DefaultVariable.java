@@ -6,21 +6,16 @@ import com.smallaswater.npc.data.RsNpcConfig;
 /**
  * @author lt_name
  */
-public class DefaultVariable extends BaseVariable {
-    
+public class DefaultVariable extends BaseVariableV2 {
+
     @Override
-    public String stringReplace(Player player, String inString) {
-        return this.stringReplace(player, inString, null);
-    }
-    
-    @Override
-    public String stringReplace(Player player, String inString, RsNpcConfig rsNpcConfig) {
-        if (player == null) {
-            return inString;
+    public void onUpdate(Player player, RsNpcConfig rsNpcConfig) {
+        if (rsNpcConfig != null) {
+            this.addVariable("%npcName%", rsNpcConfig.getName());
         }
-        return inString
-                .replace("%npcName%", rsNpcConfig.getName())
-                .replace("@p", player.getName());
+        if (player != null) {
+            this.addVariable("@p", player.getName());
+        }
     }
 
 }

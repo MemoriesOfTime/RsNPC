@@ -101,7 +101,7 @@ public class RsNpcX extends PluginBase {
         File[] files = (new File(getDataFolder() + "/Npcs")).listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
-                if (!file.isFile()) {
+                if (!file.isFile() && file.getName().endsWith(".yml")) {
                     continue;
                 }
                 String npcName = file.getName().split("\\.")[0];

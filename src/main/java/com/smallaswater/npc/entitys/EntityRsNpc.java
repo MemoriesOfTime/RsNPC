@@ -144,7 +144,7 @@ public class EntityRsNpc extends EntityHuman {
                     double z = vector3.z - this.z;
                     double diff = Math.abs(x) + Math.abs(z);
 
-                    this.motionY = vector3.y - this.y;
+                    this.motionY = this.config.getBaseMoveSpeed() * vector3.y - this.y;
                     if (this.getLevelBlock() instanceof BlockLiquid) {
                         this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
                         this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);

@@ -39,7 +39,7 @@ public class VariableManage {
 
     @Deprecated
     public static void addVariable(@NotNull String name, @NotNull Class<? extends BaseVariable> variableClass) {
-        Server.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
+        RsNpcX.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
         try {
             BaseVariable variable = variableClass.newInstance();
             VariableManage.VARIABLE_CLASS.put(name, variable);

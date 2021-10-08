@@ -100,6 +100,9 @@ public class RsNpcConfig {
 
         this.skinName = config.getString("皮肤", "尸鬼");
         this.skin = RsNpcX.getInstance().getSkinByName(this.skinName);
+        if (this.skin == null) {
+            throw new RsNpcLoadException("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！请检查配置！");
+        }
 
         this.scale = (float) config.getDouble("实体大小", 1D);
         
@@ -187,11 +190,11 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                this.entityRsNpc = new EntityRsNpc(location.getChunk(), Entity.getDefaultNBT(location)
+                this.entityRsNpc = new EntityRsNpc(this.location.getChunk(), Entity.getDefaultNBT(location)
                         .putString("rsnpcName", this.name)
                         .putCompound("Skin", (new CompoundTag())
-                                .putByteArray("Data", (skin.getSkinData()).data)
-                                .putString("ModelId", skin.getSkinId())), this);
+                                .putByteArray("Data", this.skin.getSkinData().data)
+                                .putString("ModelId", this.skin.getSkinId())), this);
                 this.entityRsNpc.setSkin(this.skin);
                 this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();

@@ -205,7 +205,7 @@ public class RsNpcX extends PluginBase {
     }
 
     public Skin getSkinByName(String name) {
-        return this.getSkins().getOrDefault(name, this.getSkins().get("尸鬼"));
+        return this.getSkins().get(name);
     }
 
 }

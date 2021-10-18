@@ -9,7 +9,7 @@ import java.io.IOException;
 public class Utils {
 
     private Utils() {
-
+        throw new RuntimeException("error");
     }
 
     public static String readFile(@NotNull File file) {

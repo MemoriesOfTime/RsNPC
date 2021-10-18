@@ -191,6 +191,7 @@ public class RsNpcX extends PluginBase {
     }
 
     public void reload() {
+        this.npcs.clear();
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity entity : level.getEntities()) {
                 if (entity instanceof EntityRsNpc) {
@@ -198,7 +199,6 @@ public class RsNpcX extends PluginBase {
                 }
             }
         }
-        this.npcs.clear();
         this.saveDefaultSkin();
         this.loadSkins();
         this.loadNpcs();

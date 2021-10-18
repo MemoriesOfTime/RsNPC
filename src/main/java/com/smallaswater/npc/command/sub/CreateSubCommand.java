@@ -1,6 +1,7 @@
 package com.smallaswater.npc.command.sub;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -65,6 +66,11 @@ public class CreateSubCommand extends BaseSubCommand {
             }
             this.rsNpcX.getNpcs().put(name, rsNpcConfig);
             rsNpcConfig.checkEntity();
+            //玄学解决首次生成不显示的问题
+            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNpcX, () -> {
+                rsNpcConfig.getEntityRsNpc().close();
+                rsNpcConfig.checkEntity();
+            }, 20);
             sender.sendMessage("§a§lNPC " + name + "创建成功!!");
         } else {
             sender.sendMessage("§c§l请输入要创建的NPC的名字！");

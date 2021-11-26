@@ -484,6 +484,11 @@ public class FormHelper {
 
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd");
 
+    /**
+     * 获取随机信息
+     *
+     * @return 随机信息
+     */
     private static String getRandomMessage() {
         switch (DATE_FORMAT.format(new Date())) {
             case "01-01":

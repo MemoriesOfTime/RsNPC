@@ -8,6 +8,10 @@
     <artifactId>RsNPCX</artifactId>
     <version>1.8.4<!-- -SNAPSHOT--></version>
 
+    <name>RsNPCX</name>
+    <description>RsNPCX -- NPC plugin for Nukkit</description>
+    <url>https://github.com/MemoriesOfTime/MemoriesOfTime-GameCore</url>
+
     <scm>
         <connection>https://github.com/lt-name/RsNPCX.git</connection>
         <developerConnection>scm:git:git@github.com:lt-name/RsNPCX.git</developerConnection>

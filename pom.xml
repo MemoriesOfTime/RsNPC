@@ -12,6 +12,14 @@
     <description>RsNPCX -- NPC plugin for Nukkit</description>
     <url>https://github.com/MemoriesOfTime/MemoriesOfTime-GameCore</url>
 
+    <licenses>
+        <license>
+            <name>GNU General Public License, Version 3.0</name>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <scm>
         <connection>https://github.com/lt-name/RsNPCX.git</connection>
         <developerConnection>scm:git:git@github.com:lt-name/RsNPCX.git</developerConnection>

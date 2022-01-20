@@ -6,11 +6,11 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPCX</artifactId>
-    <version>1.8.5-SNAPSHOT</version>
+    <version>1.8.5<!-- -SNAPSHOT--></version>
 
     <name>RsNPCX</name>
     <description>RsNPCX -- NPC plugin for Nukkit</description>
-    <url>https://github.com/lt-name/RsNPCX</url>
+    <url>https://github.com/MemoriesOfTime/RsNPCX</url>
 
     <licenses>
         <license>
@@ -21,9 +21,9 @@
     </licenses>
 
     <scm>
-        <connection>https://github.com/lt-name/RsNPCX.git</connection>
-        <developerConnection>scm:git:git@github.com:lt-name/RsNPCX.git</developerConnection>
-        <url>https://github.com/lt-name/RsNPCX</url>
+        <connection>https://github.com/MemoriesOfTime/RsNPCX.git</connection>
+        <developerConnection>scm:git:git@github.com:MemoriesOfTime/RsNPCX.git</developerConnection>
+        <url>https://github.com/MemoriesOfTime/RsNPCX</url>
     </scm>
 
     <developers>

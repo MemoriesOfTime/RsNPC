@@ -102,8 +102,7 @@ public class OnListener implements Listener {
                         player.setOp(true);
                     }
                     try {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
-                                VariableManage.stringReplace(player, cm, rsNpcConfig));
+                        Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, cm, rsNpcConfig));
                     } catch (Exception e) {
                         this.rsNpcX.getLogger().error(
                                 "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +

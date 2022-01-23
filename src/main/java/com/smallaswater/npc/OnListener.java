@@ -29,9 +29,13 @@ public class OnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
-        if (event.getEntity() instanceof EntityRsNpc ||
-                event.getVehicle() instanceof EntityRsNpc) {
+        if (event.getEntity() instanceof EntityRsNpc) {
             event.setCancelled(true);
+        }
+        if (!Server.getInstance().getCodename().equals("PM1E")) {
+            if (event.getVehicle() instanceof EntityRsNpc) {
+                event.setCancelled(true);
+            }
         }
     }
 

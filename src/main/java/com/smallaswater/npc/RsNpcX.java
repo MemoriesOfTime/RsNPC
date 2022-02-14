@@ -142,54 +142,60 @@ public class RsNpcX extends PluginBase {
     }
 
     private void loadSkins() {
-        File[] files = (new File(this.getDataFolder() + "/Skins")).listFiles();
+
+        File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
                 String skinName = file.getName();
-                File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
-                if (skinDataFile.exists()) {
+                if (new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png").exists()) {
                     Skin skin = new Skin();
-                    skin.setTrusted(true);
-
-                    BufferedImage skindata;
+                    BufferedImage skindata = null;
                     try {
-                        skindata = ImageIO.read(skinDataFile);
+                        skindata = ImageIO.read(new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png"));
                     } catch (IOException var19) {
-                        this.getLogger().error("皮肤 " + skinName + " 读取错误");
-                        continue;
+                        System.out.println("不存在皮肤");
                     }
+
                     if (skindata != null) {
                         skin.setSkinData(skindata);
                         skin.setSkinId(skinName);
                     }
-
-                    File skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
-                    if (skinJsonFile.exists()) {
-                        Map<String, Object> skinJson = (new Config(skinJsonFile, Config.JSON)).getAll();
+                    //如果是4D皮肤
+                    if (new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json").exists()) {
+                        Map<String, Object> skinJson = (new Config(this.getDataFolder() + "/Skins/" + skinName + "/skin.json", Config.JSON)).getAll();
                         String geometryName = null;
-                        for (Map.Entry<String, Object> entry1 : skinJson.entrySet()) {
-                            if (geometryName != null) {
-                                break;
-                            }
-                            geometryName = entry1.getKey();
-                        }
-                        skin.setGeometryName(geometryName);
-                        skin.setGeometryData(Utils.readFile(skinJsonFile));
-                    }
 
-                    if (skin.isValid()) {
-                        this.skins.put(skinName, skin);
-                        this.getLogger().info("皮肤 " + skinName + " 读取完成");
-                    }else {
-                        this.getLogger().error("皮肤 " + skinName + "验证失败");
+                        if (skinJson.containsKey("format_version")) {
+                            skin.generateSkinId("littlemaster");
+                            for (Map.Entry<String, Object> entry1 : skinJson.entrySet()) {
+                                if (geometryName == null) {
+                                    if (entry1.getKey().startsWith("geometry")) {
+                                        geometryName = entry1.getKey();
+                                    }
+                                }
+                            }
+                            skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
+                            skin.setGeometryData(Utils.readFile(new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json")));
+                            skin.setTrusted(true);
+                        } else {
+                            for (Map.Entry<String, Object> entry1 : skinJson.entrySet()) {
+                                if (geometryName == null) {
+                                    geometryName = entry1.getKey();
+                                }
+                            }
+                            skin.setGeometryName(geometryName);
+                            skin.setGeometryData(Utils.readFile(new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json")));
+                        }
+
                     }
+                    this.getLogger().info(skinName + "皮肤读取完成");
+                    skins.put(skinName, skin);
                 } else {
-                    this.getLogger().error("错误的皮肤名称格式 请将皮肤文件命名为 skin.png");
+                    this.getLogger().info("错误的皮肤名称格式 请将皮肤文件命名为 skin.png");
                 }
             }
         }
     }
-
     public void reload() {
         this.npcs.clear();
         for (Level level : Server.getInstance().getLevels().values()) {

@@ -142,9 +142,7 @@ public class RsNpcX extends PluginBase {
     }
 
     private void loadSkins() {
-        if (!new File(this.getDataFolder() + "/Skins").exists()) {
-            initSkin();
-        }
+
         File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
         if (files != null && files.length > 0) {
             for (File file : files) {
@@ -191,7 +189,7 @@ public class RsNpcX extends PluginBase {
 
                     }
                     this.getLogger().info(skinName + "皮肤读取完成");
-                    loadSkins.put(skinName, skin);
+                    skins.put(skinName, skin);
                 } else {
                     this.getLogger().info("错误的皮肤名称格式 请将皮肤文件命名为 skin.png");
                 }

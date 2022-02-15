@@ -15,7 +15,7 @@
     <licenses>
         <license>
             <name>GNU General Public License, Version 3.0</name>
-            <url>https://www.gnu.org/licenses/gpl.html</url>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

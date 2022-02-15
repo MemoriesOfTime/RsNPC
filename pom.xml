@@ -15,7 +15,7 @@
     <licenses>
         <license>
             <name>GNU General Public License, Version 3.0</name>
-            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <url>https://www.gnu.org/licenses/gpl.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -140,7 +140,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.10</version>
+                <version>1.6.8</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>oss</serverId>

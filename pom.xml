@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPCX</artifactId>
-    <version>1.8.7-SNAPSHOT</version>
+    <version>1.8.7<!-- -SNAPSHOT--></version>
 
     <name>RsNPCX</name>
     <description>RsNPCX -- NPC plugin for Nukkit</description>
@@ -15,7 +15,7 @@
     <licenses>
         <license>
             <name>GNU General Public License, Version 3.0</name>
-            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <url>https://www.gnu.org/licenses/gpl.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

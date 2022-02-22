@@ -42,10 +42,9 @@ public class OnListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNpc) {
+        if (entity instanceof EntityRsNpc rsNpc) {
             event.setCancelled(true);
             Player player = event.getPlayer();
-            EntityRsNpc rsNpc = (EntityRsNpc) entity;
             RsNpcConfig config = rsNpc.getConfig();
             rsNpc.setPauseMoveTick(60);
             this.executeCommand(player, config);
@@ -62,8 +61,7 @@ public class OnListener implements Listener {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
-                if (damage instanceof Player) {
-                    Player player = (Player) damage;
+                if (damage instanceof Player player) {
                     EntityRsNpc rsNpc = (EntityRsNpc) entity;
                     RsNpcConfig config = rsNpc.getConfig();
                     if (!config.isCanProjectilesTrigger() &&

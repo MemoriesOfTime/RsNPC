@@ -61,8 +61,7 @@ public class AdvancedFormWindowSimple extends FormWindowSimple {
     }
 
     public static boolean onEvent(@NotNull FormWindow formWindow, @NotNull Player player) {
-        if (formWindow instanceof AdvancedFormWindowSimple) {
-            AdvancedFormWindowSimple advancedFormWindowSimple = (AdvancedFormWindowSimple) formWindow;
+        if (formWindow instanceof AdvancedFormWindowSimple advancedFormWindowSimple) {
             if (advancedFormWindowSimple.wasClosed() || advancedFormWindowSimple.getResponse() == null) {
                 advancedFormWindowSimple.callClosed(player);
             }else {

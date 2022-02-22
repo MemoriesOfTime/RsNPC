@@ -1,10 +1,8 @@
 package com.smallaswater.npc.route;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
-import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 import com.smallaswater.npc.RsNpcX;
@@ -146,20 +144,20 @@ public class RouteFinder {
      * @return 是否可以移动到目标节点
      */
     private boolean canMoveTo(Node nowNode, Node target) {
-        if (!this.getBlockFast(target).canPassThrough() ||
-                !this.getBlockFast(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                this.getBlockFast(target.getVector3().add(0, -1, 0)).canPassThrough()) {
+        if (!this.level.getBlock(target.getVector3()).canPassThrough() ||
+                !this.level.getBlock(target.getVector3().add(0, 1, 0)).canPassThrough() ||
+                this.level.getBlock(target.getVector3().add(0, -1, 0)).canPassThrough()) {
             return false;
         }
         
         //跳跃检查
         if (target.getVector3().getY() > nowNode.getVector3().getY() &&
-                !this.getBlockFast(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.level.getBlock(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
         if (target.getVector3().getY() < nowNode.getVector3().getY() &&
-                !this.getBlockFast(target.getVector3().add(0, 2, 0)).canPassThrough()) {
+                !this.level.getBlock(target.getVector3().add(0, 2, 0)).canPassThrough()) {
             return false;
         }
         
@@ -177,57 +175,6 @@ public class RouteFinder {
             this.level.addParticleEffect(node.getVector3().add(-0.1, 0, 0.1), ParticleEffect.REDSTONE_TORCH_DUST);
             this.level.addParticleEffect(node.getVector3().add(-0.1, 0, -0.1), ParticleEffect.REDSTONE_TORCH_DUST);
         }
-    }
-
-    /**
-     * 快速获取方块
-     *
-     * @param node 节点
-     * @return 方块
-     */
-    public Block getBlockFast(Node node) {
-        return this.getBlockFast(node.getVector3());
-    }
-
-    /**
-     * 快速获取方块
-     *
-     * @param vector3 位置
-     * @return 方块
-     */
-    public Block getBlockFast(Vector3 vector3) {
-        return this.getBlockFast(vector3.getFloorX(), vector3.getFloorY(), vector3.getFloorZ());
-    }
-
-    /**
-     * 快速获取方块
-     *
-     * @param x 坐标x
-     * @param y 坐标y
-     * @param z 坐标z
-     * @return 方块
-     */
-    public Block getBlockFast(int x, int y, int z) {
-        if (!"Nukkit".equals(Server.getInstance().getName())) {
-            return this.level.getBlock(x, y, z);
-        }
-        int fullState = 0;
-        if (y >= 0 && y < 256) {
-            int cx = x >> 4;
-            int cz = z >> 4;
-            BaseFullChunk chunk = this.getLevel().getChunk(cx, cz);
-            
-            if (chunk != null) {
-                fullState = chunk.getFullBlock(x & 15, y, z & 15);
-            }
-        }
-        
-        Block block = Block.fullList[fullState & 4095].clone();
-        block.x = x;
-        block.y = y;
-        block.z = z;
-        block.level = this.getLevel();
-        return block;
     }
     
 }

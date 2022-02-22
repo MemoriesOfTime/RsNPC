@@ -62,8 +62,7 @@ public class AdvancedFormWindowCustom extends FormWindowCustom {
     }
 
     public static boolean onEvent(@NotNull FormWindow formWindow, @NotNull Player player) {
-        if (formWindow instanceof AdvancedFormWindowCustom) {
-            AdvancedFormWindowCustom advancedFormWindowCustom = (AdvancedFormWindowCustom) formWindow;
+        if (formWindow instanceof AdvancedFormWindowCustom advancedFormWindowCustom) {
             if (advancedFormWindowCustom.wasClosed() || advancedFormWindowCustom.getResponse() == null) {
                 advancedFormWindowCustom.callClosed(player);
             }else {

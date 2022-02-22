@@ -55,8 +55,7 @@ public class AdvancedFormWindowModal extends FormWindowModal {
     }
 
     public static boolean onEvent(@NotNull FormWindow formWindow, @NotNull Player player) {
-        if (formWindow instanceof AdvancedFormWindowModal) {
-            AdvancedFormWindowModal advancedFormWindowModal = (AdvancedFormWindowModal) formWindow;
+        if (formWindow instanceof AdvancedFormWindowModal advancedFormWindowModal) {
             if (advancedFormWindowModal.wasClosed() || advancedFormWindowModal.getResponse() == null) {
                 advancedFormWindowModal.callClosed(player);
             }else {

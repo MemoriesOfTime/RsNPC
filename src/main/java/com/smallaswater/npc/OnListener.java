@@ -83,12 +83,15 @@ public class OnListener implements Listener {
     private void executeCommand(Player player, RsNpcConfig rsNpcConfig) {
         for (String cmd : rsNpcConfig.getCmds()) {
             String[] c = cmd.split("&");
-            String cm = c[0];
+            String command = c[0];
+            if (command.startsWith("/")) {
+                command = command.replace("/", "");
+            }
             if (c.length > 1) {
                 if ("con".equals(c[1])) {
                     try {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
-                                VariableManage.stringReplace(player, cm, rsNpcConfig));
+                                VariableManage.stringReplace(player, command, rsNpcConfig));
                     } catch (Exception e) {
                         this.rsNpcX.getLogger().error(
                                 "控制台权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
@@ -106,7 +109,7 @@ public class OnListener implements Listener {
                         player.setOp(true);
                     }
                     try {
-                        Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, cm, rsNpcConfig));
+                        Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
                     } catch (Exception e) {
                         this.rsNpcX.getLogger().error(
                                 "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
@@ -126,7 +129,7 @@ public class OnListener implements Listener {
                 }
             }
             try {
-                Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, cm, rsNpcConfig));
+                Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
             } catch (Exception e) {
                 this.rsNpcX.getLogger().error(
                         "玩家权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +

@@ -85,7 +85,7 @@ public class OnListener implements Listener {
             String[] c = cmd.split("&");
             String command = c[0];
             if (command.startsWith("/")) {
-                command = command.replace("/", "");
+                command = command.replaceFirst("/", "");
             }
             if (c.length > 1) {
                 if ("con".equals(c[1])) {

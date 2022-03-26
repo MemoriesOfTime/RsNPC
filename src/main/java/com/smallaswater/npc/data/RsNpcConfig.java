@@ -154,6 +154,8 @@ public class RsNpcConfig {
         this.config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
         this.config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
 
+        this.config.set("皮肤", this.skinName);
+
         this.config.set("实体大小", this.scale);
     
         this.config.set("看向玩家", this.lookAtThePlayer);

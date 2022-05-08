@@ -165,8 +165,11 @@ public class RsNpcX extends PluginBase {
                         Map<String, Object> skinJson = (new Config(this.getDataFolder() + "/Skins/" + skinName + "/skin.json", Config.JSON)).getAll();
                         String geometryName = null;
 
-                        if (skinJson.containsKey("format_version")) {
-                            skin.generateSkinId("RsNpcX" + skinName);
+                        String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
+                        if ("1.12.0".equals(formatVersion)) {
+                            //TODO 加载1.12.0版本的皮肤
+                            this.getLogger().error("RsNpcX 暂不支持1.12.0版本格式的皮肤！请等待更新！");
+                        } else { //1.10.0
                             for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
                                 if (geometryName == null) {
                                     if (entry.getKey().startsWith("geometry")) {
@@ -176,16 +179,8 @@ public class RsNpcX extends PluginBase {
                                     break;
                                 }
                             }
+                            skin.generateSkinId(skinName);
                             skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
-                            skin.setGeometryData(Utils.readFile(skinJsonFile));
-                        } else {
-                            for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
-                                if (geometryName == null) {
-                                    geometryName = entry.getKey();
-                                }else {
-                                    break;
-                                }
-                            }
                             skin.setGeometryName(geometryName);
                             skin.setGeometryData(Utils.readFile(skinJsonFile));
                         }

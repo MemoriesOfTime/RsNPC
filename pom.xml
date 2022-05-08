@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPCX</artifactId>
-    <version>1.8.8<!-- -SNAPSHOT--></version>
+    <version>1.8.9-SNAPSHOT</version>
 
     <name>RsNPCX</name>
     <description>RsNPCX -- NPC plugin for Nukkit</description>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

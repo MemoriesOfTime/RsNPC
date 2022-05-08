@@ -6,6 +6,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.SerializedImage;
 import com.google.gson.Gson;
 import com.smallaswater.npc.command.RsNpcXCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
@@ -17,9 +18,7 @@ import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -149,17 +148,15 @@ public class RsNpcX extends PluginBase {
                 File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
                 if (skinDataFile.exists()) {
                     Skin skin = new Skin();
-                    BufferedImage skindata;
-                    try {
-                        skindata = ImageIO.read(skinDataFile);
-                    } catch (IOException e) {
-                        this.getLogger().error("皮肤 " + skinName + " 读取错误", e);
-                        continue;
-                    }
 
-                    if (skindata != null) {
-                        skin.setSkinData(skindata);
-                        skin.setSkinId(skinName);
+                    skin.setSkinId(skinName);
+
+                    try {
+                        skin.setSkinData(ImageIO.read(skinDataFile));
+                        SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+                    } catch (Exception e) {
+                        this.getLogger().error("皮肤 " + skinName + " 读取错误，请检查图片格式或图片尺寸！", e);
+                        continue;
                     }
 
                     //如果是4D皮肤

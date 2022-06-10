@@ -195,7 +195,7 @@ public class RsNpcX extends PluginBase {
                         this.getLogger().error("皮肤 " + skinName + " 验证失败，请检查皮肤文件完整性！");
                     }
                 } else {
-                    this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png");
+                    this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png 模型文件命名为 skin.json");
                 }
             }
         }

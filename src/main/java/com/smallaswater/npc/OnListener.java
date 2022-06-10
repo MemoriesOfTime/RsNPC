@@ -11,8 +11,15 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
+import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.utils.dialog.handler.FormDialogHandler;
+import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
+import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
+import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
+import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 
 /**
@@ -135,6 +142,40 @@ public class OnListener implements Listener {
                         "玩家权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
                                 " 玩家:" + player.getName() +
                                 " 错误:", e);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onDataPacketReceive(DataPacketReceiveEvent event) {
+        if (event.getPacket() instanceof NPCRequestPacket) {
+            Player player = event.getPlayer();
+            NPCRequestPacket npcRequestPacket = (NPCRequestPacket) event.getPacket();
+            if (Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName()) != null) {
+                FormWindowDialog dialog;
+                if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
+                    dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName());
+                    Utils.WINDOW_DIALOG_CACHE.invalidate(npcRequestPacket.getSceneName());
+                } else {
+                    dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName());
+                }
+
+
+                FormResponseDialog response = new FormResponseDialog(npcRequestPacket, dialog);
+                for (FormDialogHandler handler : dialog.getHandlers()) {
+                    handler.handle(player, response);
+                }
+
+                if (response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
+                    NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+                    closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
+                    closeWindowPacket.setSceneName(response.getSceneName());
+                    closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
+                    player.dataPacket(closeWindowPacket);
+                }
+                if (response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
+                    response.getClickedButton().getNextDialog().send(player);
+                }
             }
         }
     }

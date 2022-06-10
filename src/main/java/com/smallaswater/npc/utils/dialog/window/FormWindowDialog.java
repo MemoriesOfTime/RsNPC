@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormWindowDialog implements Dialog{
+public class FormWindowDialog implements WindowDialog {
 
     protected static final Gson GSON = new Gson();
 

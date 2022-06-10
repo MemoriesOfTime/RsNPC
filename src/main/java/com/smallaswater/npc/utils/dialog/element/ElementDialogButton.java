@@ -1,6 +1,6 @@
 package com.smallaswater.npc.utils.dialog.element;
 
-import com.smallaswater.npc.utils.dialog.window.Dialog;
+import com.smallaswater.npc.utils.dialog.window.WindowDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class ElementDialogButton {
 
     protected transient boolean closeWhenClicked = true;
 
-    protected transient Dialog nextDialog = null;
+    protected transient WindowDialog nextWindowDialog = null;
 
     public static class CmdLine{
         public CmdLine(String cmd_line, int cmd_ver){
@@ -35,18 +35,18 @@ public class ElementDialogButton {
         this(name, text, null);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog){
-        this(name, text, nextDialog, Mode.BUTTON_MODE);
+    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog){
+        this(name, text, nextWindowDialog, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode) {
-        this(name, text, nextDialog, mode, 1);
+    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog, Mode mode) {
+        this(name, text, nextWindowDialog, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text,Dialog nextDialog, Mode mode, int type) {
+    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
-        this.nextDialog = nextDialog;
+        this.nextWindowDialog = nextWindowDialog;
         this.data = updateButtonData();
         this.mode = mode.ordinal();
         this.type = type;
@@ -117,17 +117,17 @@ public class ElementDialogButton {
      * will always return false if nextDialog != null
      */
     public boolean closeWhenClicked(){
-        if (nextDialog != null)
+        if (nextWindowDialog != null)
             return false;
         return this.closeWhenClicked;
     }
 
-    public Dialog getNextDialog() {
-        return nextDialog;
+    public WindowDialog getNextDialog() {
+        return nextWindowDialog;
     }
 
-    public void setNextDialog(Dialog nextDialog) {
-        this.nextDialog = nextDialog;
+    public void setNextDialog(WindowDialog nextWindowDialog) {
+        this.nextWindowDialog = nextWindowDialog;
     }
 
     public enum Mode {

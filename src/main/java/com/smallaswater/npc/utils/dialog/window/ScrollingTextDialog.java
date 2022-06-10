@@ -5,7 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.scheduler.Task;
 import com.smallaswater.npc.utils.Utils;
 
-public class ScrollingTextDialog implements Dialog{
+public class ScrollingTextDialog implements WindowDialog {
 
     private Player player;
     private FormWindowDialog dialog;

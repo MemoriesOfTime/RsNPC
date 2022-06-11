@@ -13,6 +13,7 @@ import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.handler.FormDialogHandler;
@@ -71,16 +72,21 @@ public class OnListener implements Listener {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
                 if (damage instanceof Player) {
                     Player player = (Player) damage;
-                    EntityRsNpc rsNpc = (EntityRsNpc) entity;
-                    RsNpcConfig config = rsNpc.getConfig();
-                    if (!config.isCanProjectilesTrigger() &&
+                    EntityRsNpc entityRsNpc = (EntityRsNpc) entity;
+                    RsNpcConfig rsNpcConfig = entityRsNpc.getConfig();
+                    if (!rsNpcConfig.isCanProjectilesTrigger() &&
                             event instanceof EntityDamageByChildEntityEvent) {
                         return;
                     }
-                    rsNpc.setPauseMoveTick(60);
-                    this.executeCommand(player, config);
-                    for (String message : config.getMessages()) {
-                        player.sendMessage(VariableManage.stringReplace(player, message, config));
+                    entityRsNpc.setPauseMoveTick(60);
+                    this.executeCommand(player, rsNpcConfig);
+                    for (String message : rsNpcConfig.getMessages()) {
+                        player.sendMessage(VariableManage.stringReplace(player, message, rsNpcConfig));
+                    }
+
+                    if (rsNpcConfig.isEnabledDialogPages()) {
+                        DialogPages dialogConfig = this.rsNpcX.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
+                        dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
                     }
                 }
             }
@@ -165,6 +171,8 @@ public class OnListener implements Listener {
                 for (FormDialogHandler handler : dialog.getHandlers()) {
                     handler.handle(player, response);
                 }
+
+                response.getClickedButton().callClicked(player);
 
                 if (response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
                     NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();

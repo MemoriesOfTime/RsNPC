@@ -10,10 +10,13 @@ import cn.nukkit.utils.SerializedImage;
 import com.google.gson.Gson;
 import com.smallaswater.npc.command.RsNpcXCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.dialog.DialogManager;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
+import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -47,6 +50,9 @@ public class RsNpcX extends PluginBase {
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
     private final String[] defaultSkins = new String[]{"小丸子", "小埋", "小黑苦力怕", "尸鬼", "拉姆", "熊孩子", "狂三", "米奇", "考拉", "黑岩射手"};
 
+    @Getter
+    private DialogManager dialogManager;
+
     public static RsNpcX getInstance() {
         return rsNpcX;
     }
@@ -61,13 +67,21 @@ public class RsNpcX extends PluginBase {
         if (!file.exists() && !file.mkdirs()) {
             this.getLogger().error("Npcs文件夹创建失败");
         }
+
+        this.saveResource("Dialog/demo.yml", false);
     }
 
     @Override
     public void onEnable() {
         this.getLogger().info("RsNpcX开始加载");
+        this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
+        this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
         Entity.registerEntity("EntityRsNpc", EntityRsNpc.class);
-        
+
+        this.getLogger().info("开始加载对话页面数据");
+        this.dialogManager = new DialogManager(this);
+        this.dialogManager.loadAllDialog();
+
         this.getLogger().info("开始加载皮肤");
         this.saveDefaultSkin();
         this.loadSkins();
@@ -211,6 +225,9 @@ public class RsNpcX extends PluginBase {
             }
         }
         this.saveDefaultSkin();
+        if (this.dialogManager != null) {
+            this.dialogManager.loadAllDialog();
+        }
         this.loadSkins();
         this.loadNpcs();
     }

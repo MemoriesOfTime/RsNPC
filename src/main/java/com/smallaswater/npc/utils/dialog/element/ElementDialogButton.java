@@ -1,9 +1,13 @@
 package com.smallaswater.npc.utils.dialog.element;
 
+import cn.nukkit.Player;
 import com.smallaswater.npc.utils.dialog.window.WindowDialog;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ElementDialogButton {
 
@@ -15,7 +19,22 @@ public class ElementDialogButton {
 
     protected transient boolean closeWhenClicked = true;
 
-    protected transient WindowDialog nextWindowDialog = null;
+    protected transient WindowDialog nextWindowDialog;
+
+    private Consumer<Player> clickedListener;
+
+    public ElementDialogButton onClicked(@NotNull Consumer<Player> clickedListener) {
+        this.clickedListener = Objects.requireNonNull(clickedListener);
+        return this;
+    }
+
+    public boolean callClicked(@NotNull Player player) {
+        if (this.clickedListener != null) {
+            this.clickedListener.accept(player);
+            return true;
+        }
+        return false;
+    }
 
     public static class CmdLine{
         public CmdLine(String cmd_line, int cmd_ver){

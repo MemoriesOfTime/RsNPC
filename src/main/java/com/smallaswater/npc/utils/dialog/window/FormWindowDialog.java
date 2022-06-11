@@ -74,12 +74,13 @@ public class FormWindowDialog implements WindowDialog {
         this.buttons = buttons;
     }
 
-    public void addButton(String text) {
-        this.addButton(new ElementDialogButton(text,text));
+    public ElementDialogButton addButton(String text) {
+        return this.addButton(new ElementDialogButton(text, text));
     }
 
-    public void addButton(ElementDialogButton button) {
+    public ElementDialogButton addButton(ElementDialogButton button) {
         this.buttons.add(button);
+        return button;
     }
 
     public long getEntityId() {

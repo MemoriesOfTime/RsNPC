@@ -1,0 +1,44 @@
+#一个对话配置演示文件
+defaultPage: "1" #key
+pages:
+  - key: "1"
+    title: "演示对话框"
+    content: "这是一个演示对话框"
+    buttons:
+      - text: "确定"
+        action: "ok"
+      - text: "关闭对话框"
+        action: "close" #关闭对话框
+      - text: "下一页"
+        go: "2" #key
+  - key: "2"
+    title: "演示对话框"
+    content: "这是演示对话框的第二页"
+    buttons:
+      - text: "关闭对话框"
+        action: "close"
+      - text: "上一页"
+        go: "1" #key
+      - text: "下一页"
+        go: "3" #key
+    close:
+      go: "4" #key
+  - key: "3"
+    title: "演示对话框"
+    content: "这是演示对话框的第三页，利用go的值来指定前往的页面，可以方便的做出多个分支的选项"
+    buttons:
+      - text: "第一页"
+        go: "1" #key
+      - text: "第二页"
+        go: "2" #key
+      - text: "关闭对话框"
+        action: "close"
+  - key: "4"
+    title: "演示对话框"
+    content: "这是演示对话框的第四页，在第二页关闭时会跳转到这里 填上close的go值即可实现"
+    buttons:
+      - text: "返回第二页"
+        go: "2" #key
+      - text: "关闭对话框"
+        action: "close"
+

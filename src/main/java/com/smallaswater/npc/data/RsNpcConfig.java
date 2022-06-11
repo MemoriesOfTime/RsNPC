@@ -76,6 +76,11 @@ public class RsNpcConfig {
     @Getter
     private final double whirling;
 
+    @Getter
+    private boolean enabledDialogPages;
+    @Getter
+    private String dialogPagesName;
+
     private EntityRsNpc entityRsNpc;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
@@ -132,6 +137,9 @@ public class RsNpcConfig {
         this.enablePathfinding = config.getBoolean("启用辅助寻路", true);
 
         this.whirling = config.getDouble("旋转", 0.0);
+
+        this.enabledDialogPages = RsNpcX.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
+        this.dialogPagesName = config.getString("对话框.页面", "demo");
         
         //更新配置文件
         this.save();
@@ -179,6 +187,9 @@ public class RsNpcConfig {
         this.config.set("启用辅助寻路", this.enablePathfinding);
 
         this.config.set("旋转", this.whirling);
+
+        this.config.set("对话框.启用", this.enabledDialogPages);
+        this.config.set("对话框.页面", this.dialogPagesName);
         
         this.config.save();
     }

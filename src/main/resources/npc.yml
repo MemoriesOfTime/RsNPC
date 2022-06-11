@@ -30,3 +30,6 @@ name: "NPC1"
 route: []
 启用辅助寻路: true
 旋转: 0.0
+对话框:
+  启用: false
+  页面: "demo"

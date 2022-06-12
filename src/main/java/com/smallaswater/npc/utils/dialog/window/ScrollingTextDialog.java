@@ -73,12 +73,18 @@ public class ScrollingTextDialog implements WindowDialog {
 
     public void startScrolling(){
         this.scrolling = true;
-        Server.getInstance().getScheduler().scheduleRepeatingTask(this.scrollingTask,this.scrollingSpeed);
+        Server.getInstance().getScheduler().scheduleRepeatingTask(this.scrollingTask, this.scrollingSpeed);
     }
 
     @Override
     public void send(Player p){
         this.startScrolling();
+    }
+
+    @Override
+    public void close(Player player) {
+        this.stopScrolling();
+        //TODO
     }
 
     private class ScrollingRunner extends Task {

@@ -21,7 +21,7 @@ public class ElementDialogButton {
 
     protected transient WindowDialog nextWindowDialog;
 
-    private Consumer<Player> clickedListener;
+    private transient Consumer<Player> clickedListener;
 
     public ElementDialogButton onClicked(@NotNull Consumer<Player> clickedListener) {
         this.clickedListener = Objects.requireNonNull(clickedListener);
@@ -50,22 +50,17 @@ public class ElementDialogButton {
 
     private int type;
 
-    public ElementDialogButton(String name, String text) {
-        this(name, text, null);
+    public ElementDialogButton(String name, String text){
+        this(name, text, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog){
-        this(name, text, nextWindowDialog, Mode.BUTTON_MODE);
+    public ElementDialogButton(String name, String text, Mode mode) {
+        this(name, text, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog, Mode mode) {
-        this(name, text, nextWindowDialog, mode, 1);
-    }
-
-    public ElementDialogButton(String name, String text, WindowDialog nextWindowDialog, Mode mode, int type) {
+    public ElementDialogButton(String name, String text, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
-        this.nextWindowDialog = nextWindowDialog;
         this.data = updateButtonData();
         this.mode = mode.ordinal();
         this.type = type;
@@ -136,17 +131,7 @@ public class ElementDialogButton {
      * will always return false if nextDialog != null
      */
     public boolean closeWhenClicked(){
-        if (nextWindowDialog != null)
-            return false;
         return this.closeWhenClicked;
-    }
-
-    public WindowDialog getNextDialog() {
-        return nextWindowDialog;
-    }
-
-    public void setNextDialog(WindowDialog nextWindowDialog) {
-        this.nextWindowDialog = nextWindowDialog;
     }
 
     public enum Mode {

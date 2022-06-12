@@ -5,18 +5,12 @@ pages:
     title: "演示对话框"
     content: "这是一个演示对话框"
     buttons:
-      - text: "确定"
-        action: "ok"
-      - text: "关闭对话框"
-        action: "close" #关闭对话框
       - text: "下一页"
         go: "2" #key
   - key: "2"
     title: "演示对话框"
     content: "这是演示对话框的第二页"
     buttons:
-      - text: "关闭对话框"
-        action: "close"
       - text: "上一页"
         go: "1" #key
       - text: "下一页"
@@ -31,14 +25,10 @@ pages:
         go: "1" #key
       - text: "第二页"
         go: "2" #key
-      - text: "关闭对话框"
-        action: "close"
   - key: "4"
     title: "演示对话框"
     content: "这是演示对话框的第四页，在第二页关闭时会跳转到这里 填上close的go值即可实现"
     buttons:
       - text: "返回第二页"
         go: "2" #key
-      - text: "关闭对话框"
-        action: "close"
 

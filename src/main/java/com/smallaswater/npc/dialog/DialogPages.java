@@ -5,6 +5,8 @@ import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
 
@@ -59,28 +61,43 @@ public class DialogPages {
         private String content;
         private ArrayList<Button> buttons = new ArrayList<>();
 
+        private String closeGo;
+
         public DialogPage (DialogPages dialogPages, Map<String, Object> map) {
             this.dialogPages = dialogPages;
             this.key = (String) map.get("key");
             this.title = (String) map.get("title");
             this.content = (String) map.get("content");
             ((List<Map<String, Object>>) map.get("buttons")).forEach(button -> this.buttons.add(new Button(button)));
+            if (map.containsKey("close")) {
+                Map<String, Object> closeMap = (Map<String, Object>) map.get("close");
+                if (closeMap.containsKey("go")) {
+                    this.closeGo = (String) closeMap.get("go");
+                }
+            }
         }
 
         public void send(EntityRsNpc entityRsNpc, Player player) {
             FormWindowDialog windowDialog = new FormWindowDialog(this.title, this.content, entityRsNpc);
 
+            windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
+
             this.buttons.forEach(button -> {
                 windowDialog.addButton(button.getText()).onClicked(p -> {
                     if (button.getType() == Button.ButtonType.GOTO) {
-                        Server.getInstance().getScheduler().scheduleDelayedTask(RsNpcX.getInstance(), () -> {
-                            dialogPages.getDialogPage(button.getData()).send(entityRsNpc, player);
-                            //TODO 检查第三页无法正常显示的问题
-                        }, 15);
+                        dialogPages.getDialogPage(button.getData()).send(entityRsNpc, player);
+                    }else if (button.getType() == Button.ButtonType.ACTION_CLOSE) {
+                        windowDialog.close(player);
                     }
                     //TODO 其他点击操作
                 });
             });
+
+            if (this.closeGo != null) {
+                windowDialog.onClosed(p -> {
+                    //dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
+                });
+            }
 
             windowDialog.send(player);
         }
@@ -102,11 +119,13 @@ public class DialogPages {
                     if ("close".equalsIgnoreCase(this.data)) {
                         this.type = ButtonType.ACTION_CLOSE;
                     }
+                    return;
                 }else if (map.containsKey("go")) {
                     this.type = ButtonType.GOTO;
                     this.data = String.valueOf(map.get("go"));
+                    return;
                 }
-                //TODO
+                this.type = ButtonType.ACTION_CLOSE;
             }
 
             public enum ButtonType {

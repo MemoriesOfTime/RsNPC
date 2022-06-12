@@ -16,8 +16,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNpc;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.handler.FormDialogHandler;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
+import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
@@ -155,36 +154,7 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
         if (event.getPacket() instanceof NPCRequestPacket) {
-            Player player = event.getPlayer();
-            NPCRequestPacket npcRequestPacket = (NPCRequestPacket) event.getPacket();
-            if (Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName()) != null) {
-                FormWindowDialog dialog;
-                if (npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
-                    dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName());
-                    Utils.WINDOW_DIALOG_CACHE.invalidate(npcRequestPacket.getSceneName());
-                } else {
-                    dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(npcRequestPacket.getSceneName());
-                }
-
-
-                FormResponseDialog response = new FormResponseDialog(npcRequestPacket, dialog);
-                for (FormDialogHandler handler : dialog.getHandlers()) {
-                    handler.handle(player, response);
-                }
-
-                response.getClickedButton().callClicked(player);
-
-                if (response.getClickedButton() != null && response.getClickedButton().closeWhenClicked() && npcRequestPacket.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION) {
-                    NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
-                    closeWindowPacket.setRuntimeEntityId(npcRequestPacket.getRequestedEntityRuntimeId());
-                    closeWindowPacket.setSceneName(response.getSceneName());
-                    closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
-                    player.dataPacket(closeWindowPacket);
-                }
-                if (response.getClickedButton() != null && response.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && response.getClickedButton().getNextDialog() != null) {
-                    response.getClickedButton().getNextDialog().send(player);
-                }
-            }
+            FormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer());
         }
     }
 

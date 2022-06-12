@@ -2,15 +2,22 @@ package com.smallaswater.npc.utils.dialog.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.form.window.FormWindow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.form.windows.AdvancedFormWindowSimple;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
-import com.smallaswater.npc.utils.dialog.handler.FormDialogHandler;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
+import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
+import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class FormWindowDialog implements WindowDialog {
 
@@ -34,7 +41,7 @@ public class FormWindowDialog implements WindowDialog {
 
     private final Entity bindEntity;
 
-    protected final transient List<FormDialogHandler> handlers = new ObjectArrayList<>();
+    protected Consumer<Player> formClosedListener;
 
     public FormWindowDialog(String title, String content, Entity bindEntity) {
         this(title, content,bindEntity, new ArrayList<>());
@@ -103,14 +110,6 @@ public class FormWindowDialog implements WindowDialog {
         this.skinData = data;
     }
 
-    public void addHandler(FormDialogHandler handler) {
-        this.handlers.add(handler);
-    }
-
-    public List<FormDialogHandler> getHandlers() {
-        return handlers;
-    }
-
     public String getButtonJSONData() {
         return GSON.toJson(this.buttons);
     }
@@ -126,8 +125,62 @@ public class FormWindowDialog implements WindowDialog {
     public void updateSceneName() {
         this.sceneName = String.valueOf(dialogId++);
     }
+
+    public FormWindowDialog onClosed(@NotNull Consumer<Player> listener) {
+        this.formClosedListener = Objects.requireNonNull(listener);
+        return this;
+    }
+
+    protected void callClosed(@NotNull Player player) {
+        //TODO 修复：点击按钮关闭时不应触发！
+        if (this.formClosedListener != null) {
+            this.formClosedListener.accept(player);
+        }
+    }
+
     @Override
     public void send(Player player){
         Utils.sendDialogWindows(player, this);
     }
+
+    @Override
+    public void close(Player player){
+        NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+        closeWindowPacket.setRuntimeEntityId(player.getId());
+        closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
+        closeWindowPacket.setDialogue(this.getContent());
+        closeWindowPacket.setNpcName(this.getTitle());
+        closeWindowPacket.setSceneName(this.getSceneName());
+        closeWindowPacket.setActionJson(this.getButtonJSONData());
+        player.dataPacket(closeWindowPacket);
+    }
+
+    public static void onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
+        FormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
+        if (dialog == null) {
+            return;
+        }
+
+        if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
+            Utils.WINDOW_DIALOG_CACHE.invalidate(packet.getSceneName());
+        }
+
+        FormResponseDialog response = new FormResponseDialog(packet, dialog);
+        RsNpcX.getInstance().getLogger().info(packet.toString());
+
+        ElementDialogButton clickedButton = response.getClickedButton();
+        if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {
+            clickedButton.callClicked(player);
+            if (clickedButton.closeWhenClicked()) {
+                dialog.close(player);
+                return;
+            }
+        }
+
+        if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
+            dialog.close(player);
+            dialog.callClosed(player);
+        }
+    }
+
 }

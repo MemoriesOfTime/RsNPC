@@ -10,7 +10,7 @@ public class NPCRequestPacket extends DataPacket {
     
     public long entityRuntimeId;
     
-    public RequestType requestType = RequestType.SET_SKIN;
+    public RequestType requestType;
     
     public String data = "";
     

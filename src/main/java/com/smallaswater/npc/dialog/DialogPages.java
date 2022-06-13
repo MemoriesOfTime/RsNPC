@@ -95,7 +95,7 @@ public class DialogPages {
 
             if (this.closeGo != null) {
                 windowDialog.onClosed(p -> {
-                    //dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
+                    dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
                 });
             }
 

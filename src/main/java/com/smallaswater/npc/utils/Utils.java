@@ -55,7 +55,6 @@ public class Utils {
         dialog.getBindEntity().setDataProperty(new StringEntityData(/*Entity.DATA_NPC_SKIN_DATA*/ 40, dialog.getSkinData()));
         dialog.getBindEntity().setDataProperty(new StringEntityData(/*Entity.DATA_NPC_ACTIONS*/ 41, actionJson));
         dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
-        dialog.setEntityId(dialog.getBindEntity().getId());
 
         NPCDialoguePacket packet = new NPCDialoguePacket();
         packet.setRuntimeEntityId(dialog.getEntityId());

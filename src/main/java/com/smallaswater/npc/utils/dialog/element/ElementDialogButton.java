@@ -1,7 +1,6 @@
 package com.smallaswater.npc.utils.dialog.element;
 
 import cn.nukkit.Player;
-import com.smallaswater.npc.utils.dialog.window.WindowDialog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -16,10 +15,6 @@ public class ElementDialogButton {
     private String text;
 
     private List<CmdLine> data;
-
-    protected transient boolean closeWhenClicked = true;
-
-    protected transient WindowDialog nextWindowDialog;
 
     private transient Consumer<Player> clickedListener;
 
@@ -43,7 +38,7 @@ public class ElementDialogButton {
         }
         public String cmd_line;
         public int cmd_ver;
-        public static transient final int CMD_VER = 19;
+        public static final int CMD_VER = 19;
     }
 
     private int mode;
@@ -121,17 +116,6 @@ public class ElementDialogButton {
 
     public void setType(int type) {
         this.type = type;
-    }
-
-    public void setCloseWhenClicked(boolean closeWhenClicked){
-        this.closeWhenClicked = closeWhenClicked;
-    }
-
-    /**
-     * will always return false if nextDialog != null
-     */
-    public boolean closeWhenClicked(){
-        return this.closeWhenClicked;
     }
 
     public enum Mode {

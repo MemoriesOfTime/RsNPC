@@ -2,11 +2,9 @@ package com.smallaswater.npc.utils.dialog.window;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.form.window.FormWindow;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smallaswater.npc.RsNpcX;
-import com.smallaswater.npc.form.windows.AdvancedFormWindowSimple;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
@@ -25,9 +23,9 @@ public class FormWindowDialog implements WindowDialog {
 
     private static long dialogId = 0;
 
-    private String title = "";
+    private String title;
 
-    private String content = "";
+    private String content;
 
     private String skinData = "{\"picker_offsets\":{\"scale\":[1.70,1.70,1.70],\"translate\":[0,20,0]},\"portrait_offsets\":{\"scale\":[1.750,1.750,1.750],\"translate\":[-7,50,0]},\"skin_list\":[{\"variant\":0},{\"variant\":1},{\"variant\":2},{\"variant\":3},{\"variant\":4},{\"variant\":5},{\"variant\":6},{\"variant\":7},{\"variant\":8},{\"variant\":9},{\"variant\":10},{\"variant\":11},{\"variant\":12},{\"variant\":13},{\"variant\":14},{\"variant\":15},{\"variant\":16},{\"variant\":17},{\"variant\":18},{\"variant\":19},{\"variant\":20},{\"variant\":21},{\"variant\":22},{\"variant\":23},{\"variant\":24},{\"variant\":25},{\"variant\":26},{\"variant\":27},{\"variant\":28},{\"variant\":29},{\"variant\":30},{\"variant\":31},{\"variant\":32},{\"variant\":33},{\"variant\":34}]}";
 
@@ -37,11 +35,11 @@ public class FormWindowDialog implements WindowDialog {
 
     private List<ElementDialogButton> buttons;
 
-    private long entityId;
-
     private final Entity bindEntity;
 
     protected Consumer<Player> formClosedListener;
+
+    private boolean isClosed = false;
 
     public FormWindowDialog(String title, String content, Entity bindEntity) {
         this(title, content,bindEntity, new ArrayList<>());
@@ -91,11 +89,7 @@ public class FormWindowDialog implements WindowDialog {
     }
 
     public long getEntityId() {
-        return entityId;
-    }
-
-    public void setEntityId(long entityId) {
-        this.entityId = entityId;
+        return this.getBindEntity().getId();
     }
 
     public Entity getBindEntity() {
@@ -132,8 +126,7 @@ public class FormWindowDialog implements WindowDialog {
     }
 
     protected void callClosed(@NotNull Player player) {
-        //TODO 修复：点击按钮关闭时不应触发！
-        if (this.formClosedListener != null) {
+        if (this.formClosedListener != null && !this.isClosed) {
             this.formClosedListener.accept(player);
         }
     }
@@ -171,10 +164,7 @@ public class FormWindowDialog implements WindowDialog {
         ElementDialogButton clickedButton = response.getClickedButton();
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {
             clickedButton.callClicked(player);
-            if (clickedButton.closeWhenClicked()) {
-                dialog.close(player);
-                return;
-            }
+            dialog.isClosed = true; //点击按钮后，可以认为当前对话框已经关闭
         }
 
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {

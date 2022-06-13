@@ -15,10 +15,7 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNpc;
-import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
-import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 

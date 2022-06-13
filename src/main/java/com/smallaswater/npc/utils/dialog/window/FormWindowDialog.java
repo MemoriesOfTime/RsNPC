@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.smallaswater.npc.RsNpcX;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
@@ -159,7 +158,6 @@ public class FormWindowDialog implements WindowDialog {
         }
 
         FormResponseDialog response = new FormResponseDialog(packet, dialog);
-        RsNpcX.getInstance().getLogger().info(packet.toString());
 
         ElementDialogButton clickedButton = response.getClickedButton();
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {

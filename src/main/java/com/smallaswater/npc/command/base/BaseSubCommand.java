@@ -2,7 +2,7 @@ package com.smallaswater.npc.command.base;
 
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 
 
 /**
@@ -10,7 +10,7 @@ import com.smallaswater.npc.RsNpcX;
  */
 public abstract class BaseSubCommand {
 
-    protected RsNpcX rsNpcX = RsNpcX.getInstance();
+    protected RsNPC rsNPC = RsNPC.getInstance();
 
     private final String name;
 

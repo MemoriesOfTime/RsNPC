@@ -25,10 +25,10 @@ import com.smallaswater.npc.variable.VariableManage;
 @SuppressWarnings("unused")
 public class OnListener implements Listener {
 
-    private final RsNpcX rsNpcX;
+    private final RsNPC rsNPC;
 
-    public OnListener(RsNpcX rsNpcX) {
-        this.rsNpcX = rsNpcX;
+    public OnListener(RsNPC rsNPC) {
+        this.rsNPC = rsNPC;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -81,7 +81,7 @@ public class OnListener implements Listener {
                     }
 
                     if (rsNpcConfig.isEnabledDialogPages()) {
-                        DialogPages dialogConfig = this.rsNpcX.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
+                        DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
                         dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
                     }
                 }
@@ -102,7 +102,7 @@ public class OnListener implements Listener {
                         Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
                                 VariableManage.stringReplace(player, command, rsNpcConfig));
                     } catch (Exception e) {
-                        this.rsNpcX.getLogger().error(
+                        this.rsNPC.getLogger().error(
                                 "控制台权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
                                         " 玩家:" + player.getName() +
                                         " 错误:", e);
@@ -113,14 +113,14 @@ public class OnListener implements Listener {
                     final String playerName = player.getName();
                     if (!player.isOp()) {
                         needCancelOP = true;
-                        Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNpcX,
+                        Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC,
                                 () -> Server.getInstance().removeOp(playerName), 1);
                         player.setOp(true);
                     }
                     try {
                         Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
                     } catch (Exception e) {
-                        this.rsNpcX.getLogger().error(
+                        this.rsNPC.getLogger().error(
                                 "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
                                         " 玩家:" + player.getName() +
                                         " 错误:", e);
@@ -140,7 +140,7 @@ public class OnListener implements Listener {
             try {
                 Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
             } catch (Exception e) {
-                this.rsNpcX.getLogger().error(
+                this.rsNPC.getLogger().error(
                         "玩家权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
                                 " 玩家:" + player.getName() +
                                 " 错误:", e);

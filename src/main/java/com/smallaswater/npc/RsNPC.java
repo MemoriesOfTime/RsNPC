@@ -31,7 +31,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
-public class RsNpcX extends PluginBase {
+public class RsNPC extends PluginBase {
 
     public static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
@@ -43,13 +43,12 @@ public class RsNpcX extends PluginBase {
     public static final Random RANDOM = new Random();
     public static final Gson GSON = new Gson();
 
-    private static RsNpcX rsNpcX;
+    private static RsNPC rsNPC;
 
     @Getter
     private final HashMap<String, Skin> skins = new HashMap<>();
     @Getter
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
-    private final String[] defaultSkins = new String[]{"小丸子", "小埋", "小黑苦力怕", "尸鬼", "拉姆", "熊孩子", "狂三", "米奇", "考拉", "黑岩射手"};
 
     @Getter
     private DialogManager dialogManager;
@@ -64,18 +63,22 @@ public class RsNpcX extends PluginBase {
         DEFAULT_SKIN = skin;
     }
 
-    public static RsNpcX getInstance() {
-        return rsNpcX;
+    public static RsNPC getInstance() {
+        return rsNPC;
     }
 
     @Override
     public void onLoad() {
-        rsNpcX = this;
+        rsNPC = this;
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
-    
-        File file = new File(getDataFolder() + "/Npcs");
-        if (!file.exists() && !file.mkdirs()) {
+
+        File skinFile = new File(getDataFolder() + "/Skins");
+        if (!skinFile.exists() && !skinFile.mkdirs()) {
+            this.getLogger().error("Skins文件夹创建失败");
+        }
+        File npcFile = new File(getDataFolder() + "/Npcs");
+        if (!npcFile.exists() && !npcFile.mkdirs()) {
             this.getLogger().error("Npcs文件夹创建失败");
         }
 
@@ -94,7 +97,6 @@ public class RsNpcX extends PluginBase {
         this.dialogManager.loadAllDialog();
 
         this.getLogger().info("开始加载皮肤");
-        this.saveDefaultSkin();
         this.loadSkins();
         
         this.getLogger().info("开始加载NPC");
@@ -139,28 +141,6 @@ public class RsNpcX extends PluginBase {
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
                 this.getLogger().info("NPC: " + rsNpcConfig.getName() + " 加载完成！");
-            }
-        }
-    }
-
-    private void saveDefaultSkin() {
-        File file = new File(this.getDataFolder() + "/Skins");
-        if (!file.exists()) {
-            this.getLogger().info("未检测到Skins文件夹，正在创建");
-            if (!file.mkdirs()) {
-                this.getLogger().info("Skins文件夹创建失败");
-            } else {
-                this.getLogger().info("Skins 文件夹创建完成，正在保存预设皮肤");
-                for (String s : this.defaultSkins) {
-                    File f = new File(this.getDataFolder() + "/Skins/" + s);
-                    if (!f.exists() && !f.mkdirs()) {
-                        this.getLogger().info("载入 " + s + "失败");
-                    } else {
-                        this.saveResource("Skins/" + s + "/skin.json");
-                        this.saveResource("Skins/" + s + "/skin.png");
-                        this.getLogger().info("成功保存 " + s + " 皮肤");
-                    }
-                }
             }
         }
     }
@@ -235,7 +215,6 @@ public class RsNpcX extends PluginBase {
                 }
             }
         }
-        this.saveDefaultSkin();
         if (this.dialogManager != null) {
             this.dialogManager.loadAllDialog();
         }

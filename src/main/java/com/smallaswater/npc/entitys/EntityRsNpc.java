@@ -8,7 +8,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.route.Node;
 import com.smallaswater.npc.route.RouteFinder;
@@ -90,7 +90,7 @@ public class EntityRsNpc extends EntityHuman {
                         this.emoteSecond = 0;
                         EmotePacket packet = new EmotePacket();
                         packet.runtimeId = this.getId();
-                        packet.emoteID = this.config.getEmoteIDs().get(RsNpcX.RANDOM.nextInt(this.config.getEmoteIDs().size()));
+                        packet.emoteID = this.config.getEmoteIDs().get(RsNPC.RANDOM.nextInt(this.config.getEmoteIDs().size()));
                         packet.flags = 0;
                         Server.broadcastPacket(this.getViewers().values(), packet);
                     }
@@ -175,7 +175,7 @@ public class EntityRsNpc extends EntityHuman {
     }
 
     private void seePlayer() {
-        RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
+        RsNPC.THREAD_POOL_EXECUTOR.execute(() -> {
             LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
             npd.sort((p1, p2) -> Double.compare(this.distance(p1) - this.distance(p2), 0.0D));
             Player player = npd.poll();

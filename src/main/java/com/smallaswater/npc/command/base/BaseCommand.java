@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public abstract class BaseCommand extends Command {
 
     private final ArrayList<BaseSubCommand> subCommand = new ArrayList<>();
     private final ConcurrentHashMap<String, Integer> subCommands = new ConcurrentHashMap<>();
-    protected RsNpcX rsNpcX = RsNpcX.getInstance();
+    protected RsNPC rsNPC = RsNPC.getInstance();
 
     public BaseCommand(String name, String description) {
         super(name,description);

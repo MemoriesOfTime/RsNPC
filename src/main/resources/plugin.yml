@@ -1,6 +1,6 @@
-name: RsNPCX
+name: RsNPC
 main: com.smallaswater.npc.RsNpcX
-version: "1.8.9-SNAPSHOT"
+version: "2.0.0-SNAPSHOT"
 api:
   - "1.0.9"
   - "1.0.11"

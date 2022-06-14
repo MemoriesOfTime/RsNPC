@@ -4,7 +4,7 @@ import cn.nukkit.IPlayer;
 import cn.nukkit.OfflinePlayer;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,12 +39,12 @@ public class VariableManage {
 
     @Deprecated
     public static void addVariable(@NotNull String name, @NotNull Class<? extends BaseVariable> variableClass) {
-        RsNpcX.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
+        RsNPC.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
         try {
             BaseVariable variable = variableClass.newInstance();
             VariableManage.VARIABLE_CLASS.put(name, variable);
         } catch (Exception e) {
-            RsNpcX.getInstance().getLogger().error("添加变量时出错", e);
+            RsNPC.getInstance().getLogger().error("添加变量时出错", e);
         }
     }
 
@@ -53,7 +53,7 @@ public class VariableManage {
             BaseVariableV2 variable = variableClass.newInstance();
             VariableManage.VARIABLE_V2_CLASS.put(name, variable);
         } catch (Exception e) {
-            RsNpcX.getInstance().getLogger().error("添加变量时出错", e);
+            RsNPC.getInstance().getLogger().error("添加变量时出错", e);
         }
     }
 

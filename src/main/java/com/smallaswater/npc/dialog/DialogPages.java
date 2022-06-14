@@ -1,12 +1,9 @@
 package com.smallaswater.npc.dialog;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.utils.Config;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNpc;
-import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
 
@@ -39,7 +36,7 @@ public class DialogPages {
                 DialogPage dialogPage = new DialogPage(this, page);
                 this.dialogPageMap.put(dialogPage.getKey(), dialogPage);
             } catch (Exception e) {
-                RsNpcX.getInstance().getLogger().error("加载对话页面失败：" + this.name + "." + page.get("key"), e);
+                RsNPC.getInstance().getLogger().error("加载对话页面失败：" + this.name + "." + page.get("key"), e);
             }
         });
     }

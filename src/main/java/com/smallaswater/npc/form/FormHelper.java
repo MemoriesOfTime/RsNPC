@@ -9,7 +9,7 @@ import cn.nukkit.form.element.ElementToggle;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.form.element.ResponseElementButton;
 import com.smallaswater.npc.form.windows.AdvancedFormWindowCustom;
@@ -60,7 +60,7 @@ public class FormHelper {
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNpcX - 管理NPC<<");
         simple.setContent("请选择要设置的Npc");
 
-        for (Map.Entry<String, RsNpcConfig> entry : RsNpcX.getInstance().getNpcs().entrySet()) {
+        for (Map.Entry<String, RsNpcConfig> entry : RsNPC.getInstance().getNpcs().entrySet()) {
             simple.addButton(new ResponseElementButton(entry.getKey())
                     .onClicked(cp -> sendAdminNpc(cp, entry.getValue())));
         }
@@ -177,7 +177,7 @@ public class FormHelper {
         custom.addElement(new ElementInput("腿部", "0:0", armor[2].getId() + ":" + armor[2].getDamage())); //4
         custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //5
         //皮肤
-        ArrayList<String> skinOptions = new ArrayList<>(RsNpcX.getInstance().getSkins().keySet());
+        ArrayList<String> skinOptions = new ArrayList<>(RsNPC.getInstance().getSkins().keySet());
         int defaultOption = 0;
         for (String name : skinOptions) {
             if (name.equals(rsNpcConfig.getSkinName())) {
@@ -208,7 +208,7 @@ public class FormHelper {
             //皮肤
             String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(6).getElementID());
             rsNpcConfig.setSkinName(skinName);
-            rsNpcConfig.setSkin(RsNpcX.getInstance().getSkinByName(skinName));
+            rsNpcConfig.setSkin(RsNPC.getInstance().getSkinByName(skinName));
             //实体大小
             String scaleString = formResponseCustom.getInputResponse(7);
             float scale = rsNpcConfig.getScale();
@@ -512,7 +512,7 @@ public class FormHelper {
             case "12-13":
                 return "南京大屠杀，国民难忘记。六朝古都城，断壁残垣地。三十万同胞，顷刻魂归西。血淋淋历史，后辈永牢记。国弱被人欺，自强是真理。南京大屠杀纪念日，不忘国耻，自强不息！";
             default:
-                return RANDOM_MESSAGE.get(RsNpcX.RANDOM.nextInt(RANDOM_MESSAGE.size()));
+                return RANDOM_MESSAGE.get(RsNPC.RANDOM.nextInt(RANDOM_MESSAGE.size()));
         }
     }
 

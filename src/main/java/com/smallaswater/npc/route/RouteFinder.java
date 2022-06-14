@@ -7,7 +7,7 @@ import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +44,7 @@ public class RouteFinder {
         this.distance = (int) start.distance(end);
 
         if (async) {
-            Server.getInstance().getScheduler().scheduleAsyncTask(RsNpcX.getInstance(), new AsyncTask() {
+            Server.getInstance().getScheduler().scheduleAsyncTask(RsNPC.getInstance(), new AsyncTask() {
                 @Override
                 public void onRun() {
                     process();

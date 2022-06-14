@@ -10,7 +10,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -81,7 +81,7 @@ public class RsNpcConfig {
     @Getter
     private String dialogPagesName;
 
-    private EntityRsNpc entityRsNpc;
+    private EntityRsNPC entityRsNpc;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
         this.config = config;
@@ -203,7 +203,7 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                this.entityRsNpc = new EntityRsNpc(this.location.getChunk(), Entity.getDefaultNBT(location)
+                this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
                         .putString("rsnpcName", this.name)
                         .putCompound("Skin", (new CompoundTag())
                                 .putByteArray("Data", this.skin.getSkinData().data)
@@ -274,7 +274,7 @@ public class RsNpcConfig {
         return this.messages;
     }
 
-    public EntityRsNpc getEntityRsNpc() {
+    public EntityRsNPC getEntityRsNpc() {
         return this.entityRsNpc;
     }
 

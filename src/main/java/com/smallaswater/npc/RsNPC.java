@@ -8,10 +8,10 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.SerializedImage;
 import com.google.gson.Gson;
-import com.smallaswater.npc.command.RsNpcXCommand;
+import com.smallaswater.npc.command.RsNPCCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
@@ -87,10 +87,10 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.getLogger().info("RsNpcX开始加载");
+        this.getLogger().info("RsNPC开始加载");
         this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
         this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
-        Entity.registerEntity("EntityRsNpc", EntityRsNpc.class);
+        Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
         this.getLogger().info("开始加载对话页面数据");
         this.dialogManager = new DialogManager(this);
@@ -107,9 +107,9 @@ public class RsNPC extends PluginBase {
         
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
 
-        this.getServer().getCommandMap().register("rsnpcx", new RsNpcXCommand("rsnpcx"));
+        this.getServer().getCommandMap().register("RsNPC", new RsNPCCommand("RsNPC"));
         
-        this.getLogger().info("RsNpcX加载完成");
+        this.getLogger().info("RsNPC加载完成");
     }
 
     @Override
@@ -120,7 +120,7 @@ public class RsNPC extends PluginBase {
             }
         }
         this.npcs.clear();
-        this.getLogger().info("RsNpcX卸载完成");
+        this.getLogger().info("RsNPC卸载完成");
     }
 
     private void loadNpcs() {
@@ -173,7 +173,7 @@ public class RsNPC extends PluginBase {
                         String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
                         if ("1.12.0".equals(formatVersion)) {
                             //TODO 加载1.12.0版本的皮肤
-                            this.getLogger().error("RsNpcX 暂不支持1.12.0版本格式的皮肤！请等待更新！");
+                            this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
                         } else { //1.10.0
                             for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
                                 if (geometryName == null) {
@@ -210,7 +210,7 @@ public class RsNPC extends PluginBase {
         this.npcs.clear();
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity entity : level.getEntities()) {
-                if (entity instanceof EntityRsNpc) {
+                if (entity instanceof EntityRsNPC) {
                     entity.close();
                 }
             }

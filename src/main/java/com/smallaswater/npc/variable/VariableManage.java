@@ -59,7 +59,7 @@ public class VariableManage {
 
     public static String stringReplace(IPlayer player, @NotNull String inString, @NotNull RsNpcConfig rsNpcConfig) {
         if (player == null) {
-            player = new OfflinePlayer(Server.getInstance(), "RsNpcXFakePlayer");
+            player = new OfflinePlayer(Server.getInstance(), "RsNPCFakePlayer");
         }
 
         for (Map.Entry<String, Supplier<Object>> entry : VARIABLES_SUPPLIER.entrySet()) {

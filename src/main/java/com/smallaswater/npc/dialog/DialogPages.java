@@ -3,7 +3,7 @@ package com.smallaswater.npc.dialog;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
 
@@ -74,7 +74,7 @@ public class DialogPages {
             }
         }
 
-        public void send(EntityRsNpc entityRsNpc, Player player) {
+        public void send(EntityRsNPC entityRsNpc, Player player) {
             FormWindowDialog windowDialog = new FormWindowDialog(this.title, this.content, entityRsNpc);
 
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");

@@ -1,5 +1,5 @@
 name: RsNPC
-main: com.smallaswater.npc.RsNpcX
+main: com.smallaswater.npc.RsNPC
 version: "2.0.0-SNAPSHOT"
 api:
   - "1.0.9"
@@ -8,6 +8,6 @@ authors: ["若水", "LT_Name"]
 load: POSTWORLD
 
 permissions:
-  RsNPCX.npc:
+  RsNPC.admin:
     default: op
-    description: "RSNPCX插件主命令"
+    description: "RsNPC插件主命令"

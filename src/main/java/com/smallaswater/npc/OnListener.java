@@ -14,7 +14,7 @@ import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
@@ -33,11 +33,11 @@ public class OnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
-        if (event.getEntity() instanceof EntityRsNpc) {
+        if (event.getEntity() instanceof EntityRsNPC) {
             event.setCancelled(true);
         }
         if (!Server.getInstance().getCodename().equals("PM1E")) {
-            if (event.getVehicle() instanceof EntityRsNpc) {
+            if (event.getVehicle() instanceof EntityRsNPC) {
                 event.setCancelled(true);
             }
         }
@@ -46,10 +46,10 @@ public class OnListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNpc) {
+        if (entity instanceof EntityRsNPC) {
             event.setCancelled(true);
             Player player = event.getPlayer();
-            EntityRsNpc rsNpc = (EntityRsNpc) entity;
+            EntityRsNPC rsNpc = (EntityRsNPC) entity;
             RsNpcConfig config = rsNpc.getConfig();
             rsNpc.setPauseMoveTick(60);
             this.executeCommand(player, config);
@@ -62,13 +62,13 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNpc) {
+        if (entity instanceof EntityRsNPC) {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
                 if (damage instanceof Player) {
                     Player player = (Player) damage;
-                    EntityRsNpc entityRsNpc = (EntityRsNpc) entity;
+                    EntityRsNPC entityRsNpc = (EntityRsNPC) entity;
                     RsNpcConfig rsNpcConfig = entityRsNpc.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&
                             event instanceof EntityDamageByChildEntityEvent) {

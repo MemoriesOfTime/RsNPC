@@ -106,7 +106,7 @@ public class RsNpcConfig {
         this.skinName = config.getString("皮肤", "尸鬼");
         this.skin = RsNpcX.getInstance().getSkinByName(this.skinName);
         if (this.skin == null) {
-            throw new RsNpcLoadException("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！请检查配置！");
+            RsNpcX.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
         }
 
         this.scale = (float) config.getDouble("实体大小", 1D);

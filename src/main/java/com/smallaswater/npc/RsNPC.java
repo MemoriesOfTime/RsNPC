@@ -17,6 +17,7 @@ import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
+import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -70,6 +71,9 @@ public class RsNPC extends PluginBase {
     @Override
     public void onLoad() {
         rsNPC = this;
+
+        ConfigUpdateUtils.updateConfig(this);
+
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
 

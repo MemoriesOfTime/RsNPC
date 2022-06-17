@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class FormWindowDialog implements WindowDialog {
 
@@ -36,7 +35,7 @@ public class FormWindowDialog implements WindowDialog {
 
     private final Entity bindEntity;
 
-    protected Consumer<Player> formClosedListener;
+    protected BiConsumer<Player, FormResponseDialog> formClosedListener;
 
     private boolean isClosed = false;
 
@@ -119,32 +118,20 @@ public class FormWindowDialog implements WindowDialog {
         this.sceneName = String.valueOf(dialogId++);
     }
 
-    public FormWindowDialog onClosed(@NotNull Consumer<Player> listener) {
+    public FormWindowDialog onClosed(@NotNull BiConsumer<Player, FormResponseDialog> listener) {
         this.formClosedListener = Objects.requireNonNull(listener);
         return this;
     }
 
-    protected void callClosed(@NotNull Player player) {
+    protected void callClosed(@NotNull Player player, FormResponseDialog response) {
         if (this.formClosedListener != null && !this.isClosed) {
-            this.formClosedListener.accept(player);
+            this.formClosedListener.accept(player, response);
         }
     }
 
     @Override
     public void send(Player player){
         Utils.sendDialogWindows(player, this);
-    }
-
-    @Override
-    public void close(Player player){
-        NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
-        closeWindowPacket.setRuntimeEntityId(player.getId());
-        closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
-        closeWindowPacket.setDialogue(this.getContent());
-        closeWindowPacket.setNpcName(this.getTitle());
-        closeWindowPacket.setSceneName(this.getSceneName());
-        closeWindowPacket.setActionJson(this.getButtonJSONData());
-        player.dataPacket(closeWindowPacket);
     }
 
     public static void onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
@@ -161,13 +148,13 @@ public class FormWindowDialog implements WindowDialog {
 
         ElementDialogButton clickedButton = response.getClickedButton();
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {
-            clickedButton.callClicked(player);
-            dialog.isClosed = true; //点击按钮后，可以认为当前对话框已经关闭
+            clickedButton.callClicked(player, response);
+            //点击按钮后，需要关闭当前窗口或者跳转新的窗口，否则对话框会卡住玩家，所以可以认为当前对话框已经关闭
+            dialog.isClosed = true;
         }
 
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
-            dialog.close(player);
-            dialog.callClosed(player);
+            dialog.callClosed(player, response);
         }
     }
 

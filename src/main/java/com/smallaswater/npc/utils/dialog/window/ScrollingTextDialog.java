@@ -80,13 +80,6 @@ public class ScrollingTextDialog implements WindowDialog {
     public void send(Player p){
         this.startScrolling();
     }
-
-    @Override
-    public void close(Player player) {
-        this.stopScrolling();
-        //TODO
-    }
-
     private class ScrollingRunner extends Task {
 
         private FormWindowDialog clone = new FormWindowDialog(dialog.getTitle(), dialog.getContent(), dialog.getBindEntity());

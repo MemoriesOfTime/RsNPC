@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
+import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
 
@@ -80,18 +81,22 @@ public class DialogPages {
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 
             this.buttons.forEach(button -> {
-                windowDialog.addButton(button.getText()).onClicked(p -> {
+                windowDialog.addButton(button.getText()).onClicked((p, response) -> {
                     if (button.getType() == Button.ButtonType.GOTO) {
                         dialogPages.getDialogPage(button.getData()).send(entityRsNpc, player);
                     }else if (button.getType() == Button.ButtonType.ACTION_CLOSE) {
-                        windowDialog.close(player);
+                        NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
+                        closeWindowPacket.setRuntimeEntityId(response.getEntityRuntimeId());
+                        closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
+                        closeWindowPacket.setSceneName(response.getSceneName());
+                        p.dataPacket(closeWindowPacket);
                     }
                     //TODO 其他点击操作
                 });
             });
 
             if (this.closeGo != null) {
-                windowDialog.onClosed(p -> {
+                windowDialog.onClosed((p, response) -> {
                     dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
                 });
             }

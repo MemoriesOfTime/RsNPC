@@ -5,6 +5,8 @@ pages:
     title: "演示对话框"
     content: "这是一个演示对话框"
     buttons:
+      - text: "关闭"
+        action: "close" #此项留空默认关闭对话框
       - text: "下一页"
         go: "2" #key
   - key: "2"
@@ -31,4 +33,6 @@ pages:
     buttons:
       - text: "返回第二页"
         go: "2" #key
+      - text: "关闭"
+        action: "close"
 

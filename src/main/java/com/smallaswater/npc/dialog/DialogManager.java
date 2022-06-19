@@ -2,6 +2,7 @@ package com.smallaswater.npc.dialog;
 
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class DialogManager {
     private RsNPC rsNPC;
     private final HashMap<String, DialogPages> dialogConfigs = new HashMap<>();
 
-    public DialogManager(RsNPC rsNPC) {
+    public DialogManager(@NotNull RsNPC rsNPC) {
         this.rsNPC = rsNPC;
         this.loadAllDialog();
     }
@@ -40,12 +41,12 @@ public class DialogManager {
         this.rsNPC.getLogger().info("成功加载: " + this.dialogConfigs.size() + "个对话页面配置");
     }
 
-    public void loadDialog(String name) {
+    public void loadDialog(@NotNull String name) {
         Config config = new Config(this.rsNPC.getDataFolder() + "/Dialog/" + name + ".yml", Config.YAML);
         this.dialogConfigs.put(name, new DialogPages(name, config));
     }
 
-    public DialogPages getDialogConfig(String name) {
+    public DialogPages getDialogConfig(@NotNull String name) {
         return this.dialogConfigs.get(name);
     }
 

@@ -34,7 +34,7 @@ public class ConfigUpdateUtils {
         }
         //仅文件夹名称修改
         File file = new File(rsNPC.getServer().getPluginPath() + "/RsNPCX");
-        if (file != null && file.exists()) {
+        if (file.exists()) {
             if (file.renameTo(rsNPC.getDataFolder())) {
                 rsNPC.getLogger().info("[ConfigUpdateUtils](updateRsNpcX1_X_X_To_RsNPC2_0_0) 配置文件更新成功！");
             }else {

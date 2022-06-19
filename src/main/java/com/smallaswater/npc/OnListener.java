@@ -15,6 +15,7 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
+import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
@@ -52,7 +53,7 @@ public class OnListener implements Listener {
             EntityRsNPC rsNpc = (EntityRsNPC) entity;
             RsNpcConfig config = rsNpc.getConfig();
             rsNpc.setPauseMoveTick(60);
-            this.executeCommand(player, config);
+            Utils.executeCommand(player, config);
             for (String message : config.getMessages()) {
                 player.sendMessage(VariableManage.stringReplace(player, message, config));
             }
@@ -75,7 +76,7 @@ public class OnListener implements Listener {
                         return;
                     }
                     entityRsNpc.setPauseMoveTick(60);
-                    this.executeCommand(player, rsNpcConfig);
+                    Utils.executeCommand(player, rsNpcConfig);
                     for (String message : rsNpcConfig.getMessages()) {
                         player.sendMessage(VariableManage.stringReplace(player, message, rsNpcConfig));
                     }
@@ -85,65 +86,6 @@ public class OnListener implements Listener {
                         dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
                     }
                 }
-            }
-        }
-    }
-
-    private void executeCommand(Player player, RsNpcConfig rsNpcConfig) {
-        for (String cmd : rsNpcConfig.getCmds()) {
-            String[] c = cmd.split("&");
-            String command = c[0];
-            if (command.startsWith("/")) {
-                command = command.replaceFirst("/", "");
-            }
-            if (c.length > 1) {
-                if ("con".equals(c[1])) {
-                    try {
-                        Server.getInstance().dispatchCommand(Server.getInstance().getConsoleSender(),
-                                VariableManage.stringReplace(player, command, rsNpcConfig));
-                    } catch (Exception e) {
-                        this.rsNPC.getLogger().error(
-                                "控制台权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
-                                        " 玩家:" + player.getName() +
-                                        " 错误:", e);
-                    }
-                    continue;
-                }else if ("op".equals(c[1])) {
-                    boolean needCancelOP = false;
-                    final String playerName = player.getName();
-                    if (!player.isOp()) {
-                        needCancelOP = true;
-                        Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC,
-                                () -> Server.getInstance().removeOp(playerName), 1);
-                        player.setOp(true);
-                    }
-                    try {
-                        Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
-                    } catch (Exception e) {
-                        this.rsNPC.getLogger().error(
-                                "OP权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
-                                        " 玩家:" + player.getName() +
-                                        " 错误:", e);
-                    } finally {
-                        if (needCancelOP) {
-                            try {
-                                player.setOp(false);
-                            } catch (Exception ignored) {
-
-                            }
-                            Server.getInstance().removeOp(playerName);
-                        }
-                    }
-                    continue;
-                }
-            }
-            try {
-                Server.getInstance().dispatchCommand(player, VariableManage.stringReplace(player, command, rsNpcConfig));
-            } catch (Exception e) {
-                this.rsNPC.getLogger().error(
-                        "玩家权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
-                                " 玩家:" + player.getName() +
-                                " 错误:", e);
             }
         }
     }

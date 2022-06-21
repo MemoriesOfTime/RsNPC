@@ -30,13 +30,13 @@ public class DeleteSubCommand extends BaseSubCommand {
     public boolean execute(CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
             String name = args[1];
-            if (!this.rsNpcX.getNpcs().containsKey(name)) {
+            if (!this.rsNPC.getNpcs().containsKey(name)) {
                 sender.sendMessage("§c§lNPC " + name + "不存在...");
                 return true;
             }
-            this.rsNpcX.getNpcs().get(name).getEntityRsNpc().close();
-            this.rsNpcX.getNpcs().remove(name);
-            if (!(new File(this.rsNpcX.getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
+            this.rsNPC.getNpcs().get(name).getEntityRsNpc().close();
+            this.rsNPC.getNpcs().remove(name);
+            if (!(new File(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
                 sender.sendMessage("§c§lNPC " + name + " 文件删除失败！请尝试手动删除！");
             }else {
                 sender.sendMessage("§a§lNPC " + name + " 移除成功 ");

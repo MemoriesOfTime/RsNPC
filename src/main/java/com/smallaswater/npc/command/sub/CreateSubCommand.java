@@ -40,12 +40,12 @@ public class CreateSubCommand extends BaseSubCommand {
                 sender.sendMessage("§c§lNPC的名字不能是空格！");
                 return true;
             }
-            if (this.rsNpcX.getNpcs().containsKey(name)) {
+            if (this.rsNPC.getNpcs().containsKey(name)) {
                 sender.sendMessage("§c§lNPC " + name + "已经存在...");
                 return true;
             }
-            this.rsNpcX.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
-            Config config = new Config(this.rsNpcX.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
+            this.rsNPC.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
+            Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
             config.set("name", name);
             Player player = (Player) sender;
             LinkedHashMap<String, Object> map = new LinkedHashMap<>();
@@ -61,13 +61,13 @@ public class CreateSubCommand extends BaseSubCommand {
                 rsNpcConfig = new RsNpcConfig(name, config);
             } catch (RsNpcLoadException e) {
                 sender.sendMessage("创建NPC失败！");
-                this.rsNpcX.getLogger().error("创建NPC失败！", e);
+                this.rsNPC.getLogger().error("创建NPC失败！", e);
                 return true;
             }
-            this.rsNpcX.getNpcs().put(name, rsNpcConfig);
+            this.rsNPC.getNpcs().put(name, rsNpcConfig);
             rsNpcConfig.checkEntity();
             //玄学解决首次生成不显示的问题
-            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNpcX, () -> {
+            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
                 rsNpcConfig.getEntityRsNpc().close();
                 rsNpcConfig.checkEntity();
             }, 20);

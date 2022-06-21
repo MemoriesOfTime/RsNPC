@@ -8,15 +8,16 @@ import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.SerializedImage;
 import com.google.gson.Gson;
-import com.smallaswater.npc.command.RsNpcXCommand;
+import com.smallaswater.npc.command.RsNPCCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
+import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -31,7 +32,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 
-public class RsNpcX extends PluginBase {
+public class RsNPC extends PluginBase {
 
     public static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
@@ -43,13 +44,12 @@ public class RsNpcX extends PluginBase {
     public static final Random RANDOM = new Random();
     public static final Gson GSON = new Gson();
 
-    private static RsNpcX rsNpcX;
+    private static RsNPC rsNPC;
 
     @Getter
     private final HashMap<String, Skin> skins = new HashMap<>();
     @Getter
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
-    private final String[] defaultSkins = new String[]{"小丸子", "小埋", "小黑苦力怕", "尸鬼", "拉姆", "熊孩子", "狂三", "米奇", "考拉", "黑岩射手"};
 
     @Getter
     private DialogManager dialogManager;
@@ -64,18 +64,25 @@ public class RsNpcX extends PluginBase {
         DEFAULT_SKIN = skin;
     }
 
-    public static RsNpcX getInstance() {
-        return rsNpcX;
+    public static RsNPC getInstance() {
+        return rsNPC;
     }
 
     @Override
     public void onLoad() {
-        rsNpcX = this;
+        rsNPC = this;
+
+        ConfigUpdateUtils.updateConfig(this);
+
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
-    
-        File file = new File(getDataFolder() + "/Npcs");
-        if (!file.exists() && !file.mkdirs()) {
+
+        File skinFile = new File(getDataFolder() + "/Skins");
+        if (!skinFile.exists() && !skinFile.mkdirs()) {
+            this.getLogger().error("Skins文件夹创建失败");
+        }
+        File npcFile = new File(getDataFolder() + "/Npcs");
+        if (!npcFile.exists() && !npcFile.mkdirs()) {
             this.getLogger().error("Npcs文件夹创建失败");
         }
 
@@ -84,17 +91,16 @@ public class RsNpcX extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.getLogger().info("RsNpcX开始加载");
+        this.getLogger().info("RsNPC开始加载");
         this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
         this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
-        Entity.registerEntity("EntityRsNpc", EntityRsNpc.class);
+        Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
         this.getLogger().info("开始加载对话页面数据");
         this.dialogManager = new DialogManager(this);
         this.dialogManager.loadAllDialog();
 
         this.getLogger().info("开始加载皮肤");
-        this.saveDefaultSkin();
         this.loadSkins();
         
         this.getLogger().info("开始加载NPC");
@@ -105,9 +111,9 @@ public class RsNpcX extends PluginBase {
         
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
 
-        this.getServer().getCommandMap().register("rsnpcx", new RsNpcXCommand("rsnpcx"));
+        this.getServer().getCommandMap().register("RsNPC", new RsNPCCommand("RsNPC"));
         
-        this.getLogger().info("RsNpcX加载完成");
+        this.getLogger().info("RsNPC加载完成");
     }
 
     @Override
@@ -118,7 +124,7 @@ public class RsNpcX extends PluginBase {
             }
         }
         this.npcs.clear();
-        this.getLogger().info("RsNpcX卸载完成");
+        this.getLogger().info("RsNPC卸载完成");
     }
 
     private void loadNpcs() {
@@ -139,28 +145,6 @@ public class RsNpcX extends PluginBase {
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
                 this.getLogger().info("NPC: " + rsNpcConfig.getName() + " 加载完成！");
-            }
-        }
-    }
-
-    private void saveDefaultSkin() {
-        File file = new File(this.getDataFolder() + "/Skins");
-        if (!file.exists()) {
-            this.getLogger().info("未检测到Skins文件夹，正在创建");
-            if (!file.mkdirs()) {
-                this.getLogger().info("Skins文件夹创建失败");
-            } else {
-                this.getLogger().info("Skins 文件夹创建完成，正在保存预设皮肤");
-                for (String s : this.defaultSkins) {
-                    File f = new File(this.getDataFolder() + "/Skins/" + s);
-                    if (!f.exists() && !f.mkdirs()) {
-                        this.getLogger().info("载入 " + s + "失败");
-                    } else {
-                        this.saveResource("Skins/" + s + "/skin.json");
-                        this.saveResource("Skins/" + s + "/skin.png");
-                        this.getLogger().info("成功保存 " + s + " 皮肤");
-                    }
-                }
             }
         }
     }
@@ -193,7 +177,7 @@ public class RsNpcX extends PluginBase {
                         String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
                         if ("1.12.0".equals(formatVersion)) {
                             //TODO 加载1.12.0版本的皮肤
-                            this.getLogger().error("RsNpcX 暂不支持1.12.0版本格式的皮肤！请等待更新！");
+                            this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
                         } else { //1.10.0
                             for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
                                 if (geometryName == null) {
@@ -230,12 +214,11 @@ public class RsNpcX extends PluginBase {
         this.npcs.clear();
         for (Level level : Server.getInstance().getLevels().values()) {
             for (Entity entity : level.getEntities()) {
-                if (entity instanceof EntityRsNpc) {
+                if (entity instanceof EntityRsNPC) {
                     entity.close();
                 }
             }
         }
-        this.saveDefaultSkin();
         if (this.dialogManager != null) {
             this.dialogManager.loadAllDialog();
         }

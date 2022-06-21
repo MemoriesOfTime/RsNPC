@@ -3,7 +3,7 @@ package com.smallaswater.npc.form.windows;
 import cn.nukkit.Player;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowModal;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -72,7 +72,7 @@ public class AdvancedFormWindowModal extends FormWindowModal {
     }
 
     public String getJSONData() {
-        return RsNpcX.GSON.toJson(this, FormWindowModal.class);
+        return RsNPC.GSON.toJson(this, FormWindowModal.class);
     }
 
 }

@@ -8,16 +8,17 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.route.Node;
 import com.smallaswater.npc.route.RouteFinder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.LinkedList;
 
-public class EntityRsNpc extends EntityHuman {
+public class EntityRsNPC extends EntityHuman {
 
     private final RsNpcConfig config;
     private int emoteSecond = 0;
@@ -35,13 +36,15 @@ public class EntityRsNpc extends EntityHuman {
     @Setter
     private int pauseMoveTick = 0;
 
-
+    /**
+     * RsNPC实体在创建时必须传入RsNPCConfig参数，保留此方法仅为兼容核心创建实体方法
+     */
     @Deprecated
-    public EntityRsNpc(FullChunk chunk, CompoundTag nbt) {
+    public EntityRsNPC(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
 
-    public EntityRsNpc(FullChunk chunk, CompoundTag nbt, RsNpcConfig config) {
+    public EntityRsNPC(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
         super(chunk, nbt);
         this.config = config;
         if (this.config == null) {
@@ -65,7 +68,7 @@ public class EntityRsNpc extends EntityHuman {
         }
 
         //旋转
-        if (Math.abs(this.config.getWhirling()) > 0) {
+        if (this.config.getWhirling() != 0) {
             this.yaw += this.config.getWhirling();
         }else {
             //寻路
@@ -73,7 +76,7 @@ public class EntityRsNpc extends EntityHuman {
                 this.processMove(currentTick);
             } else {
                 //看向玩家
-                if (currentTick%2 == 0 && this.config.isLookAtThePlayer() && !this.getLevel().getPlayers().isEmpty()) {
+                if (currentTick%2 == 0 && this.config.isLookAtThePlayer() && !this.getViewers().isEmpty()) {
                     this.seePlayer();
                 }
 
@@ -90,7 +93,7 @@ public class EntityRsNpc extends EntityHuman {
                         this.emoteSecond = 0;
                         EmotePacket packet = new EmotePacket();
                         packet.runtimeId = this.getId();
-                        packet.emoteID = this.config.getEmoteIDs().get(RsNpcX.RANDOM.nextInt(this.config.getEmoteIDs().size()));
+                        packet.emoteID = this.config.getEmoteIDs().get(RsNPC.RANDOM.nextInt(this.config.getEmoteIDs().size()));
                         packet.flags = 0;
                         Server.broadcastPacket(this.getViewers().values(), packet);
                     }
@@ -136,25 +139,24 @@ public class EntityRsNpc extends EntityHuman {
                 if (currentTick - this.lastUpdateNodeTick > 100) {
                     if (this.distance(lastPos) < 0.1) {
                         this.setPosition(vector3);
+                        return;
                     }
                     this.lastUpdateNodeTick = currentTick;
-                } else {
-                    this.lastPos = this.getLocation();
-                    double x = vector3.x - this.x;
-                    double z = vector3.z - this.z;
-                    double diff = Math.abs(x) + Math.abs(z);
-
-                    this.motionY = this.config.getBaseMoveSpeed() * vector3.y - this.y;
-                    if (this.getLevelBlock() instanceof BlockLiquid) {
-                        this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
-                        this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);
-                    } else {
-                        this.motionX = this.config.getBaseMoveSpeed() * 0.15 * (x / diff);
-                        this.motionZ = this.config.getBaseMoveSpeed() * 0.15 * (z / diff);
-                    }
-
-                    this.move(this.motionX, this.motionY, this.motionZ);
                 }
+
+                this.lastPos = this.getLocation();
+                double x = vector3.x - this.x;
+                double z = vector3.z - this.z;
+                double diff = Math.abs(x) + Math.abs(z);
+                this.motionY = this.config.getBaseMoveSpeed() * vector3.y - this.y;
+                if (this.getLevelBlock() instanceof BlockLiquid) {
+                    this.motionX = this.config.getBaseMoveSpeed() * 0.05 * (x / diff);
+                    this.motionZ = this.config.getBaseMoveSpeed() * 0.05 * (z / diff);
+                } else {
+                    this.motionX = this.config.getBaseMoveSpeed() * 0.15 * (x / diff);
+                    this.motionZ = this.config.getBaseMoveSpeed() * 0.15 * (z / diff);
+                }
+                this.move(this.motionX, this.motionY, this.motionZ);
 
                 //视角计算
                 if (currentTick % 4 == 0) {
@@ -175,7 +177,7 @@ public class EntityRsNpc extends EntityHuman {
     }
 
     private void seePlayer() {
-        RsNpcX.THREAD_POOL_EXECUTOR.execute(() -> {
+        RsNPC.THREAD_POOL_EXECUTOR.execute(() -> {
             LinkedList<Player> npd = new LinkedList<>(this.getViewers().values());
             npd.sort((p1, p2) -> Double.compare(this.distance(p1) - this.distance(p2), 0.0D));
             Player player = npd.poll();

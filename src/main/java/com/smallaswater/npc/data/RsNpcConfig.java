@@ -9,8 +9,8 @@ import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Config;
-import com.smallaswater.npc.RsNpcX;
-import com.smallaswater.npc.entitys.EntityRsNpc;
+import com.smallaswater.npc.RsNPC;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -81,7 +81,7 @@ public class RsNpcConfig {
     @Getter
     private String dialogPagesName;
 
-    private EntityRsNpc entityRsNpc;
+    private EntityRsNPC entityRsNpc;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
         this.config = config;
@@ -103,10 +103,10 @@ public class RsNpcConfig {
         this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
         this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
 
-        this.skinName = config.getString("皮肤", "尸鬼");
-        this.skin = RsNpcX.getInstance().getSkinByName(this.skinName);
+        this.skinName = config.getString("皮肤", "默认");
+        this.skin = RsNPC.getInstance().getSkinByName(this.skinName);
         if (this.skin == null) {
-            RsNpcX.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
+            RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
         }
 
         this.scale = (float) config.getDouble("实体大小", 1D);
@@ -138,7 +138,7 @@ public class RsNpcConfig {
 
         this.whirling = config.getDouble("旋转", 0.0);
 
-        this.enabledDialogPages = RsNpcX.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
+        this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
         this.dialogPagesName = config.getString("对话框.页面", "demo");
         
         //更新配置文件
@@ -196,14 +196,14 @@ public class RsNpcConfig {
 
     public void checkEntity() {
         if (this.location.getLevel() == null && !Server.getInstance().loadLevel(this.levelName)) {
-            RsNpcX.getInstance().getLogger().error("世界: " + this.levelName + " 不存在！NPC: " + this.name + "无法生成！");
+            RsNPC.getInstance().getLogger().error("世界: " + this.levelName + " 不存在！NPC: " + this.name + "无法生成！");
             return;
         }
         if (this.location.getChunk() != null &&
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                this.entityRsNpc = new EntityRsNpc(this.location.getChunk(), Entity.getDefaultNBT(location)
+                this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
                         .putString("rsnpcName", this.name)
                         .putCompound("Skin", (new CompoundTag())
                                 .putByteArray("Data", this.skin.getSkinData().data)
@@ -274,7 +274,7 @@ public class RsNpcConfig {
         return this.messages;
     }
 
-    public EntityRsNpc getEntityRsNpc() {
+    public EntityRsNPC getEntityRsNpc() {
         return this.entityRsNpc;
     }
 

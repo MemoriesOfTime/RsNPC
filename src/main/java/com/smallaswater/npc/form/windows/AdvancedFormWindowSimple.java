@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.form.element.ElementButton;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowSimple;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.form.element.ResponseElementButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -79,7 +79,7 @@ public class AdvancedFormWindowSimple extends FormWindowSimple {
 
     @Override
     public String getJSONData() {
-        return RsNpcX.GSON.toJson(this, FormWindowSimple.class);
+        return RsNPC.GSON.toJson(this, FormWindowSimple.class);
     }
 
 }

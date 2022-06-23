@@ -6,7 +6,7 @@ import cn.nukkit.form.element.ElementButtonImageData;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
-import com.smallaswater.npc.RsNpcX;
+import com.smallaswater.npc.RsNPC;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -75,7 +75,7 @@ public class AdvancedFormWindowCustom extends FormWindowCustom {
 
     @Override
     public String getJSONData() {
-        return RsNpcX.GSON.toJson(this, FormWindowCustom.class);
+        return RsNPC.GSON.toJson(this, FormWindowCustom.class);
     }
 
 }

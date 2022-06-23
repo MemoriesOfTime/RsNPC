@@ -33,11 +33,11 @@ public class AddRouteSubCommand extends BaseSubCommand {
         Player player = (Player) sender;
         if (args.length > 1) {
             String name = args[1];
-            if (!this.rsNpcX.getNpcs().containsKey(name)) {
+            if (!this.rsNPC.getNpcs().containsKey(name)) {
                 sender.sendMessage("§c§lNPC " + name + " 不存在！");
                 return true;
             }
-            RsNpcConfig rsNpcConfig = this.rsNpcX.getNpcs().get(name);
+            RsNpcConfig rsNpcConfig = this.rsNPC.getNpcs().get(name);
             rsNpcConfig.getRoute().add(player.clone());
             List<String> list = rsNpcConfig.getConfig().getStringList("route");
             list.add(player.getX() + ":" + player.getY() + ":" + player.getZ());

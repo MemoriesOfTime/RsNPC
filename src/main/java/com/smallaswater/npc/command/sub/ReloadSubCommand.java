@@ -25,7 +25,7 @@ public class ReloadSubCommand extends BaseSubCommand {
 
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
-        this.rsNpcX.reload();
+        this.rsNPC.reload();
         sender.sendMessage("§a§l已重载配置！");
         return true;
     }

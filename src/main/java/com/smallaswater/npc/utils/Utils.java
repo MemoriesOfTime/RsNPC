@@ -2,15 +2,11 @@ package com.smallaswater.npc.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.level.Location;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
@@ -120,25 +116,10 @@ public class Utils {
     }
 
     public static void sendDialogWindows(@NotNull Player player, @NotNull FormWindowDialog dialog) {
-        if(WINDOW_DIALOG_CACHE.getIfPresent(dialog.getSceneName()) != null) {
-            dialog.updateSceneName();
-        }
-        String actionJson = dialog.getButtonJSONData();
-
-        dialog.getBindEntity().setDataProperty(new ByteEntityData(Entity.DATA_HAS_NPC_COMPONENT, 1));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(/*Entity.DATA_NPC_SKIN_DATA*/ 40, dialog.getSkinData()));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(/*Entity.DATA_NPC_ACTIONS*/ 41, actionJson));
-        dialog.getBindEntity().setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, dialog.getContent()));
-
-        NPCDialoguePacket packet = new NPCDialoguePacket();
-        packet.setRuntimeEntityId(dialog.getEntityId());
-        packet.setAction(NPCDialoguePacket.NPCDialogAction.OPEN);
-        packet.setDialogue(dialog.getContent());
-        packet.setNpcName(dialog.getTitle());
-        packet.setSceneName(dialog.getSceneName());
-        packet.setActionJson(dialog.getButtonJSONData());
+        //在PNX可以直接调用核心的接口
+        //保留这个方法仅为方便合并主分支提交
+        player.showDialogWindow(dialog);
         WINDOW_DIALOG_CACHE.put(dialog.getSceneName(),dialog);
-        player.dataPacket(packet);
     }
 
 }

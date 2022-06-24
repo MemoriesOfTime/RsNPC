@@ -12,11 +12,11 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.network.protocol.NPCRequestPacket;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 
@@ -28,8 +28,8 @@ public class OnListener implements Listener {
 
     private final RsNPC rsNPC;
 
-    public OnListener(RsNPC rsNPC) {
-        this.rsNPC = rsNPC;
+    public OnListener(RsNPC rsNpcX) {
+        this.rsNPC = rsNpcX;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -62,12 +62,11 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNPC) {
+        if (entity instanceof EntityRsNPC entityRsNpc) {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
                 if (damage instanceof Player player) {
-                    EntityRsNPC entityRsNpc = (EntityRsNPC) entity;
                     RsNpcConfig rsNpcConfig = entityRsNpc.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&
                             event instanceof EntityDamageByChildEntityEvent) {
@@ -90,8 +89,10 @@ public class OnListener implements Listener {
 
     @EventHandler
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
-        if (event.getPacket() instanceof NPCRequestPacket) {
-            FormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer());
+        if (event.getPacket() instanceof NPCRequestPacket npcRequestPacket) {
+            if (FormWindowDialog.onEvent(npcRequestPacket, event.getPlayer())) {
+                event.setCancelled(true);
+            }
         }
     }
 

@@ -15,8 +15,6 @@ import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
-import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -92,8 +90,7 @@ public class RsNPC extends PluginBase {
     @Override
     public void onEnable() {
         this.getLogger().info("RsNPC开始加载");
-        this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
-        this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
+
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
         this.getLogger().info("开始加载对话页面数据");

@@ -1,11 +1,12 @@
 package com.smallaswater.npc.dialog;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.protocol.NPCDialoguePacket;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
+import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,7 +85,7 @@ public class DialogPages {
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 
             this.buttons.forEach(button -> {
-                windowDialog.addButton(button.getText()).onClicked((p, response) -> {
+                windowDialog.addButton(new ElementDialogButton(button.getText(), button.getText())).onClicked((p, response) -> {
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();

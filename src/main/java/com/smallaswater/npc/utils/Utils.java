@@ -7,6 +7,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
@@ -55,11 +56,9 @@ public class Utils {
                     continue;
                 }else if ("op".equals(c[1])) {
                     boolean needCancelOP = false;
-                    final String playerName = player.getName();
                     if (!player.isOp()) {
                         needCancelOP = true;
-                        Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(),
-                                () -> Server.getInstance().removeOp(playerName), 1);
+                        PlayerPermissionCheckTask.addCheck(player);
                         player.setOp(true);
                     }
                     try {
@@ -71,12 +70,7 @@ public class Utils {
                                         " 错误:", e);
                     } finally {
                         if (needCancelOP) {
-                            try {
-                                player.setOp(false);
-                            } catch (Exception ignored) {
-
-                            }
-                            Server.getInstance().removeOp(playerName);
+                            player.setOp(false);
                         }
                     }
                     continue;

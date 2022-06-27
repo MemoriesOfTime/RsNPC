@@ -12,7 +12,7 @@ import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
-import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
-    public static final Cache<String, FormWindowDialog> WINDOW_DIALOG_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+    public static final Cache<String, AdvancedFormWindowDialog> WINDOW_DIALOG_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     private Utils() {
         throw new RuntimeException("error");
@@ -113,7 +113,7 @@ public class Utils {
         }
     }
 
-    public static void sendDialogWindows(@NotNull Player player, @NotNull FormWindowDialog dialog) {
+    public static void sendDialogWindows(@NotNull Player player, @NotNull AdvancedFormWindowDialog dialog) {
         if(WINDOW_DIALOG_CACHE.getIfPresent(dialog.getSceneName()) != null) {
             dialog.updateSceneName();
         }

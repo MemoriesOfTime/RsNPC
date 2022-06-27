@@ -5,7 +5,7 @@ import cn.nukkit.entity.Entity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
+import com.smallaswater.npc.utils.dialog.element.AdvancedElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.dialog.response.FormResponseDialog;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class FormWindowDialog implements WindowDialog {
+public class AdvancedFormWindowDialog implements WindowDialog {
 
     protected static final Gson GSON = new Gson();
 
@@ -31,7 +31,7 @@ public class FormWindowDialog implements WindowDialog {
     //in pnx this value is used to be an identifier
     private String sceneName = String.valueOf(dialogId++);
 
-    private List<ElementDialogButton> buttons;
+    private List<AdvancedElementDialogButton> buttons;
 
     private final Entity bindEntity;
 
@@ -39,11 +39,11 @@ public class FormWindowDialog implements WindowDialog {
 
     private boolean isClosed = false;
 
-    public FormWindowDialog(String title, String content, Entity bindEntity) {
+    public AdvancedFormWindowDialog(String title, String content, Entity bindEntity) {
         this(title, content,bindEntity, new ArrayList<>());
     }
 
-    public FormWindowDialog(String title, String content, Entity bindEntity, List<ElementDialogButton> buttons) {
+    public AdvancedFormWindowDialog(String title, String content, Entity bindEntity, List<AdvancedElementDialogButton> buttons) {
         this.title = title;
         this.content = content;
         this.buttons = buttons;
@@ -69,19 +69,19 @@ public class FormWindowDialog implements WindowDialog {
         this.content = content;
     }
 
-    public List<ElementDialogButton> getButtons() {
+    public List<AdvancedElementDialogButton> getButtons() {
         return buttons;
     }
 
-    public void setButtons(List<ElementDialogButton> buttons) {
+    public void setButtons(List<AdvancedElementDialogButton> buttons) {
         this.buttons = buttons;
     }
 
-    public ElementDialogButton addButton(String text) {
-        return this.addButton(new ElementDialogButton(text, text));
+    public AdvancedElementDialogButton addButton(String text) {
+        return this.addButton(new AdvancedElementDialogButton(text, text));
     }
 
-    public ElementDialogButton addButton(ElementDialogButton button) {
+    public AdvancedElementDialogButton addButton(AdvancedElementDialogButton button) {
         this.buttons.add(button);
         return button;
     }
@@ -107,7 +107,7 @@ public class FormWindowDialog implements WindowDialog {
     }
 
     public void setButtonJSONData(String json){
-        this.setButtons(GSON.fromJson(json, new TypeToken<List<ElementDialogButton>>(){}.getType()));
+        this.setButtons(GSON.fromJson(json, new TypeToken<List<AdvancedElementDialogButton>>(){}.getType()));
     }
 
     public String getSceneName() {
@@ -118,7 +118,7 @@ public class FormWindowDialog implements WindowDialog {
         this.sceneName = String.valueOf(dialogId++);
     }
 
-    public FormWindowDialog onClosed(@NotNull BiConsumer<Player, FormResponseDialog> listener) {
+    public AdvancedFormWindowDialog onClosed(@NotNull BiConsumer<Player, FormResponseDialog> listener) {
         this.formClosedListener = Objects.requireNonNull(listener);
         return this;
     }
@@ -135,7 +135,7 @@ public class FormWindowDialog implements WindowDialog {
     }
 
     public static void onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
-        FormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
+        AdvancedFormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
         if (dialog == null) {
             return;
         }
@@ -146,7 +146,7 @@ public class FormWindowDialog implements WindowDialog {
 
         FormResponseDialog response = new FormResponseDialog(packet, dialog);
 
-        ElementDialogButton clickedButton = response.getClickedButton();
+        AdvancedElementDialogButton clickedButton = response.getClickedButton();
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {
             clickedButton.callClicked(player, response);
             //点击按钮后，需要关闭当前窗口或者跳转新的窗口，否则对话框会卡住玩家，所以可以认为当前对话框已经关闭

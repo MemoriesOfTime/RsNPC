@@ -1,8 +1,8 @@
 package com.smallaswater.npc.utils.dialog.response;
 
-import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
+import com.smallaswater.npc.utils.dialog.element.AdvancedElementDialogButton;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
-import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import lombok.Getter;
 
 @Getter
@@ -10,12 +10,12 @@ public class FormResponseDialog {
 
     private long entityRuntimeId;
     private String data;
-    private ElementDialogButton clickedButton;//can be null
+    private AdvancedElementDialogButton clickedButton;//can be null
     private String sceneName;
     private NPCRequestPacket.RequestType requestType;
     private int skinType;
 
-    public FormResponseDialog(NPCRequestPacket packet, FormWindowDialog dialog) {
+    public FormResponseDialog(NPCRequestPacket packet, AdvancedFormWindowDialog dialog) {
         this.entityRuntimeId = packet.getRequestedEntityRuntimeId();
         this.data = packet.getData();
         try {

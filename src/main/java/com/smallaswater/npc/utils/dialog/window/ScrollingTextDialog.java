@@ -8,17 +8,17 @@ import com.smallaswater.npc.utils.Utils;
 public class ScrollingTextDialog implements WindowDialog {
 
     private Player player;
-    private FormWindowDialog dialog;
+    private AdvancedFormWindowDialog dialog;
     private int scrollingSpeed;//unit: gt
     private boolean scrolling = false;
     private int cursor = 0;
     private Task scrollingTask;
 
-    public ScrollingTextDialog(Player player, FormWindowDialog dialog) {
+    public ScrollingTextDialog(Player player, AdvancedFormWindowDialog dialog) {
         this(player, dialog,2);
     }
 
-    public ScrollingTextDialog(Player player, FormWindowDialog dialog, int scrollingSpeed) {
+    public ScrollingTextDialog(Player player, AdvancedFormWindowDialog dialog, int scrollingSpeed) {
         this.player = player;
         this.dialog = dialog;
         scrollingTask = new ScrollingRunner();
@@ -33,11 +33,11 @@ public class ScrollingTextDialog implements WindowDialog {
         this.player = player;
     }
 
-    public FormWindowDialog getDialog() {
+    public AdvancedFormWindowDialog getDialog() {
         return dialog;
     }
 
-    public void setDialog(FormWindowDialog dialog) {
+    public void setDialog(AdvancedFormWindowDialog dialog) {
         this.dialog = dialog;
     }
 
@@ -82,7 +82,7 @@ public class ScrollingTextDialog implements WindowDialog {
     }
     private class ScrollingRunner extends Task {
 
-        private FormWindowDialog clone = new FormWindowDialog(dialog.getTitle(), dialog.getContent(), dialog.getBindEntity());
+        private AdvancedFormWindowDialog clone = new AdvancedFormWindowDialog(dialog.getTitle(), dialog.getContent(), dialog.getBindEntity());
         {
             clone.setSkinData(dialog.getSkinData());
         }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class ElementDialogButton {
+public class AdvancedElementDialogButton {
 
     private String button_name; // json 格式需要，勿改
 
@@ -19,7 +19,7 @@ public class ElementDialogButton {
 
     private transient BiConsumer<Player, FormResponseDialog> clickedListener;
 
-    public ElementDialogButton onClicked(@NotNull BiConsumer<Player, FormResponseDialog> clickedListener) {
+    public AdvancedElementDialogButton onClicked(@NotNull BiConsumer<Player, FormResponseDialog> clickedListener) {
         this.clickedListener = Objects.requireNonNull(clickedListener);
         return this;
     }
@@ -46,15 +46,15 @@ public class ElementDialogButton {
 
     private int type;
 
-    public ElementDialogButton(String name, String text){
+    public AdvancedElementDialogButton(String name, String text){
         this(name, text, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode) {
+    public AdvancedElementDialogButton(String name, String text, Mode mode) {
         this(name, text, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode, int type) {
+    public AdvancedElementDialogButton(String name, String text, Mode mode, int type) {
         this.button_name = name;
         this.text = text;
         this.data = updateButtonData();

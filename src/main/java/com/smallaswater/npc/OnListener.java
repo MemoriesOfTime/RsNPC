@@ -17,7 +17,7 @@ import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
-import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 
 /**
@@ -93,7 +93,7 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
         if (event.getPacket() instanceof NPCRequestPacket) {
-            FormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer());
+            AdvancedFormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer());
         }
     }
 

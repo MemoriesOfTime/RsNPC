@@ -94,10 +94,12 @@ public class OnListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
         if (event.getPacket() instanceof NPCRequestPacket) {
-            AdvancedFormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer());
+            if (AdvancedFormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer())) {
+                event.setCancelled(true);
+            }
         }
     }
 

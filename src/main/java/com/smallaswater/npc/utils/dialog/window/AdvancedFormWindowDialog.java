@@ -134,10 +134,10 @@ public class AdvancedFormWindowDialog implements WindowDialog {
         Utils.sendDialogWindows(player, this);
     }
 
-    public static void onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
+    public static boolean onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
         AdvancedFormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
         if (dialog == null) {
-            return;
+            return false;
         }
 
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
@@ -156,6 +156,7 @@ public class AdvancedFormWindowDialog implements WindowDialog {
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {
             dialog.callClosed(player, response);
         }
+        return true;
     }
 
 }

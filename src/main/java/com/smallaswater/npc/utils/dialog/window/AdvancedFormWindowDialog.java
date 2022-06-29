@@ -1,11 +1,12 @@
 package com.smallaswater.npc.utils.dialog.window;
 
 import cn.nukkit.Player;
+import cn.nukkit.dialog.element.ElementDialogButton;
 import cn.nukkit.dialog.response.FormResponseDialog;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.network.protocol.NPCRequestPacket;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
+import com.smallaswater.npc.utils.dialog.element.AdvancedElementDialogButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class AdvancedFormWindowDialog extends cn.nukkit.dialog.window.FormWindow
     public static boolean onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
         AdvancedFormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
         if (dialog == null) {
-            return false; //只处理RsNPC的对话框
+            return false;
         }
 
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_CLOSING_COMMANDS) {

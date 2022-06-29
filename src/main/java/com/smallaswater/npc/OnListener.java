@@ -17,7 +17,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 
 /**
@@ -28,8 +28,8 @@ public class OnListener implements Listener {
 
     private final RsNPC rsNPC;
 
-    public OnListener(RsNPC rsNpc) {
-        this.rsNPC = rsNpc;
+    public OnListener(RsNPC rsNPC) {
+        this.rsNPC = rsNPC;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -92,10 +92,10 @@ public class OnListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
-        if (event.getPacket() instanceof NPCRequestPacket npcRequestPacket) {
-            if (AdvancedFormWindowDialog.onEvent(npcRequestPacket, event.getPlayer())) {
+        if (event.getPacket() instanceof NPCRequestPacket) {
+            if (AdvancedFormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer())) {
                 event.setCancelled(true);
             }
         }

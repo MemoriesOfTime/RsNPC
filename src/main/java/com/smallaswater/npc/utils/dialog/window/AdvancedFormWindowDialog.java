@@ -45,7 +45,7 @@ public class AdvancedFormWindowDialog extends cn.nukkit.dialog.window.FormWindow
         return button;
     }
 
-    public FormWindowDialog onClosed(@NotNull BiConsumer<Player, FormResponseDialog> listener) {
+    public AdvancedFormWindowDialog onClosed(@NotNull BiConsumer<Player, FormResponseDialog> listener) {
         this.formClosedListener = Objects.requireNonNull(listener);
         return this;
     }

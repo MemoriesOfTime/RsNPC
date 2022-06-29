@@ -8,7 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
-import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
 
@@ -109,7 +109,7 @@ public class Utils {
         }
     }
 
-    public static void sendDialogWindows(@NotNull Player player, @NotNull FormWindowDialog dialog) {
+    public static void sendDialogWindows(@NotNull Player player, @NotNull AdvancedFormWindowDialog dialog) {
         //在PNX可以直接调用核心的接口
         //保留这个方法仅为方便合并主分支提交
         player.showDialogWindow(dialog);

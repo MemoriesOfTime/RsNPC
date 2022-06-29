@@ -8,6 +8,7 @@ import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.utils.dialog.element.ElementDialogButton;
 import com.smallaswater.npc.utils.dialog.window.FormWindowDialog;
 import lombok.Getter;
@@ -90,7 +91,7 @@ public class DialogPages {
                 player.setGamemode(Player.ADVENTURE);
             }
 
-            FormWindowDialog windowDialog = new FormWindowDialog(this.title, this.content, entityRsNpc);
+            AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(this.title, this.content, entityRsNpc);
 
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 

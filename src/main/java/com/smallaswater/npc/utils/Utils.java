@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
-    public static final Cache<String, FormWindowDialog> WINDOW_DIALOG_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+    public static final Cache<String, AdvancedFormWindowDialog> WINDOW_DIALOG_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     private Utils() {
         throw new RuntimeException("error");

@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class ElementDialogButton extends cn.nukkit.dialog.element.ElementDialogButton {
+public class AdvancedElementDialogButton extends cn.nukkit.dialog.element.ElementDialogButton {
 
     private transient BiConsumer<Player, FormResponseDialog> clickedListener;
 
-    public ElementDialogButton onClicked(@NotNull BiConsumer<Player, FormResponseDialog> clickedListener) {
+    public AdvancedElementDialogButton onClicked(@NotNull BiConsumer<Player, FormResponseDialog> clickedListener) {
         this.clickedListener = Objects.requireNonNull(clickedListener);
         return this;
     }
@@ -24,15 +24,15 @@ public class ElementDialogButton extends cn.nukkit.dialog.element.ElementDialogB
         return false;
     }
 
-    public ElementDialogButton(String name, String text){
+    public AdvancedElementDialogButton(String name, String text){
         this(name, text, Mode.BUTTON_MODE);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode) {
+    public AdvancedElementDialogButton(String name, String text, Mode mode) {
         this(name, text, mode, 1);
     }
 
-    public ElementDialogButton(String name, String text, Mode mode, int type) {
+    public AdvancedElementDialogButton(String name, String text, Mode mode, int type) {
         super(name, text, null, mode, type);
     }
 

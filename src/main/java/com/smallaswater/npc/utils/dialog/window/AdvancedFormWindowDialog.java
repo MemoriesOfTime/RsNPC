@@ -13,17 +13,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class FormWindowDialog extends cn.nukkit.dialog.window.FormWindowDialog {
+public class AdvancedFormWindowDialog extends cn.nukkit.dialog.window.FormWindowDialog {
 
     protected BiConsumer<Player, FormResponseDialog> formClosedListener;
 
     private boolean isClosed = false;
 
-    public FormWindowDialog(String title, String content, Entity bindEntity) {
+    public AdvancedFormWindowDialog(String title, String content, Entity bindEntity) {
         this(title, content,bindEntity, new ArrayList<>());
     }
 
-    public FormWindowDialog(String title, String content, Entity bindEntity, List<cn.nukkit.dialog.element.ElementDialogButton> buttons) {
+    public AdvancedFormWindowDialog(String title, String content, Entity bindEntity, List<cn.nukkit.dialog.element.ElementDialogButton> buttons) {
         super(title, content, bindEntity, buttons);
         if (this.getBindEntity() == null) {
             throw new IllegalArgumentException("bindEntity cannot be null!");
@@ -32,14 +32,14 @@ public class FormWindowDialog extends cn.nukkit.dialog.window.FormWindowDialog {
 
     @Deprecated
     public void addButton(String text) {
-        this.addButton(new ElementDialogButton(text, text));
+        this.addButton(new AdvancedElementDialogButton(text, text));
     }
 
-    public ElementDialogButton addAdvancedButton(String text) {
-        return this.addButton(new ElementDialogButton(text, text));
+    public AdvancedElementDialogButton addAdvancedButton(String text) {
+        return this.addButton(new AdvancedElementDialogButton(text, text));
     }
 
-    public ElementDialogButton addButton(ElementDialogButton button) {
+    public AdvancedElementDialogButton addButton(AdvancedElementDialogButton button) {
         super.addButton(button);
         return button;
     }
@@ -61,7 +61,7 @@ public class FormWindowDialog extends cn.nukkit.dialog.window.FormWindowDialog {
     }
 
     public static boolean onEvent(@NotNull NPCRequestPacket packet, @NotNull Player player) {
-        FormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
+        AdvancedFormWindowDialog dialog = Utils.WINDOW_DIALOG_CACHE.getIfPresent(packet.getSceneName());
         if (dialog == null) {
             return false; //只处理RsNPC的对话框
         }
@@ -72,9 +72,9 @@ public class FormWindowDialog extends cn.nukkit.dialog.window.FormWindowDialog {
 
         FormResponseDialog response = new FormResponseDialog(packet, dialog);
 
-        cn.nukkit.dialog.element.ElementDialogButton clickedButton = response.getClickedButton();
+        ElementDialogButton clickedButton = response.getClickedButton();
         if (packet.getRequestType() == NPCRequestPacket.RequestType.EXECUTE_ACTION && clickedButton != null) {
-            if (clickedButton instanceof ElementDialogButton advancedButton) {
+            if (clickedButton instanceof AdvancedElementDialogButton advancedButton) {
                 advancedButton.callClicked(player, response);
             }
             //点击按钮后，需要关闭当前窗口或者跳转新的窗口，否则对话框会卡住玩家，所以可以认为当前对话框已经关闭

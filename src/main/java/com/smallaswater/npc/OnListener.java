@@ -28,8 +28,8 @@ public class OnListener implements Listener {
 
     private final RsNPC rsNPC;
 
-    public OnListener(RsNPC rsNpcX) {
-        this.rsNPC = rsNpcX;
+    public OnListener(RsNPC rsNpc) {
+        this.rsNPC = rsNpc;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -50,11 +50,16 @@ public class OnListener implements Listener {
         if (entity instanceof EntityRsNPC rsNpc) {
             event.setCancelled(true);
             Player player = event.getPlayer();
-            RsNpcConfig config = rsNpc.getConfig();
-            rsNpc.setPauseMoveTick(60);
+            EntityRsNPC entityRsNPC = (EntityRsNPC) entity;
+            RsNpcConfig config = entityRsNPC.getConfig();
+            entityRsNPC.setPauseMoveTick(60);
             Utils.executeCommand(player, config);
             for (String message : config.getMessages()) {
                 player.sendMessage(VariableManage.stringReplace(player, message, config));
+            }
+            if (entityRsNPC.getConfig().isEnabledDialogPages()) {
+                DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(entityRsNPC.getConfig().getDialogPagesName());
+                dialogConfig.getDefaultDialogPage().send(entityRsNPC, player);
             }
         }
     }
@@ -90,7 +95,7 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDataPacketReceive(DataPacketReceiveEvent event) {
         if (event.getPacket() instanceof NPCRequestPacket npcRequestPacket) {
-            if (FormWindowDialog.onEvent(npcRequestPacket, event.getPlayer())) {
+            if (AdvancedFormWindowDialog.onEvent(npcRequestPacket, event.getPlayer())) {
                 event.setCancelled(true);
             }
         }

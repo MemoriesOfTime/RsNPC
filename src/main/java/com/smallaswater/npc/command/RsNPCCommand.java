@@ -7,7 +7,7 @@ import com.smallaswater.npc.command.sub.AddRouteSubCommand;
 import com.smallaswater.npc.command.sub.CreateSubCommand;
 import com.smallaswater.npc.command.sub.DeleteSubCommand;
 import com.smallaswater.npc.command.sub.ReloadSubCommand;
-import com.smallaswater.npc.form.FormHelper;
+import com.smallaswater.npc.utils.FormHelper;
 
 /**
  * @author LT_Name

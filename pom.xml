@@ -86,6 +86,13 @@
         </dependency>
 
         <dependency>
+            <groupId>cn.lanink</groupId>
+            <artifactId>MemoriesOfTime-GameCore</artifactId>
+            <version>1.5.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>

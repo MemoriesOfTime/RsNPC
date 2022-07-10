@@ -1,5 +1,9 @@
-package com.smallaswater.npc.form;
+package com.smallaswater.npc.utils;
 
+import cn.lanink.gamecore.form.element.ResponseElementButton;
+import cn.lanink.gamecore.form.windows.AdvancedFormWindowCustom;
+import cn.lanink.gamecore.form.windows.AdvancedFormWindowModal;
+import cn.lanink.gamecore.form.windows.AdvancedFormWindowSimple;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.form.element.ElementDropdown;
@@ -11,10 +15,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.form.element.ResponseElementButton;
-import com.smallaswater.npc.form.windows.AdvancedFormWindowCustom;
-import com.smallaswater.npc.form.windows.AdvancedFormWindowModal;
-import com.smallaswater.npc.form.windows.AdvancedFormWindowSimple;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;

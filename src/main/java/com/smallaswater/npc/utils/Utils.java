@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.level.Location;
+import cn.nukkit.plugin.Plugin;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
@@ -17,7 +18,10 @@ import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +31,30 @@ public class Utils {
 
     private Utils() {
         throw new RuntimeException("error");
+    }
+
+    public static int checkAndDownloadDepend() {
+        Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
+        if (plugin == null || plugin.isDisabled()) {
+            RsNPC.getInstance().getLogger().info("下载MemoriesOfTime-GameCore依赖中...");
+
+            String gamecore = Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore.jar";
+
+            try {
+                FileOutputStream fos = new FileOutputStream(gamecore);
+                fos.getChannel().transferFrom(Channels.newChannel(new URL(RsNPC.GAME_CORE_URL).openStream()), 0, Long.MAX_VALUE);
+                fos.close();
+            } catch (Exception e) {
+                RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
+                Server.getInstance().getPluginManager().disablePlugin(RsNPC.getInstance());
+                return 1;
+            }
+
+            RsNPC.getInstance().getLogger().info("MemoriesOfTime-GameCore依赖下载成功！");
+            Server.getInstance().getPluginManager().loadPlugin(gamecore);
+            return 2;
+        }
+        return 0;
     }
 
     public static void executeCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {

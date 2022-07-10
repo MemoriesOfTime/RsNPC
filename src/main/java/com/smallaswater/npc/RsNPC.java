@@ -12,7 +12,6 @@ import com.smallaswater.npc.command.RsNPCCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
 import com.smallaswater.npc.entitys.EntityRsNPC;
-import com.smallaswater.npc.form.FormListener;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
@@ -56,6 +55,8 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
+    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.5.6/MemoriesOfTime-GameCore-1.5.6.jar";
+
     static {
         Skin skin = new Skin();
         skin.setTrusted(true);
@@ -92,6 +93,21 @@ public class RsNPC extends PluginBase {
     @Override
     public void onEnable() {
         this.getLogger().info("RsNPC开始加载");
+
+        int checkAndDownloadDepend = Utils.checkAndDownloadDepend();
+        if (checkAndDownloadDepend == 1) {
+            return;
+        }else if (checkAndDownloadDepend == 2) {
+            this.getLogger().info("请重启服务器以保证MemoriesOfTime-GameCore正确加载！");
+            this.getServer().shutdown();
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
         this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
         this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
@@ -106,7 +122,6 @@ public class RsNPC extends PluginBase {
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
 
-        this.getServer().getPluginManager().registerEvents(new FormListener(), this);
         this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
         
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);

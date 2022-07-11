@@ -1,5 +1,6 @@
 package com.smallaswater.npc.dialog;
 
+import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
 import com.google.common.cache.Cache;
@@ -7,8 +8,6 @@ import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
-import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ public class DialogPages {
     private final Config config;
 
     private String defaultPage;
-    private HashMap<String, DialogPage> dialogPageMap = new HashMap<>();
+    private final HashMap<String, DialogPage> dialogPageMap = new HashMap<>();
     public static final Cache<Player, Integer> PLAYER_ORIGINAL_GAME_MODE_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     public DialogPages(@NotNull String name, @NotNull Config config) {
@@ -62,9 +61,9 @@ public class DialogPages {
         private final DialogPages dialogPages;
         @Getter
         private final String key;
-        private String title;
-        private String content;
-        private ArrayList<Button> buttons = new ArrayList<>();
+        private final String title;
+        private final String content;
+        private final ArrayList<Button> buttons = new ArrayList<>();
 
         private String closeGo;
 
@@ -97,11 +96,7 @@ public class DialogPages {
                 windowDialog.addButton(button.getText()).onClicked((p, response) -> {
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
-                            NPCDialoguePacket closeWindowPacket = new NPCDialoguePacket();
-                            closeWindowPacket.setRuntimeEntityId(response.getEntityRuntimeId());
-                            closeWindowPacket.setAction(NPCDialoguePacket.NPCDialogAction.CLOSE);
-                            closeWindowPacket.setSceneName(response.getSceneName());
-                            p.dataPacket(closeWindowPacket);
+                            windowDialog.close(p, response);
                         }else if (buttonAction.getType() == Button.ButtonActionType.GOTO) {
                             dialogPages.getDialogPage(buttonAction.getData()).send(entityRsNpc, player);
                         }else if (buttonAction.getType() == Button.ButtonActionType.EXECUTE_COMMAND) {
@@ -130,7 +125,7 @@ public class DialogPages {
         public static class Button {
 
             @Getter
-            private String text;
+            private final String text;
 
             @Getter
             private final List<ButtonAction> buttonActions = new ArrayList<>();

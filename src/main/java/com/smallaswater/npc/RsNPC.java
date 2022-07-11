@@ -14,8 +14,6 @@ import com.smallaswater.npc.dialog.DialogManager;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCDialoguePacket;
-import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
@@ -52,7 +50,10 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.5.6/MemoriesOfTime-GameCore-1.5.6.jar";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.0";
+    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.0.0-PM1E";
+    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.6.0/MemoriesOfTime-GameCore-1.6.0.jar";
+    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.6.0.0-PM1E/MemoriesOfTime-GameCore-1.6.0.0-PM1E.jar";
 
     static {
         Skin skin = new Skin();
@@ -91,27 +92,21 @@ public class RsNPC extends PluginBase {
     public void onEnable() {
         this.getLogger().info("RsNPC开始加载");
 
-        int checkAndDownloadDepend = Utils.checkAndDownloadDepend();
-        if (checkAndDownloadDepend == 1) {
-            return;
-        }else if (checkAndDownloadDepend == 2) {
-            this.getLogger().info("请重启服务器以保证MemoriesOfTime-GameCore正确加载！");
-            this.getServer().shutdown();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return;
+        switch (Utils.checkAndDownloadDepend()) {
+            case 1:
+                Server.getInstance().getPluginManager().disablePlugin(this);
+                return;
+            case 2:
+                this.getServer().getScheduler().scheduleTask(this, () ->
+                        this.getLogger().warning("MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！")
+                );
+                break;
         }
 
-        this.getServer().getNetwork().registerPacket(NPCDialoguePacket.NETWORK_ID, NPCDialoguePacket.class);
-        this.getServer().getNetwork().registerPacket(NPCRequestPacket.NETWORK_ID, NPCRequestPacket.class);
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
         this.getLogger().info("开始加载对话页面数据");
         this.dialogManager = new DialogManager(this);
-        this.dialogManager.loadAllDialog();
 
         this.getLogger().info("开始加载皮肤");
         this.loadSkins();
@@ -193,7 +188,7 @@ public class RsNPC extends PluginBase {
                             case "1.12.0":
                                 geometryName = getGeometryName(skinJsonFile);
                                 if(geometryName.equals("nullvalue")){
-                                    this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
+                                    this.getLogger().error("RsNPC 暂不支持" + skinName + "皮肤所用格式！请等待更新！");
                                 }else{
                                     skin.generateSkinId(skinName);
                                     skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");

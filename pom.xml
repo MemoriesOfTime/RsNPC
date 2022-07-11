@@ -75,6 +75,10 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>repo-lanink-cn</id>
+            <url>https://repo.lanink.cn/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -88,7 +92,7 @@
         <dependency>
             <groupId>cn.lanink</groupId>
             <artifactId>MemoriesOfTime-GameCore</artifactId>
-            <version>1.5.6</version>
+            <version>1.6.0</version>
             <scope>provided</scope>
         </dependency>
 

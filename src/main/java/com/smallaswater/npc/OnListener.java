@@ -11,13 +11,10 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
-import cn.nukkit.event.server.DataPacketReceiveEvent;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
-import com.smallaswater.npc.utils.dialog.packet.NPCRequestPacket;
-import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 
 /**
@@ -90,15 +87,6 @@ public class OnListener implements Listener {
                         dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
                     }
                 }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onDataPacketReceive(DataPacketReceiveEvent event) {
-        if (event.getPacket() instanceof NPCRequestPacket) {
-            if (AdvancedFormWindowDialog.onEvent((NPCRequestPacket) event.getPacket(), event.getPlayer())) {
-                event.setCancelled(true);
             }
         }
     }

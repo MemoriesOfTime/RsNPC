@@ -42,11 +42,7 @@ public abstract class BaseCommand extends Command {
                 if (subCommands.containsKey(subCommand)) {
                     BaseSubCommand command = this.subCommand.get(this.subCommands.get(subCommand));
                     if (command.canUser(sender)) {
-                        try {
-                            return command.execute(sender, s, args);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        return command.execute(sender, s, args);
                     }else if (sender.isPlayer()) {
                         sender.sendMessage("你没有权限使用这个命令！");
                     }else {

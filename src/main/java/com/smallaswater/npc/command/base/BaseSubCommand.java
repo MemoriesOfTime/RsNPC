@@ -4,8 +4,6 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import com.smallaswater.npc.RsNPC;
 
-import java.io.IOException;
-
 
 /**
  * @author SmallasWater
@@ -47,7 +45,7 @@ public abstract class BaseSubCommand {
      * @param label  label..
      * @return true if true
      */
-    public abstract boolean execute(CommandSender sender, String label, String[] args) throws IOException;
+    public abstract boolean execute(CommandSender sender, String label, String[] args);
 
     /**
      * 指令参数.

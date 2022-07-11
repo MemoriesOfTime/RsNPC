@@ -4,6 +4,8 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import com.smallaswater.npc.command.base.BaseSubCommand;
 
+import java.io.IOException;
+
 /**
  * @author LT_Name
  */
@@ -24,7 +26,7 @@ public class ReloadSubCommand extends BaseSubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String label, String[] args) {
+    public boolean execute(CommandSender sender, String label, String[] args) throws IOException {
         this.rsNPC.reload();
         sender.sendMessage("§a§l已重载配置！");
         return true;

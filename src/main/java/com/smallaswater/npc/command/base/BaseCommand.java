@@ -6,6 +6,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParameter;
 import com.smallaswater.npc.RsNPC;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -41,7 +42,11 @@ public abstract class BaseCommand extends Command {
                 if (subCommands.containsKey(subCommand)) {
                     BaseSubCommand command = this.subCommand.get(this.subCommands.get(subCommand));
                     if (command.canUser(sender)) {
-                        return command.execute(sender, s, args);
+                        try {
+                            return command.execute(sender, s, args);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }else if (sender.isPlayer()) {
                         sender.sendMessage("你没有权限使用这个命令！");
                     }else {

@@ -22,10 +22,7 @@ import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -118,7 +115,7 @@ public class RsNPC extends PluginBase {
 
         this.getLogger().info("开始加载皮肤");
         this.loadSkins();
-        
+
         this.getLogger().info("开始加载NPC");
         this.loadNpcs();
 
@@ -190,23 +187,39 @@ public class RsNPC extends PluginBase {
                         String geometryName = null;
 
                         String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
-                        if ("1.12.0".equals(formatVersion)) {
-                            //TODO 加载1.12.0版本的皮肤
-                            this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
-                        } else { //1.10.0
-                            for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
-                                if (geometryName == null) {
-                                    if (entry.getKey().startsWith("geometry")) {
-                                        geometryName = entry.getKey();
-                                    }
-                                }else {
-                                    break;
+                        skin.setGeometryDataEngineVersion(formatVersion); //设置皮肤版本，主流格式有1.16.0,1.12.0(Blockbench新模型),1.10.0(Blockbench Legacy模型),1.8.0
+                        switch (formatVersion){
+                            case "1.16.0":
+                            case "1.12.0":
+                                geometryName = getGeometryName(skinJsonFile);
+                                if(geometryName.equals("nullvalue")){
+                                    this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
+                                }else{
+                                    skin.generateSkinId(skinName);
+                                    skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
+                                    skin.setGeometryName(geometryName);
+                                    skin.setGeometryData(Utils.readFile(skinJsonFile));
+                                    this.getLogger().info("皮肤 " + skinName + " 读取中");
                                 }
-                            }
-                            skin.generateSkinId(skinName);
-                            skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
-                            skin.setGeometryName(geometryName);
-                            skin.setGeometryData(Utils.readFile(skinJsonFile));
+                                break;
+                            default:
+                                this.getLogger().warning("["+skinJsonFile.getName()+"] 的版本格式为："+formatVersion + "，正在尝试加载！");
+                            case "1.10.0":
+                            case "1.8.0":
+                                for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
+                                    if (geometryName == null) {
+                                        if (entry.getKey().startsWith("geometry")) {
+                                            geometryName = entry.getKey();
+                                        }
+                                    }else {
+                                        break;
+                                    }
+                                }
+                                skin.generateSkinId(skinName);
+                                skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
+                                skin.setGeometryName(geometryName);
+                                skin.setGeometryData(Utils.readFile(skinJsonFile));
+                                break;
                         }
                     }
 
@@ -223,6 +236,20 @@ public class RsNPC extends PluginBase {
                 }
             }
         }
+    }
+
+    public String getGeometryName(File file) {
+        Config originGeometry = new Config(file, Config.JSON);
+        if (!originGeometry.getString("format_version").equals("1.12.0") && !originGeometry.getString("format_version").equals("1.16.0")) {
+            return "nullvalue";
+        }
+        //先读取minecraft:geometry下面的项目
+        List<Map<String, Object>> geometryList = (List<Map<String, Object>>) originGeometry.get("minecraft:geometry");
+        //不知道为何这里改成了数组，所以按照示例文件读取第一项
+        Map<String, Object> geometryMain = geometryList.get(0);
+        //获取description内的所有
+        Map<String, Object> descriptions = (Map<String, Object>) geometryMain.get("description");
+        return (String) descriptions.getOrDefault("identifier", "geometry.unknown"); //获取identifier
     }
 
     public void reload() {

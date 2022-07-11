@@ -192,20 +192,9 @@ public class RsNPC extends PluginBase {
                         String geometryName = null;
 
                         String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
+                        skin.setGeometryDataEngineVersion(formatVersion); //设置皮肤版本，主流格式有1.16.0,1.12.0(Blockbench新模型),1.10.0(Blockbench Legacy模型),1.8.0
                         switch (formatVersion){
                             case "1.16.0":
-                                geometryName = getGeometryName(skinJsonFile);
-                                if(geometryName.equals("nullvalue")){
-                                    this.getLogger().error("RsNPC 暂不支持1.12.0版本格式的皮肤！请等待更新！");
-                                }else{
-                                    skin.generateSkinId(skinName);
-                                    skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
-                                    skin.setGeometryName(geometryName);
-                                    skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                    skin.setGeometryDataEngineVersion("1.16.0"); //设置皮肤版本
-                                    this.getLogger().info("皮肤 " + skinName + " 读取中");
-                                }
-                                break;
                             case "1.12.0":
                                 geometryName = getGeometryName(skinJsonFile);
                                 if(geometryName.equals("nullvalue")){
@@ -215,11 +204,13 @@ public class RsNPC extends PluginBase {
                                     skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
                                     skin.setGeometryName(geometryName);
                                     skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                    skin.setGeometryDataEngineVersion("1.12.0"); //设置皮肤版本
                                     this.getLogger().info("皮肤 " + skinName + " 读取中");
                                 }
                                 break;
+                            default:
+                                this.getLogger().warning("["+skinJsonFile.getName()+"] 的版本格式为："+formatVersion + "，正在尝试加载！");
                             case "1.10.0":
+                            case "1.8.0":
                                 for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
                                     if (geometryName == null) {
                                         if (entry.getKey().startsWith("geometry")) {

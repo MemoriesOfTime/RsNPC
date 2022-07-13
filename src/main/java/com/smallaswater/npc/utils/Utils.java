@@ -1,28 +1,57 @@
 package com.smallaswater.npc.utils;
 
+import cn.lanink.gamecore.utils.VersionUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Location;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import cn.nukkit.plugin.Plugin;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
-import com.smallaswater.npc.utils.dialog.window.AdvancedFormWindowDialog;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Utils {
-
-    public static final Cache<String, AdvancedFormWindowDialog> WINDOW_DIALOG_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-
     private Utils() {
         throw new RuntimeException("error");
+    }
+
+    public static int checkAndDownloadDepend() {
+        Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
+
+        if (plugin != null &&
+                !VersionUtils.checkMinimumVersion(plugin, Server.getInstance().getCodename().equals("PM1E") ? RsNPC.MINIMUM_GAME_CORE_VERSION_PM1E : RsNPC.MINIMUM_GAME_CORE_VERSION)) {
+            RsNPC.getInstance().getLogger().warning("MemoriesOfTime-GameCore依赖版本太低！正在尝试更新版本...");
+            Server.getInstance().getPluginManager().disablePlugin(plugin);
+        }
+
+        if (plugin == null || plugin.isDisabled()) {
+            RsNPC.getInstance().getLogger().info("下载MemoriesOfTime-GameCore依赖中...");
+
+            String gamecore = Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore.jar";
+
+            try {
+                FileOutputStream fos = new FileOutputStream(gamecore);
+                URL url = new URL(Server.getInstance().getCodename().equals("PM1E") ? RsNPC.GAME_CORE_URL_PM1E : RsNPC.GAME_CORE_URL);
+                fos.getChannel().transferFrom(Channels.newChannel(url.openStream()), 0, Long.MAX_VALUE);
+                fos.close();
+            } catch (Exception e) {
+                RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
+                return 1;
+            }
+
+            RsNPC.getInstance().getLogger().info("MemoriesOfTime-GameCore依赖下载成功！");
+            Server.getInstance().getPluginManager().loadPlugin(gamecore);
+            return 2;
+        }
+        return 0;
     }
 
     public static void executeCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
@@ -107,13 +136,6 @@ public class Utils {
         }else {
             return 270D;
         }
-    }
-
-    public static void sendDialogWindows(@NotNull Player player, @NotNull AdvancedFormWindowDialog dialog) {
-        //在PNX可以直接调用核心的接口
-        //保留这个方法仅为方便合并主分支提交
-        player.showDialogWindow(dialog);
-        WINDOW_DIALOG_CACHE.put(dialog.getSceneName(),dialog);
     }
 
 }

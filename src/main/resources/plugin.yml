@@ -1,11 +1,13 @@
 name: RsNPC
 main: com.smallaswater.npc.RsNPC
-version: "2.0.2-PNX-SNAPSHOT"
+version: "2.1.0-PNX-SNAPSHOT"
 api:
   - "1.0.9"
   - "1.0.11"
 authors: ["若水", "LT_Name"]
 load: POSTWORLD
+softdepend:
+  - "MemoriesOfTime-GameCore"
 
 permissions:
   RsNPC.admin:

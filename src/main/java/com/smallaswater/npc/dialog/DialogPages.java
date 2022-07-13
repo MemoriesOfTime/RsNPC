@@ -2,7 +2,6 @@ package com.smallaswater.npc.dialog;
 
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.NPCDialoguePacket;
 import cn.nukkit.utils.Config;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -94,7 +93,7 @@ public class DialogPages {
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 
             this.buttons.forEach(button -> {
-                windowDialog.addButton(button.getText()).onClicked((p, response) -> {
+                windowDialog.addAdvancedButton(button.getText()).onClicked((p, response) -> {
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             windowDialog.close(p, response);

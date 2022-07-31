@@ -178,6 +178,9 @@ public class FormHelper {
         custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //5
         //皮肤
         ArrayList<String> skinOptions = new ArrayList<>(RsNPC.getInstance().getSkins().keySet());
+        if (skinOptions.isEmpty()) {
+            skinOptions.add("Default Skin");
+        }
         int defaultOption = 0;
         for (String name : skinOptions) {
             if (name.equals(rsNpcConfig.getSkinName())) {

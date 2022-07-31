@@ -29,7 +29,7 @@ public class Utils {
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
         if (plugin != null &&
-                !VersionUtils.checkMinimumVersion(plugin, Server.getInstance().getCodename().equals("PM1E") ? RsNPC.MINIMUM_GAME_CORE_VERSION_PM1E : RsNPC.MINIMUM_GAME_CORE_VERSION)) {
+                !VersionUtils.checkMinimumVersion(plugin, RsNPC.MINIMUM_GAME_CORE_VERSION)) {
             RsNPC.getInstance().getLogger().warning("MemoriesOfTime-GameCore依赖版本太低！正在尝试更新版本...");
             Server.getInstance().getPluginManager().disablePlugin(plugin);
         }
@@ -41,7 +41,7 @@ public class Utils {
 
             try {
                 FileOutputStream fos = new FileOutputStream(gamecore);
-                URL url = new URL(Server.getInstance().getCodename().equals("PM1E") ? RsNPC.GAME_CORE_URL_PM1E : RsNPC.GAME_CORE_URL);
+                URL url = new URL(RsNPC.GAME_CORE_URL);
                 fos.getChannel().transferFrom(Channels.newChannel(url.openStream()), 0, Long.MAX_VALUE);
                 fos.close();
             } catch (Exception e) {

@@ -85,7 +85,7 @@ public class RouteFinder {
     
             LinkedList<Node> nextNodes = new LinkedList<>();
             
-            for (int y = -1; y <= 1; y++) {
+            for (int y = 1; y > -1; y--) {
                 boolean N = this.check(nowNode, nextNodes, completeList, 0, y, -1);
                 boolean E = this.check(nowNode, nextNodes, completeList, 1, y, 0);
                 boolean S = this.check(nowNode, nextNodes, completeList, 0, y, 1);

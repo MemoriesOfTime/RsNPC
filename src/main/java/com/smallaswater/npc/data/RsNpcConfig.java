@@ -2,6 +2,7 @@ package com.smallaswater.npc.data;
 
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -11,6 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
+import com.smallaswater.npc.entitys.EntityRsNPCCustomEntity;
 import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.variable.VariableManage;
@@ -84,6 +86,8 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
+    private CustomEntityDefinition customEntityDefinition = null;
+
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
         this.config = config;
         this.name = name;
@@ -141,6 +145,13 @@ public class RsNpcConfig {
 
         this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
         this.dialogPagesName = config.getString("对话框.页面", "demo");
+
+        if (this.config.exists("CustomEntity")) {
+            this.customEntityDefinition = CustomEntityDefinition.builder()
+                    .identifier(config.getString("CustomEntity.identifier"))
+                    .spawnEgg(false)
+                    .summonable(false).build();
+        }
         
         //更新配置文件
         this.save();
@@ -191,6 +202,10 @@ public class RsNpcConfig {
 
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
+
+        if (this.customEntityDefinition != null) {
+            config.set("CustomEntity.identifier", this.customEntityDefinition.getStringId());
+        }
         
         this.config.save();
     }
@@ -204,11 +219,20 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
-                        .putString("rsnpcName", this.name)
-                        .putCompound("Skin", (new CompoundTag())
-                                .putByteArray("Data", this.skin.getSkinData().data)
-                                .putString("ModelId", this.skin.getSkinId())), this);
+                if (this.customEntityDefinition != null) {
+                    this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), Entity.getDefaultNBT(location)
+                            .putString("rsnpcName", this.name)
+                            .putCompound("Skin", (new CompoundTag())
+                                    .putByteArray("Data", this.skin.getSkinData().data)
+                                    .putString("ModelId", this.skin.getSkinId())), this);
+                    ((EntityRsNPCCustomEntity) this.entityRsNpc).setDefinition(this.customEntityDefinition);
+                }else {
+                    this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
+                            .putString("rsnpcName", this.name)
+                            .putCompound("Skin", (new CompoundTag())
+                                    .putByteArray("Data", this.skin.getSkinData().data)
+                                    .putString("ModelId", this.skin.getSkinId())), this);
+                }
                 this.entityRsNpc.setSkin(this.skin);
                 this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();

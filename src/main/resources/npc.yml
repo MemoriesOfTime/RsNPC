@@ -33,3 +33,5 @@ route: []
 对话框:
   启用: false
   页面: "demo"
+CustomEntity:
+  identifier: "RsNPC"

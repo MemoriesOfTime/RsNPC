@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.1.0-PNX-SNAPSHOT</version>
+    <version>2.1.0-PNX<!-- -SNAPSHOT--></version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -87,14 +87,14 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>powernukkitx</artifactId>
-            <version>1.6.0.0-PNX</version>
+            <version>1.19.20-r4</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>cn.lanink</groupId>
             <artifactId>MemoriesOfTime-GameCore</artifactId>
-            <version>1.6.0.1-PNX-SNAPSHOT</version>
+            <version>1.6.0.1-PNX</version>
             <scope>provided</scope>
         </dependency>
 

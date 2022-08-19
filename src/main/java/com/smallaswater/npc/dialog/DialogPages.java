@@ -3,8 +3,6 @@ package com.smallaswater.npc.dialog;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
 import cn.nukkit.Player;
 import cn.nukkit.utils.Config;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
@@ -16,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author LT_Name
@@ -28,7 +25,6 @@ public class DialogPages {
 
     private String defaultPage;
     private final HashMap<String, DialogPage> dialogPageMap = new HashMap<>();
-    public static final Cache<Player, Integer> PLAYER_ORIGINAL_GAME_MODE_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
     public DialogPages(@NotNull String name, @NotNull Config config) {
         this.name = name;
@@ -83,10 +79,12 @@ public class DialogPages {
 
         public void send(@NotNull EntityRsNPC entityRsNpc, @NotNull Player player) {
             //RsNPC的对话框没有实现边界界面，创造玩家先转为冒险模式，再发送对话框，最后恢复玩家的游戏模式
+            int beforeGameMode = -1;
             if (player.getGamemode() == Player.CREATIVE) {
-                PLAYER_ORIGINAL_GAME_MODE_CACHE.put(player, player.getGamemode());
+                beforeGameMode = player.getGamemode();
                 player.setGamemode(Player.ADVENTURE);
             }
+            final int finalBeforeGameMode = beforeGameMode;
 
             AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(this.title, this.content, entityRsNpc);
 
@@ -94,6 +92,10 @@ public class DialogPages {
 
             this.buttons.forEach(button -> {
                 windowDialog.addAdvancedButton(button.getText()).onClicked((p, response) -> {
+                    if (finalBeforeGameMode != -1) {
+                        p.setGamemode(finalBeforeGameMode);
+                    }
+
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             windowDialog.close(p, response);
@@ -108,11 +110,9 @@ public class DialogPages {
                 });
             });
 
-
             windowDialog.onClosed((p, response) -> {
-                Integer gameMode = PLAYER_ORIGINAL_GAME_MODE_CACHE.getIfPresent(p);
-                if (gameMode != null) {
-                    p.setGamemode(gameMode);
+                if (finalBeforeGameMode != -1) {
+                    p.setGamemode(finalBeforeGameMode);
                 }
                 if (this.closeGo != null) {
                     dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);

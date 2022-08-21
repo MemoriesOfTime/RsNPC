@@ -158,38 +158,41 @@ public class RsNPC extends PluginBase {
 
     private void loadSkins() {
         File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
-        if (files != null && files.length > 0) {
-            for (File file : files) {
-                String skinName = file.getName();
-                File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
-                if (skinDataFile.exists()) {
-                    Skin skin = new Skin();
+        if (files == null || files.length == 0) {
+            return;
+        }
+        for (File file : files) {
+            String skinName = file.getName();
+            File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+            if (skinDataFile.exists()) {
+                Skin skin = new Skin();
 
-                    skin.setSkinId(skinName);
+                skin.setSkinId(skinName);
 
+                try {
+                    skin.setSkinData(ImageIO.read(skinDataFile));
+                    SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+                } catch (Exception e) {
+                    this.getLogger().error("皮肤 " + skinName + " 读取错误，请检查图片格式或图片尺寸！", e);
+                    continue;
+                }
+
+                //如果是4D皮肤
+                File skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
+                if (skinJsonFile.exists()) {
                     try {
-                        skin.setSkinData(ImageIO.read(skinDataFile));
-                        SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
-                    } catch (Exception e) {
-                        this.getLogger().error("皮肤 " + skinName + " 读取错误，请检查图片格式或图片尺寸！", e);
-                        continue;
-                    }
-
-                    //如果是4D皮肤
-                    File skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
-                    if (skinJsonFile.exists()) {
                         Map<String, Object> skinJson = (new Config(this.getDataFolder() + "/Skins/" + skinName + "/skin.json", Config.JSON)).getAll();
                         String geometryName = null;
 
                         String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
                         skin.setGeometryDataEngineVersion(formatVersion); //设置皮肤版本，主流格式有1.16.0,1.12.0(Blockbench新模型),1.10.0(Blockbench Legacy模型),1.8.0
-                        switch (formatVersion){
+                        switch (formatVersion) {
                             case "1.16.0":
                             case "1.12.0":
                                 geometryName = getGeometryName(skinJsonFile);
-                                if(geometryName.equals("nullvalue")){
+                                if (geometryName.equals("nullvalue")) {
                                     this.getLogger().error("RsNPC 暂不支持" + skinName + "皮肤所用格式！请等待更新！");
-                                }else{
+                                } else {
                                     skin.generateSkinId(skinName);
                                     skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
                                     skin.setGeometryName(geometryName);
@@ -198,7 +201,7 @@ public class RsNPC extends PluginBase {
                                 }
                                 break;
                             default:
-                                this.getLogger().warning("["+skinJsonFile.getName()+"] 的版本格式为："+formatVersion + "，正在尝试加载！");
+                                this.getLogger().warning("[" + skinJsonFile.getName() + "] 的版本格式为：" + formatVersion + "，正在尝试加载！");
                             case "1.10.0":
                             case "1.8.0":
                                 for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
@@ -206,7 +209,7 @@ public class RsNPC extends PluginBase {
                                         if (entry.getKey().startsWith("geometry")) {
                                             geometryName = entry.getKey();
                                         }
-                                    }else {
+                                    } else {
                                         break;
                                     }
                                 }
@@ -216,19 +219,21 @@ public class RsNPC extends PluginBase {
                                 skin.setGeometryData(Utils.readFile(skinJsonFile));
                                 break;
                         }
+                    }catch (Exception e) {
+                        this.getLogger().error("皮肤 " + skinName + " 模型加载失败，请检查模型文件！", e);
                     }
-
-                    skin.setTrusted(true);
-
-                    if (skin.isValid()) {
-                        this.skins.put(skinName, skin);
-                        this.getLogger().info("皮肤 " + skinName + " 读取完成");
-                    }else {
-                        this.getLogger().error("皮肤 " + skinName + " 验证失败，请检查皮肤文件完整性！");
-                    }
-                } else {
-                    this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png 模型文件命名为 skin.json");
                 }
+
+                skin.setTrusted(true);
+
+                if (skin.isValid()) {
+                    this.skins.put(skinName, skin);
+                    this.getLogger().info("皮肤 " + skinName + " 读取完成");
+                } else {
+                    this.getLogger().error("皮肤 " + skinName + " 验证失败，请检查皮肤文件完整性！");
+                }
+            } else {
+                this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png 模型文件命名为 skin.json");
             }
         }
     }

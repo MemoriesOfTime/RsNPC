@@ -7,7 +7,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.SerializedImage;
-import com.google.gson.Gson;
 import com.smallaswater.npc.command.RsNPCCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
@@ -36,7 +35,6 @@ public class RsNPC extends PluginBase {
             new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors() * 4),
             new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
-    public static final Gson GSON = new Gson();
 
     private static RsNPC rsNPC;
 
@@ -52,8 +50,8 @@ public class RsNPC extends PluginBase {
 
     public static final String MINIMUM_GAME_CORE_VERSION = "1.6.0";
     public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.0.0-PM1E";
-    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.6.0/MemoriesOfTime-GameCore-1.6.0.jar";
-    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/1.6.0.0-PM1E/MemoriesOfTime-GameCore-1.6.0.0-PM1E.jar";
+    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
+    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
 
     static {
         Skin skin = new Skin();
@@ -163,8 +161,16 @@ public class RsNPC extends PluginBase {
         }
         for (File file : files) {
             String skinName = file.getName();
-            File skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
-            if (skinDataFile.exists()) {
+
+            File skinDataFile = null;
+            if (file.isFile() && skinName.endsWith(".png")) {
+                skinName = skinName.replace(".png", "");
+                skinDataFile = file;
+            }else if (file.isDirectory()) {
+                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+            }
+
+            if (skinDataFile != null && skinDataFile.exists()) {
                 Skin skin = new Skin();
 
                 skin.setSkinId(skinName);
@@ -178,9 +184,14 @@ public class RsNPC extends PluginBase {
                 }
 
                 //如果是4D皮肤
-                File skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
-                if (skinJsonFile.exists()) {
-                    try {
+                try {
+                    File skinJsonFile = null;
+                    if (file.isFile()) {
+                        skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + ".json");
+                    }else if (file.isFile()) {
+                        skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
+                    }
+                    if (skinJsonFile != null && skinJsonFile.exists()) {
                         Map<String, Object> skinJson = (new Config(this.getDataFolder() + "/Skins/" + skinName + "/skin.json", Config.JSON)).getAll();
                         String geometryName = null;
 
@@ -219,9 +230,9 @@ public class RsNPC extends PluginBase {
                                 skin.setGeometryData(Utils.readFile(skinJsonFile));
                                 break;
                         }
-                    }catch (Exception e) {
-                        this.getLogger().error("皮肤 " + skinName + " 模型加载失败，请检查模型文件！", e);
                     }
+                }catch (Exception e) {
+                    this.getLogger().error("皮肤 " + skinName + " 模型加载失败，请检查模型文件！", e);
                 }
 
                 skin.setTrusted(true);

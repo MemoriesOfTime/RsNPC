@@ -136,7 +136,7 @@ public class Utils {
         try {
             content = cn.nukkit.utils.Utils.readFile(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            RsNPC.getInstance().getLogger().error("Read File Error!", e);
         }
         return content;
     }

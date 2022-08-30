@@ -1,4 +1,5 @@
 #一个对话配置演示文件
+configVersion: 1
 defaultPage: "1" #key
 pages:
   - key: "1"

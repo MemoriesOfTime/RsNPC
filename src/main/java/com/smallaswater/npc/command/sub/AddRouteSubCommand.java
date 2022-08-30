@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.math.Vector3;
 import com.smallaswater.npc.command.base.BaseSubCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 
@@ -40,7 +41,8 @@ public class AddRouteSubCommand extends BaseSubCommand {
             RsNpcConfig rsNpcConfig = this.rsNPC.getNpcs().get(name);
             rsNpcConfig.getRoute().add(player.clone());
             List<String> list = rsNpcConfig.getConfig().getStringList("route");
-            list.add(player.getX() + ":" + player.getY() + ":" + player.getZ());
+            Vector3 floor = player.floor().add(0.5, 0.01, 0.5);
+            list.add(floor.getX() + ":" + player.getY() + ":" + player.getZ());
             rsNpcConfig.getConfig().set("route", list);
             rsNpcConfig.getConfig().save();
             sender.sendMessage("§a§l已添加到路径");

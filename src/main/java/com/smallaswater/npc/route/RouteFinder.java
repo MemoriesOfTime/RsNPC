@@ -28,6 +28,8 @@ public class RouteFinder {
     private final Vector3 start;
     private final Vector3 end;
     private final int distance;
+
+    private final int maxUseTime = 30;
     
     LinkedList<Node> nodes = new LinkedList<>();
     
@@ -77,9 +79,9 @@ public class RouteFinder {
                 }
                 break;
             }
-    
-            //超时跳出 (60s)
-            if (Server.getInstance().getTick() - this.startTick > 20 * 60) {
+
+            //超时跳出
+            if (Server.getInstance().getTick() - this.startTick > 20 * this.maxUseTime) {
                 break;
             }
     

@@ -1,0 +1,10 @@
+plugin.depend.gamecore.needReload: "MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！"
+
+plugin.load.startLoad: "RsNPC开始加载"
+plugin.load.startLoadDialog: "开始加载对话页面数据"
+plugin.load.startLoadSkin: "开始加载皮肤"
+plugin.load.startLoadNPC: "开始加载NPC"
+plugin.load.complete: "RsNPC加载完成"
+plugin.load.skin.dataError: "皮肤 %1% 读取错误，请检查图片格式或图片尺寸！"
+
+plugin.disable.complete: "RsNPC卸载完成"

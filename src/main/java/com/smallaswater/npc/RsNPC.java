@@ -187,7 +187,7 @@ public class RsNPC extends PluginBase {
                     File skinJsonFile = null;
                     if (file.isFile()) {
                         skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + ".json");
-                    }else if (file.isFile()) {
+                    }else if (file.isDirectory()) {
                         skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
                     }
                     if (skinJsonFile != null && skinJsonFile.exists()) {

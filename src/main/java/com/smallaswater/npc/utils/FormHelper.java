@@ -104,7 +104,7 @@ public class FormHelper {
 
         StringBuilder route = new StringBuilder();
         if (rsNpcConfig.getRoute().isEmpty()) {
-            route.append("无");
+            route.append("无(不移动)");
         }else {
             for (Vector3 vector3 : rsNpcConfig.getRoute()) {
                 route.append("\n  ")
@@ -138,9 +138,14 @@ public class FormHelper {
                 "\n  间隔(秒): " + rsNpcConfig.getShowEmoteInterval() +
                 "\n允许抛射物触发: " + (rsNpcConfig.isCanProjectilesTrigger() ? "是" : "否") +
                 "\n点击执行指令: " + cmds +
-                "\n发送消息: " + messages +
-                "\n基础移动速度: " + rsNpcConfig.getBaseMoveSpeed() +
-                "\n路径：" + route +
+                "\n点击发送消息: " + messages +
+                "\n对话框:" +
+                "\n  启用对话框: " + (rsNpcConfig.isEnabledDialogPages() ? "是" : "否") +
+                "\n  对话框配置: " + rsNpcConfig.getDialogPagesName() +
+                "\n移动:" +
+                "\n  基础移动速度: " + rsNpcConfig.getBaseMoveSpeed() +
+                "\n  启用辅助寻路: " + (rsNpcConfig.isEnablePathfinding() ? "是" : "否") +
+                "\n  路径: " + route +
                 "\n\n");
 
         simple.addButton(new ResponseElementButton("修改基础配置")
@@ -178,20 +183,31 @@ public class FormHelper {
         custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //5
         //皮肤
         ArrayList<String> skinOptions = new ArrayList<>(RsNPC.getInstance().getSkins().keySet());
-        if (skinOptions.isEmpty()) {
-            skinOptions.add("Default Skin");
-        }
-        int defaultOption = 0;
+        skinOptions.add("Default Skin");
+        int defaultOption = -1;
         for (String name : skinOptions) {
+            defaultOption++;
             if (name.equals(rsNpcConfig.getSkinName())) {
                 break;
             }
-            defaultOption++;
         }
         custom.addElement(new ElementDropdown("皮肤", skinOptions, defaultOption)); //6
         custom.addElement(new ElementInput("实体大小", "1.0", rsNpcConfig.getScale() + "")); //7
         custom.addElement(new ElementToggle("看向玩家", rsNpcConfig.isLookAtThePlayer())); //8
         custom.addElement(new ElementToggle("允许抛射物触发", rsNpcConfig.isCanProjectilesTrigger())); //9
+        custom.addElement(new ElementToggle("启用对话框", rsNpcConfig.isEnabledDialogPages())); //10
+        ArrayList<String> dialogOptions = new ArrayList<>(RsNPC.getInstance().getDialogManager().getDialogConfigs().keySet());
+        if (dialogOptions.isEmpty()) {
+            dialogOptions.add("Null");
+        }
+        defaultOption = -1;
+        for (String name : dialogOptions) {
+            defaultOption++;
+            if (name.equals(rsNpcConfig.getDialogPagesName())) {
+                break;
+            }
+        }
+        custom.addElement(new ElementDropdown("对话框配置", dialogOptions, defaultOption)); //11
 
         custom.onResponded((formResponseCustom, cp) -> {
             String showName = formResponseCustom.getInputResponse(0);
@@ -227,6 +243,8 @@ public class FormHelper {
             rsNpcConfig.setScale(scale);
             rsNpcConfig.setLookAtThePlayer(formResponseCustom.getToggleResponse(8));
             rsNpcConfig.setCanProjectilesTrigger(formResponseCustom.getToggleResponse(9));
+            rsNpcConfig.setEnabledDialogPages(formResponseCustom.getToggleResponse(10));
+            rsNpcConfig.setDialogPagesName(formResponseCustom.getDropdownResponse(11).getElementContent());
             //保存并重载
             rsNpcConfig.save();
             if (rsNpcConfig.getEntityRsNpc() != null) {
@@ -482,7 +500,9 @@ public class FormHelper {
             "RsNPC是开源免费的插件！",
             "即使从梦中醒来，还会有回忆留下。",
             "放火烧山可莉完蛋",
-            "RsNPC的寻路只是辅助性质的哦！"
+            "RsNPC的寻路只是辅助性质的哦！",
+            "路径点距离较远时，RsNPC可能会占用更多的性能进行寻路！",
+            "创造模式无法正常使用对话框功能，RsNPC会尝试把您的游戏模式暂时改为冒险模式"
     );
 
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM-dd");
@@ -510,6 +530,8 @@ public class FormHelper {
                 return "守卫边疆，无怨无悔;抢险抗灾，身先士卒;科技建军，国防稳固;为国为民，军功无量。八一建军节，向人民子弟兵问好，愿他们兵强马壮，再立新功!";
             case "08-15":
                 return "许一个美好的心愿，祝你快乐连连，送一份美妙的感觉，祝你万事圆圆，传一份短短的祝福，祝你微笑甜甜。中秋节快乐！";
+            case "09-03":
+                return "中国人民抗日战争胜利纪念日！珍惜现在的和平生活，同时不要忘了那些为现在和平生活付出努力甚至生命的人，铭记历史，勿忘国耻，吾辈自强，奋勇前进！";
             case "10-01":
                 return "灿烂的烟花绽放，欢乐的歌声飞扬，我的祝福乘着洁白的月光，悄悄来到你身旁。每逢佳节倍思友，愿你的幸福乐无忧。国庆佳节，为朋友祝福。";
             case "12-13":

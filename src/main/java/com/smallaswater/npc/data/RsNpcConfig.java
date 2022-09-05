@@ -76,8 +76,10 @@ public class RsNpcConfig {
     @Getter
     private final double whirling;
 
+    @Setter
     @Getter
     private boolean enabledDialogPages;
+    @Setter
     @Getter
     private String dialogPagesName;
 

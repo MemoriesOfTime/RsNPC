@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class DialogManager {
 
-    private RsNPC rsNPC;
+    private final RsNPC rsNPC;
     private final HashMap<String, DialogPages> dialogConfigs = new HashMap<>();
 
     public DialogManager(@NotNull RsNPC rsNPC) {
@@ -48,6 +48,10 @@ public class DialogManager {
 
     public DialogPages getDialogConfig(@NotNull String name) {
         return this.dialogConfigs.get(name);
+    }
+
+    public HashMap<String, DialogPages> getDialogConfigs() {
+        return new HashMap<>(dialogConfigs); //不允许直接修改源Map
     }
 
 }

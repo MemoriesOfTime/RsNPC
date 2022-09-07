@@ -88,6 +88,7 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
+    private boolean enableCustomEntity = false;
     private CustomEntityDefinition customEntityDefinition = null;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
@@ -149,10 +150,13 @@ public class RsNpcConfig {
         this.dialogPagesName = config.getString("对话框.页面", "demo");
 
         if (this.config.exists("CustomEntity")) {
-            this.customEntityDefinition = CustomEntityDefinition.builder()
-                    .identifier(config.getString("CustomEntity.identifier"))
-                    .spawnEgg(false)
-                    .summonable(false).build();
+            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
+            if (this.enableCustomEntity) {
+                this.customEntityDefinition = CustomEntityDefinition.builder()
+                        .identifier(config.getString("CustomEntity.identifier"))
+                        .spawnEgg(false)
+                        .summonable(false).build();
+            }
         }
         
         //更新配置文件
@@ -205,7 +209,8 @@ public class RsNpcConfig {
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
 
-        if (this.customEntityDefinition != null) {
+        if (this.enableCustomEntity && this.customEntityDefinition != null) {
+            config.set("CustomEntity.enable", true);
             config.set("CustomEntity.identifier", this.customEntityDefinition.getStringId());
         }
         

@@ -48,10 +48,10 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.0";
-    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.0.0-PM1E";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.2";
+    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.2.0-PM1E";
     public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
-    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
+    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
 
     static {
         Skin skin = new Skin();

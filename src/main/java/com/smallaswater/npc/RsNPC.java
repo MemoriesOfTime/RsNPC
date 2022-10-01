@@ -158,12 +158,12 @@ public class RsNPC extends PluginBase {
                 try {
                     rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
                 } catch (Exception e) {
-                    this.getLogger().error("加载NPC出现错误！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.loadNPCError"), e);
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
-                this.getLogger().info("NPC: " + rsNpcConfig.getName() + " 加载完成！");
+                this.getLogger().info(this.getLanguage().translateString("plugin.load.loadNPCComplete", rsNpcConfig.getName()));
             }
         }
     }

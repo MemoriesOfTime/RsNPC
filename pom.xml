@@ -94,7 +94,7 @@
         <dependency>
             <groupId>cn.lanink</groupId>
             <artifactId>MemoriesOfTime-GameCore</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.2.0-PNX</version>
             <scope>provided</scope>
         </dependency>
 

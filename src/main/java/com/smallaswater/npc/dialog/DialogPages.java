@@ -6,6 +6,7 @@ import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -78,7 +79,7 @@ public class DialogPages {
         }
 
         public void send(@NotNull EntityRsNPC entityRsNpc, @NotNull Player player) {
-            //RsNPC的对话框没有实现边界界面，创造玩家先转为冒险模式，再发送对话框，最后恢复玩家的游戏模式
+            //RsNPC的对话框没有实现编辑界面，创造玩家先转为冒险模式，再发送对话框，最后恢复玩家的游戏模式
             int beforeGameMode = -1;
             if (player.getGamemode() == Player.CREATIVE) {
                 beforeGameMode = player.getGamemode();
@@ -86,7 +87,11 @@ public class DialogPages {
             }
             final int finalBeforeGameMode = beforeGameMode;
 
-            AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(this.title, this.content, entityRsNpc);
+            AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(
+                    VariableManage.stringReplace(player, this.title, entityRsNpc.getConfig()),
+                    VariableManage.stringReplace(player, this.content, entityRsNpc.getConfig()),
+                    entityRsNpc
+            );
 
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 
@@ -115,7 +120,7 @@ public class DialogPages {
                     p.setGamemode(finalBeforeGameMode);
                 }
                 if (this.closeGo != null) {
-                    dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
+                    this.dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
                 }
             });
 

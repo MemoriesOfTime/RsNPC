@@ -2,6 +2,8 @@ package com.smallaswater.npc.route;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFence;
+import cn.nukkit.block.BlockFenceGate;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.ParticleEffect;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -28,6 +30,9 @@ public class RouteFinder {
     private final Vector3 start;
     private final Vector3 end;
     private final int distance;
+
+    LinkedList<Node> openNodes = new LinkedList<>();
+    ArrayList<Vector3> closeNodes = new ArrayList<>();
     
     LinkedList<Node> nodes = new LinkedList<>();
     
@@ -59,13 +64,10 @@ public class RouteFinder {
      * 寻路
      */
     private void process() {
-        LinkedList<Node> needChecks = new LinkedList<>();
-        ArrayList<Vector3> completeList = new ArrayList<>();
-
-        needChecks.add(new Node(this.start));
+        this.openNodes.add(new Node(this.start));
         
         Node nowNode;
-        while ((nowNode = needChecks.poll()) != null && Server.getInstance().isRunning()) {
+        while ((nowNode = this.openNodes.poll()) != null && Server.getInstance().isRunning()) {
             //到达终点，保存路径
             if (nowNode.getVector3().equals(this.getEnd())) {
                 Node parent = nowNode;
@@ -86,22 +88,22 @@ public class RouteFinder {
             LinkedList<Node> nextNodes = new LinkedList<>();
             
             for (int y = 1; y > -1; y--) {
-                boolean N = this.check(nowNode, nextNodes, completeList, 0, y, -1);
-                boolean E = this.check(nowNode, nextNodes, completeList, 1, y, 0);
-                boolean S = this.check(nowNode, nextNodes, completeList, 0, y, 1);
-                boolean W = this.check(nowNode, nextNodes, completeList, -1, y, 0);
+                boolean N = this.check(nowNode, nextNodes, 0, y, -1);
+                boolean E = this.check(nowNode, nextNodes, 1, y, 0);
+                boolean S = this.check(nowNode, nextNodes, 0, y, 1);
+                boolean W = this.check(nowNode, nextNodes, -1, y, 0);
                 
                 if (N && E) {
-                    this.check(nowNode, nextNodes, completeList, 1, y, -1);
+                    this.check(nowNode, nextNodes, 1, y, -1);
                 }
                 if (E && S) {
-                    this.check(nowNode, nextNodes, completeList, 1, y, 1);
+                    this.check(nowNode, nextNodes, 1, y, 1);
                 }
                 if (W && S) {
-                    this.check(nowNode, nextNodes, completeList, -1, y, 1);
+                    this.check(nowNode, nextNodes, -1, y, 1);
                 }
                 if (W && N) {
-                    this.check(nowNode, nextNodes, completeList, -1, y, -1);
+                    this.check(nowNode, nextNodes, -1, y, -1);
                 }
             }
     
@@ -109,8 +111,8 @@ public class RouteFinder {
                 continue;
             }
             
-            needChecks.addAll(nextNodes);
-            needChecks.sort((o1, o2) -> {
+            this.openNodes.addAll(nextNodes);
+            this.openNodes.sort((o1, o2) -> {
                 double d1 = o1.getF();
                 double d2 = o2.getF();
                 if (d1 == d2) {
@@ -123,12 +125,12 @@ public class RouteFinder {
         this.processingComplete = true;
     }
     
-    private boolean check(Node nowNode, LinkedList<Node> nextNodes, ArrayList<Vector3> completeList, int x, int y, int z) {
+    private boolean check(Node nowNode, LinkedList<Node> nextNodes, int x, int y, int z) {
         Vector3 vector3 = nowNode.getVector3().add(x, y, z);
-        if (completeList.contains(vector3)) {
+        if (this.closeNodes.contains(vector3)) {
             return false;
         }
-        completeList.add(vector3);
+        this.closeNodes.add(vector3);
 
         Node nextNode = new Node(vector3, nowNode, vector3.distance(this.start), vector3.distance(this.end));
         if (this.canMoveTo(nowNode, nextNode)) {
@@ -148,7 +150,7 @@ public class RouteFinder {
     private boolean canMoveTo(Node nowNode, Node target) {
         if (!this.getBlockFast(target).canPassThrough() ||
                 !this.getBlockFast(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                this.getBlockFast(target.getVector3().add(0, -1, 0)).canPassThrough()) {
+                !this.canWalkOn(this.getBlockFast(target.getVector3().add(0, -1, 0)))) {
             return false;
         }
         
@@ -164,6 +166,19 @@ public class RouteFinder {
         }
         
         return true;
+    }
+
+    private boolean canWalkOn(Block block) {
+        if (block.getId() == Block.LAVA || block.getId() == Block.STILL_LAVA || block.getId() == Block.CACTUS) {
+            return false;
+        }
+        if (block instanceof BlockFence || block instanceof BlockFenceGate) {
+            return false;
+        }
+        if (block.getId() == Block.STILL_WATER || block.getId() == Block.WATER) {
+            return true;
+        }
+        return !block.canPassThrough();
     }
 
     /**

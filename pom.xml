@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -43,6 +43,8 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <lib.GameCore.version>1.6.3</lib.GameCore.version>
+        <lib.GameCore.PM1E.version>1.6.3.0-PM1E</lib.GameCore.PM1E.version>
     </properties>
 
     <distributionManagement>
@@ -94,7 +96,7 @@
         <dependency>
             <groupId>cn.lanink</groupId>
             <artifactId>MemoriesOfTime-GameCore</artifactId>
-            <version>1.6.2</version>
+            <version>${lib.GameCore.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -139,11 +141,20 @@
                         <configuration>
                             <includes>
                                 <include>${project.basedir}/src/main/resources/plugin.yml</include>
+                                <include>${project.basedir}/src/main/java/com/smallaswater/npc/RsNPC.java</include>
                             </includes>
                             <replacements>
                                 <replacement>
                                     <token>version: ".*"</token>
                                     <value>version: "${project.version}"</value>
+                                </replacement>
+                                <replacement>
+                                    <token>MINIMUM_GAME_CORE_VERSION = ".*"</token>
+                                    <value>MINIMUM_GAME_CORE_VERSION = "${lib.GameCore.version}"</value>
+                                </replacement>
+                                <replacement>
+                                    <token>MINIMUM_GAME_CORE_VERSION_PM1E = ".*"</token>
+                                    <value>MINIMUM_GAME_CORE_VERSION_PM1E = "${lib.GameCore.PM1E.version}"</value>
                                 </replacement>
                             </replacements>
                         </configuration>

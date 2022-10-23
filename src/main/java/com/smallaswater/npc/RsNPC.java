@@ -13,6 +13,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
+import com.smallaswater.npc.utils.MetricsLite;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.VariableManage;
@@ -52,8 +53,8 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.2";
-    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.2.0-PM1E";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.3";
+    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.3.0-PM1E";
     public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
     public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
 
@@ -123,7 +124,13 @@ public class RsNPC extends PluginBase {
         this.getServer().getScheduler().scheduleRepeatingTask(this, new CheckNpcEntityTask(this), 60);
 
         this.getServer().getCommandMap().register("RsNPC", new RsNPCCommand("RsNPC"));
-        
+
+        try {
+            new MetricsLite(this, 16713);
+        }catch (Exception ignored) {
+
+        }
+
         this.getLogger().info("plugin.load.complete");
     }
 

@@ -9,4 +9,27 @@ plugin.load.NPC.loadComplete: "NPC: %1% 加载完成！"
 plugin.load.complete: "RsNPC加载完成"
 plugin.load.skin.dataError: "皮肤 %1% 读取错误，请检查图片格式或图片尺寸！"
 
+plugin.load.dialog.dataError: "对话页面 %1% 读取错误，请检查文件格式！"
+plugin.load.dialog.loadComplete: "成功加载: %1% 个对话页面配置"
+
 plugin.disable.complete: "RsNPC卸载完成"
+
+tips.command.noPermissions: "你没有权限使用这个命令！"
+tips.command.cannotBeUsedInConsole: "你不能在控制台使用这个命令！"
+
+tips.npcNotExist: "§c§lNPC %1% 不存在！"
+tips.npcRouteAddSuccess: "§a§l已添加到路径！"
+tips.npcAlreadyExist: "§c§l已存在名为 %1% 的NPC！"
+tips.npcCreateSuccess: "§a§l成功创建NPC %1%！"
+tips.npcRemoveSuccess: "§a§l成功删除NPC %1%！"
+tips.nameRequired: "§c§l请输入NPC的名称！"
+tips.npcCreationFailed: "§c§lNPC创建失败！"
+tips.reloadSuccess: "§a§l已重载配置！"
+
+tips.command.help: |-
+  §a§l >> §eHelp for RsNPC §a<<
+  §a§l/rsnpc create <NPC名称> §7在当前位置创建NPC
+  §a§l/rsnpc delete <NPC名称> §7移除NPC
+  §a§l/rsnpc addroute <NPC名称> §7将当前位置添加到NPC路径
+  §a§l/rsnpc reload §7重载NPC
+  §a§l >> §eHelp for RsNPC §a<<

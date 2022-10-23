@@ -26,7 +26,7 @@ import java.util.*;
 public class FormHelper {
 
     private FormHelper() {
-        throw new RuntimeException("你想干什么？");
+        throw new RuntimeException("Error");
     }
 
     public static void sendMain(@NotNull Player player) {

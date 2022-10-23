@@ -35,10 +35,10 @@ public class DialogManager {
                     try {
                         this.loadDialog(file.getName().split("\\.")[0]);
                     } catch (Exception e) {
-                        this.rsNPC.getLogger().error("加载对话文件失败：" + file.getName(), e);
+                        this.rsNPC.getLogger().error(this.rsNPC.getLanguage().translateString("plugin.load.dialog.dataError", file.getName()), e);
                     }
                 });
-        this.rsNPC.getLogger().info("成功加载: " + this.dialogConfigs.size() + "个对话页面配置");
+        this.rsNPC.getLogger().info(this.rsNPC.getLanguage().translateString("plugin.load.dialog.loadComplete", this.dialogConfigs.size()));
     }
 
     public void loadDialog(@NotNull String name) {

@@ -39,7 +39,7 @@ public class DeleteSubCommand extends BaseSubCommand {
             if (!(new File(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
                 sender.sendMessage("§c§lNPC " + name + " 文件删除失败！请尝试手动删除！");
             }else {
-                sender.sendMessage("§a§lNPC " + name + " 移除成功 ");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcRemoveSuccess", name));
             }
         } else {
             sender.sendMessage("§c§l请输入要删除的NPC的名字！");

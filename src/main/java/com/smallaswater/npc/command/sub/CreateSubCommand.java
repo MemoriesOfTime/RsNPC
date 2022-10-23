@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.command.base.BaseSubCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
 
 import java.util.LinkedHashMap;
@@ -37,49 +36,48 @@ public class CreateSubCommand extends BaseSubCommand {
         if (args.length > 1) {
             String name = args[1].trim();
             if ("".equals(name)) {
-                sender.sendMessage("§c§lNPC的名字不能是空格！");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
                 return true;
             }
             if (this.rsNPC.getNpcs().containsKey(name)) {
-                sender.sendMessage("§c§lNPC " + name + "已经存在...");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcAlreadyExist", name));
                 return true;
             }
-            this.rsNPC.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
-            Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
-            config.set("name", name);
-            Player player = (Player) sender;
-            LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-            map.put("x", player.getX());
-            map.put("y", player.getY());
-            map.put("z", player.getZ());
-            map.put("yaw", Utils.getYaw(player));
-            map.put("level", player.getLevel().getName());
-            config.set("坐标", map);
-            config.save();
-            RsNpcConfig rsNpcConfig;
             try {
-                rsNpcConfig = new RsNpcConfig(name, config);
-            } catch (RsNpcLoadException e) {
-                sender.sendMessage("创建NPC失败！");
-                this.rsNPC.getLogger().error("创建NPC失败！", e);
+                this.rsNPC.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
+                Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
+                config.set("name", name);
+                Player player = (Player) sender;
+                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+                map.put("x", player.getX());
+                map.put("y", player.getY());
+                map.put("z", player.getZ());
+                map.put("yaw", Utils.getYaw(player));
+                map.put("level", player.getLevel().getName());
+                config.set("坐标", map);
+                config.save();
+                RsNpcConfig rsNpcConfig = new RsNpcConfig(name, config);
+                this.rsNPC.getNpcs().put(name, rsNpcConfig);
+                rsNpcConfig.checkEntity();
+                //玄学解决首次生成不显示的问题
+                Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
+                    rsNpcConfig.getEntityRsNpc().close();
+                    rsNpcConfig.checkEntity();
+                }, 20);
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreateSuccess", name));
+            } catch (Exception e) {
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreationFailed"));
+                this.rsNPC.getLogger().error(this.rsNPC.getLanguage().translateString("tips.npcCreationFailed"), e);
                 return true;
             }
-            this.rsNPC.getNpcs().put(name, rsNpcConfig);
-            rsNpcConfig.checkEntity();
-            //玄学解决首次生成不显示的问题
-            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
-                rsNpcConfig.getEntityRsNpc().close();
-                rsNpcConfig.checkEntity();
-            }, 20);
-            sender.sendMessage("§a§lNPC " + name + "创建成功!!");
         } else {
-            sender.sendMessage("§c§l请输入要创建的NPC的名字！");
+            sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
         }
         return true;
     }
 
     @Override
     public CommandParameter[] getParameters() {
-        return new CommandParameter[] { CommandParameter.newType("NPC名称", CommandParamType.TEXT) };
+        return new CommandParameter[] { CommandParameter.newType("NPC_Name", CommandParamType.TEXT) };
     }
 }

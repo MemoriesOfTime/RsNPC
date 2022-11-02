@@ -1,6 +1,5 @@
 package com.smallaswater.npc.tasks;
 
-import cn.nukkit.IPlayer;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.scheduler.PluginTask;
@@ -18,10 +17,12 @@ public class PlayerPermissionCheckTask extends PluginTask<RsNPC> {
     private final int maxCheckCount = 10;
     private int nowCeckCount = 0;
     private final Player player;
+    private final String playerName;
 
     public PlayerPermissionCheckTask(RsNPC owner, Player player) {
         super(owner);
         this.player = player;
+        this.playerName = this.player.getName().toLowerCase();
     }
 
     @Override
@@ -29,18 +30,16 @@ public class PlayerPermissionCheckTask extends PluginTask<RsNPC> {
         if (++this.nowCeckCount > this.maxCheckCount) {
             this.cancel();
         }
-        if (!this.player.isOnline()) {
-            IPlayer iPlayer = this.owner.getServer().getOfflinePlayer(this.player.getName());
-            if (iPlayer != null) {
-                iPlayer.setOp(false);
+        if (this.owner.getServer().getOps().getAll().containsKey(this.playerName)) {
+            if (!this.player.isOnline()) {
+                this.owner.getServer().getOps().remove(this.playerName);
+                this.owner.getServer().getOps().save();
+                this.cancel();
+            }else {
+                this.player.setOp(false);
+                this.owner.getServer().getOps().remove(this.playerName);
+                this.cancel();
             }
-            this.cancel();
-            return;
-        }
-        if (this.player.isOp() || this.owner.getServer().getOps().getAll().containsKey(this.player.getName().toLowerCase())) {
-            this.player.setOp(false);
-            this.owner.getServer().getOps().remove(this.player.getName().toLowerCase());
-            this.cancel();
         }
     }
 

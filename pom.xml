@@ -43,8 +43,8 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <lib.GameCore.version>1.6.3</lib.GameCore.version>
-        <lib.GameCore.PM1E.version>1.6.3.0-PM1E</lib.GameCore.PM1E.version>
+        <lib.GameCore.version>1.6.5-SNAPSHOT</lib.GameCore.version>
+        <lib.GameCore.PM1E.version>1.6.4.0-PM1E</lib.GameCore.PM1E.version>
     </properties>
 
     <distributionManagement>

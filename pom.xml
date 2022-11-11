@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater.npc</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.2.2-PNX-SNAPSHOT</version>
+    <version>2.2.2-PNX<!-- -SNAPSHOT--></version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -43,7 +43,7 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <lib.GameCore.version>1.6.3.0-PNX</lib.GameCore.version>
+        <lib.GameCore.version>1.6.5.0-PNX</lib.GameCore.version>
     </properties>
 
     <distributionManagement>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>powernukkitx</artifactId>
-            <version>1.19.40-r1</version>
+            <version>1.19.40-r2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -160,7 +160,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.6.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>oss</serverId>

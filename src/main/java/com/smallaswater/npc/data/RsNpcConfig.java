@@ -1,5 +1,6 @@
 package com.smallaswater.npc.data;
 
+import cn.lanink.gamecore.utils.ConfigUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
@@ -161,6 +162,7 @@ public class RsNpcConfig {
         
         //更新配置文件
         this.save();
+        ConfigUtils.addDescription(this.config, RsNPC.getInstance().getNpcConfigDescription());
     }
     
     public void save() {

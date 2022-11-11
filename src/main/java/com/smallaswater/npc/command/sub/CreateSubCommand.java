@@ -44,7 +44,7 @@ public class CreateSubCommand extends BaseSubCommand {
                 sender.sendMessage("§c§lNPC " + name + "已经存在...");
                 return true;
             }
-            this.rsNPC.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
+            this.rsNPC.saveResource("Npc.yml", "/Npcs/" + name + ".yml", false);
             Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
             config.set("name", name);
             Player player = (Player) sender;

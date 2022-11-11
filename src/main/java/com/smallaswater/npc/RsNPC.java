@@ -47,6 +47,11 @@ public class RsNPC extends PluginBase {
     @Getter
     private DialogManager dialogManager;
 
+    /**
+     * Npc配置文件描述
+     */
+    private Config npcConfigDescription;
+
     private static final Skin DEFAULT_SKIN;
 
     public static final String MINIMUM_GAME_CORE_VERSION = "1.6.3";
@@ -292,6 +297,14 @@ public class RsNPC extends PluginBase {
             skin = DEFAULT_SKIN;
         }
         return skin;
+    }
+
+    public Config getNpcConfigDescription() {
+        if (this.npcConfigDescription == null) {
+            this.npcConfigDescription = new Config();
+            this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
+        }
+        return this.npcConfigDescription;
     }
 
 }

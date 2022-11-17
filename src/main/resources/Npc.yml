@@ -19,7 +19,7 @@ name: "NPC1"
   启用: false
   表情ID:
     - "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"
-  间隔(秒): 10
+  间隔: 10
 允许抛射物触发: true
 点击执行指令:
   - "give @p 260 1&con"

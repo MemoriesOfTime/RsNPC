@@ -26,6 +26,8 @@ import java.util.HashMap;
  */
 public class RsNpcConfig {
 
+    public static final String NPC_CONFIG_VERSION_KEY = "ConfigVersion";
+
     private final Config config;
     private final String name;
     @Setter
@@ -118,7 +120,7 @@ public class RsNpcConfig {
         
         this.enableEmote = config.getBoolean("表情动作.启用");
         this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
-        this.showEmoteInterval = config.getInt("表情动作.间隔(秒)", 10);
+        this.showEmoteInterval = config.getInt("表情动作.间隔", 10);
         
         this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
 
@@ -174,7 +176,7 @@ public class RsNpcConfig {
     
         this.config.set("表情动作.启用", this.enableEmote);
         this.config.set("表情动作.表情ID", this.emoteIDs);
-        this.config.set("表情动作.间隔(秒)", this.showEmoteInterval);
+        this.config.set("表情动作.间隔", this.showEmoteInterval);
     
         this.config.set("允许抛射物触发", this.canProjectilesTrigger);
     

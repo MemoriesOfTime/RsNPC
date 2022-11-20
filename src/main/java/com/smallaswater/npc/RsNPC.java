@@ -174,11 +174,21 @@ public class RsNPC extends PluginBase {
             String skinName = file.getName();
 
             File skinDataFile = null;
+            boolean isSlim = true;
             if (file.isFile() && skinName.endsWith(".png")) {
                 skinName = skinName.replace(".png", "");
                 skinDataFile = file;
+                if (skinName.contains("_slim")) {
+                    skinName = skinName.replace("_slim", "");
+                } else {
+                    isSlim = false;
+                }
             }else if (file.isDirectory()) {
-                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin_slim.png");
+                if (!skinDataFile.exists()) {
+                    skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+                    isSlim = false;
+                }
             }
 
             if (skinDataFile != null && skinDataFile.exists()) {
@@ -189,6 +199,10 @@ public class RsNPC extends PluginBase {
                 try {
                     skin.setSkinData(ImageIO.read(skinDataFile));
                     SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+
+                    if (isSlim) {
+                        skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
+                    }
                 } catch (Exception e) {
                     this.getLogger().error("皮肤 " + skinName + " 读取错误，请检查图片格式或图片尺寸！", e);
                     continue;

@@ -22,6 +22,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author lt_name
@@ -160,12 +161,18 @@ public class RsNpcConfig {
         }
 
         try {
+            if (!(config.get("点击执行指令") instanceof List)) {
+                throw new RuntimeException("点击执行指令 配置读取到的内容不是List类型！请检查您的配置格式是否正确！");
+            }
             this.cmds.addAll(config.getStringList("点击执行指令"));
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 点击执行指令加载失败！请检查配置文件！", e);
         }
 
         try {
+            if (!(config.get("发送消息") instanceof List)) {
+                throw new RuntimeException("发送消息 配置读取到的内容不是List类型！请检查您的配置格式是否正确！");
+            }
             this.messages.addAll(config.getStringList("发送消息"));
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 发送消息加载失败！请检查配置文件！", e);

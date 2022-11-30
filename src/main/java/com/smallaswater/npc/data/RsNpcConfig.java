@@ -12,7 +12,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
-import com.smallaswater.npc.utils.RsNpcLoadException;
+import com.smallaswater.npc.utils.Utils;
+import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
+import com.smallaswater.npc.utils.exception.RsNpcLoadException;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 import lombok.NonNull;
@@ -88,63 +90,122 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
-    public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcLoadException {
+    public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
         this.name = name;
-        this.showName = config.getString("name");
 
-        HashMap<String, Object> map = config.get("坐标", new HashMap<>());
-        this.levelName = (String) map.get("level");
-        if (!Server.getInstance().loadLevel(this.levelName)) {
-            throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
-        }
-        Level level = Server.getInstance().getLevelByName(this.levelName);
-        this.location = new Location((double) map.get("x"), (double) map.get("y"), (double) map.get("z"),
-                (double) map.getOrDefault("yaw", 0D), 0, level);
-
-        this.hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
-        this.armor[0] = Item.fromString("".equals(config.getString("头部")) ? "0:0" : config.getString("头部"));
-        this.armor[1] = Item.fromString("".equals(config.getString("胸部")) ? "0:0" : config.getString("胸部"));
-        this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
-        this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
-
-        this.skinName = config.getString("皮肤", "默认");
-        this.skin = RsNPC.getInstance().getSkinByName(this.skinName);
-        if (this.skin == null) {
-            RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
+        try {
+            this.showName = config.getString("name");
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 显示名称配置错误！请检查配置文件！", e);
         }
 
-        this.scale = (float) config.getDouble("实体大小", 1D);
-        
-        this.lookAtThePlayer = config.getBoolean("看向玩家", true);
-        
-        this.enableEmote = config.getBoolean("表情动作.启用");
-        this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
-        this.showEmoteInterval = config.getInt("表情动作.间隔", 10);
-        
-        this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
-
-        this.cmds.addAll(config.getStringList("点击执行指令"));
-        this.messages.addAll(config.getStringList("发送消息"));
-
-        if (this.config.get("基础移动速度") instanceof Integer) {
-            this.config.set("基础移动速度", this.config.getInt("基础移动速度") * 1.0D);
-        }
-        this.baseMoveSpeed = config.getDouble("基础移动速度", 1.0D);
-
-        for (String string : config.getStringList("route")) {
-            String[] s = string.split(":");
-            this.route.add(new Vector3(Double.parseDouble(s[0]),
-                    Double.parseDouble(s[1]),
-                    Double.parseDouble(s[2])));
+        try {
+            HashMap<String, Object> map = config.get("坐标", new HashMap<>());
+            this.levelName = (String) map.get("level");
+            if (!Server.getInstance().loadLevel(this.levelName)) {
+                throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
+            }
+            Level level = Server.getInstance().getLevelByName(this.levelName);
+            this.location = new Location((double) map.get("x"), (double) map.get("y"), (double) map.get("z"),
+                    (double) map.getOrDefault("yaw", 0D), 0, level);
+        } catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 位置/世界配置错误！请检查配置文件！", e);
         }
 
-        this.enablePathfinding = config.getBoolean("启用辅助寻路", true);
+        try {
+            this.hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
+            this.armor[0] = Item.fromString("".equals(config.getString("头部")) ? "0:0" : config.getString("头部"));
+            this.armor[1] = Item.fromString("".equals(config.getString("胸部")) ? "0:0" : config.getString("胸部"));
+            this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
+            this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 手持物品/护甲加载失败！请检查配置文件！", e);
+        }
 
-        this.whirling = config.getDouble("旋转", 0.0);
+        try {
+            this.skinName = config.getString("皮肤", "默认");
+            if (!RsNPC.getInstance().getSkins().containsKey(this.skinName)) {
+                RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
+            }
+            this.skin = RsNPC.getInstance().getSkinByName(this.skinName);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 皮肤加载失败！请检查配置文件！", e);
+        }
 
-        this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
-        this.dialogPagesName = config.getString("对话框.页面", "demo");
+        try {
+            this.scale = (float) Utils.toDouble(config.get("实体大小", 1));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 实体大小加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.lookAtThePlayer = config.getBoolean("看向玩家", true);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 看向玩家选项加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.enableEmote = config.getBoolean("表情动作.启用");
+            this.emoteIDs.addAll(config.getStringList("表情动作.表情ID"));
+            this.showEmoteInterval = config.getInt("表情动作.间隔", 10);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 表情动作加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.canProjectilesTrigger = config.getBoolean("允许抛射物触发", true);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 允许抛射物触发选项加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.cmds.addAll(config.getStringList("点击执行指令"));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 点击执行指令加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.messages.addAll(config.getStringList("发送消息"));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 发送消息加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.baseMoveSpeed = Utils.toDouble(config.get("基础移动速度", 1.0D));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 基础移动速度加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            for (String string : config.getStringList("route")) {
+                String[] s = string.split(":");
+                this.route.add(new Vector3(Double.parseDouble(s[0]),
+                        Double.parseDouble(s[1]),
+                        Double.parseDouble(s[2])));
+            }
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 路径加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.enablePathfinding = config.getBoolean("启用辅助寻路", true);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 启用辅助寻路选项加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.whirling = Utils.toDouble(config.get("旋转", 0.0));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 旋转加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
+            this.dialogPagesName = config.getString("对话框.页面", "demo");
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
+        }
         
         //更新配置文件
         this.save();

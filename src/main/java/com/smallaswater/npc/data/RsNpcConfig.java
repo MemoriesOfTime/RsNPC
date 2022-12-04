@@ -210,6 +210,9 @@ public class RsNpcConfig {
         try {
             this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
             this.dialogPagesName = config.getString("对话框.页面", "demo");
+            if (RsNPC.getInstance().getDialogManager().getDialogConfig(this.dialogPagesName) == null) {
+                RsNPC.getInstance().getLogger().warning("NPC配置 对话框-页面 选项加载失败！不存在名为 " + this.dialogPagesName + " 的对话框页面！");
+            }
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
         }

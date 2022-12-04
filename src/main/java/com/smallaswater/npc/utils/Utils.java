@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
@@ -39,6 +40,14 @@ public class Utils {
             return item.getNamespaceId();
         }
         return item.getId() + ":" + item.getDamage();
+    }
+
+    public static double toDouble(Object object) {
+        return new BigDecimal(object.toString()).doubleValue();
+    }
+
+    public static int toInt(Object object) {
+        return new BigDecimal(object.toString()).intValue();
     }
 
     public static void executeCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {

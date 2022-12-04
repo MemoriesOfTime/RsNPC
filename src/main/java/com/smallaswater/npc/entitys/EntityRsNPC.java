@@ -170,6 +170,7 @@ public class EntityRsNPC extends EntityHuman {
                         yaw = -yaw + 180.0D;
                     }
                     this.yaw = yaw;
+                    this.headYaw = yaw;
                     this.pitch = 0;
                 }
             }
@@ -191,6 +192,7 @@ public class EntityRsNPC extends EntityHuman {
                     yaw = -yaw + 180.0D;
                 }
                 this.yaw = yaw;
+                this.headYaw = yaw;
                 this.pitch = pitch;
             }
         });

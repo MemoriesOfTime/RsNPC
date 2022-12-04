@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.command.base.BaseSubCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.utils.RsNpcLoadException;
 import com.smallaswater.npc.utils.Utils;
 
 import java.util.LinkedHashMap;
@@ -59,8 +58,8 @@ public class CreateSubCommand extends BaseSubCommand {
             RsNpcConfig rsNpcConfig;
             try {
                 rsNpcConfig = new RsNpcConfig(name, config);
-            } catch (RsNpcLoadException e) {
-                sender.sendMessage("创建NPC失败！");
+            } catch (Exception e) {
+                sender.sendMessage("创建NPC失败！请查看控制台错误信息！");
                 this.rsNPC.getLogger().error("创建NPC失败！", e);
                 return true;
             }

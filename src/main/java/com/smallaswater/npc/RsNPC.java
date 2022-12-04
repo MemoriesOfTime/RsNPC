@@ -151,11 +151,18 @@ public class RsNPC extends PluginBase {
                     continue;
                 }
                 String npcName = file.getName().split("\\.")[0];
+                Config config;
+                try {
+                    config = new Config(file, Config.YAML);
+                }catch (Exception e) {
+                    this.getLogger().error("§c NPC " + npcName + " 配置文件格式严重错误！请检查配置文件！", e);
+                    continue;
+                }
                 RsNpcConfig rsNpcConfig;
                 try {
-                    rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
+                    rsNpcConfig = new RsNpcConfig(npcName, config);
                 } catch (Exception e) {
-                    this.getLogger().error("加载NPC出现错误！", e);
+                    this.getLogger().error("§c NPC: " + npcName + " 配置文件出现错误！无法正常加载！", e);
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);

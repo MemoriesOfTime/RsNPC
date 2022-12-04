@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.smallaswater.npc</groupId>
+    <groupId>com.smallaswater</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.2.3-PNX<!-- -SNAPSHOT--></version>
+    <version>2.2.4-PNX<!-- -SNAPSHOT--></version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -14,8 +14,8 @@
 
     <licenses>
         <license>
-            <name>GNU General Public License, Version 3.0</name>
-            <url>https://www.gnu.org/licenses/gpl.html</url>
+            <name>GNU Affero General Public License v3.0</name>
+            <url>https://www.gnu.org/licenses/agpl-3.0.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>powernukkitx</artifactId>
-            <version>1.19.40-r3</version>
+            <version>1.19.50-r1</version>
             <scope>provided</scope>
         </dependency>
 

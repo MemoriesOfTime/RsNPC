@@ -50,7 +50,7 @@ public class VariableManage {
 
     public static void addVariableV2(@NotNull String name, @NotNull Class<? extends BaseVariableV2> variableClass) {
         try {
-            BaseVariableV2 variable = variableClass.newInstance();
+            BaseVariableV2 variable = variableClass.getDeclaredConstructor().newInstance();
             VariableManage.VARIABLE_V2_CLASS.put(name, variable);
         } catch (Exception e) {
             RsNPC.getInstance().getLogger().error("添加变量时出错", e);
@@ -77,7 +77,7 @@ public class VariableManage {
             inString = variable.stringReplace(p, inString, rsNpcConfig);
         }
         for (BaseVariableV2 variable : VARIABLE_V2_CLASS.values()) {
-            variable.onUpdate(p, rsNpcConfig);
+            variable.update(p, rsNpcConfig);
             inString = variable.stringReplace(inString);
         }
 

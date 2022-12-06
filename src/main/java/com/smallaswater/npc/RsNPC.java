@@ -146,7 +146,7 @@ public class RsNPC extends PluginBase {
 
     private void loadNpcs() {
         File[] files = (new File(getDataFolder() + "/Npcs")).listFiles();
-        if (files != null && files.length > 0) {
+        if (files != null) {
             for (File file : files) {
                 if (!file.isFile() && file.getName().endsWith(".yml")) {
                     continue;
@@ -175,7 +175,7 @@ public class RsNPC extends PluginBase {
 
     private void loadSkins() {
         File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
-        if (files == null || files.length == 0) {
+        if (files == null) {
             return;
         }
         for (File file : files) {

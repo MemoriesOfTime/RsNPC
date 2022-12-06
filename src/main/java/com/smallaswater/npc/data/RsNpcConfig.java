@@ -50,6 +50,9 @@ public class RsNpcConfig {
     @Setter
     private Skin skin;
 
+    @Getter
+    private int networkId;
+
     @Setter
     @Getter
     private float scale;
@@ -132,6 +135,12 @@ public class RsNpcConfig {
             this.skin = RsNPC.getInstance().getSkinByName(this.skinName);
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 皮肤加载失败！请检查配置文件！", e);
+        }
+
+        try {
+            this.setNetworkId(config.getInt("实体NetworkId", -1));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 实体NetworkId加载失败！请检查配置文件！", e);
         }
 
         try {
@@ -241,6 +250,8 @@ public class RsNpcConfig {
 
         this.config.set("皮肤", this.skinName);
 
+        this.config.set("实体NetworkId", this.networkId);
+
         this.config.set("实体大小", this.scale);
     
         this.config.set("看向玩家", this.lookAtThePlayer);
@@ -285,7 +296,7 @@ public class RsNpcConfig {
                         .putCompound("Skin", (new CompoundTag())
                                 .putByteArray("Data", this.skin.getSkinData().data)
                                 .putString("ModelId", this.skin.getSkinId())), this);
-                this.entityRsNpc.setSkin(this.skin);
+                this.entityRsNpc.setSkin(this.getSkin());
                 this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();
             }
@@ -353,6 +364,13 @@ public class RsNpcConfig {
 
     public EntityRsNPC getEntityRsNpc() {
         return this.entityRsNpc;
+    }
+
+    public void setNetworkId(int networkId) {
+        if (networkId <= 0) {
+            networkId = -1;
+        }
+        this.networkId = networkId;
     }
 
 }

@@ -52,6 +52,9 @@ public class RsNpcConfig {
     @Setter
     private Skin skin;
 
+    @Getter
+    private int networkId;
+
     @Setter
     @Getter
     private float scale;
@@ -140,6 +143,12 @@ public class RsNpcConfig {
         }
 
         try {
+            this.setNetworkId(config.getInt("实体NetworkId", -1));
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 实体NetworkId加载失败！请检查配置文件！", e);
+        }
+
+        try {
             this.scale = (float) Utils.toDouble(config.get("实体大小", 1));
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 实体大小加载失败！请检查配置文件！", e);
@@ -215,6 +224,9 @@ public class RsNpcConfig {
         try {
             this.enabledDialogPages = RsNPC.getInstance().getDialogManager() != null && config.getBoolean("对话框.启用");
             this.dialogPagesName = config.getString("对话框.页面", "demo");
+            if (RsNPC.getInstance().getDialogManager().getDialogConfig(this.dialogPagesName) == null) {
+                RsNPC.getInstance().getLogger().warning("NPC配置 对话框-页面 选项加载失败！不存在名为 " + this.dialogPagesName + " 的对话框页面！");
+            }
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
         }
@@ -252,6 +264,8 @@ public class RsNpcConfig {
         this.config.set("脚部", Utils.item2String(this.armor[3]));
 
         this.config.set("皮肤", this.skinName);
+
+        this.config.set("实体NetworkId", this.networkId);
 
         this.config.set("实体大小", this.scale);
     
@@ -311,7 +325,7 @@ public class RsNpcConfig {
                                     .putByteArray("Data", this.skin.getSkinData().data)
                                     .putString("ModelId", this.skin.getSkinId())), this);
                 }
-                this.entityRsNpc.setSkin(this.skin);
+                this.entityRsNpc.setSkin(this.getSkin());
                 this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();
             }
@@ -379,6 +393,13 @@ public class RsNpcConfig {
 
     public EntityRsNPC getEntityRsNpc() {
         return this.entityRsNpc;
+    }
+
+    public void setNetworkId(int networkId) {
+        if (networkId <= 0) {
+            networkId = -1;
+        }
+        this.networkId = networkId;
     }
 
 }

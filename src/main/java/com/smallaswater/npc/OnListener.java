@@ -82,7 +82,15 @@ public class OnListener implements Listener {
 
                     if (rsNpcConfig.isEnabledDialogPages()) {
                         DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
-                        dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
+                        if (dialogConfig != null) {
+                            dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
+                        }else {
+                            String message = "§cNPC " + rsNpcConfig.getName() + " 配置错误！不存在名为 " + rsNpcConfig.getDialogPagesName() + " 的对话框页面！";
+                            this.rsNPC.getLogger().warning(message);
+                            if (player.isOp()) {
+                                player.sendMessage(message);
+                            }
+                        }
                     }
                 }
             }

@@ -77,7 +77,7 @@ public class VariableManage {
             inString = variable.stringReplace(p, inString, rsNpcConfig);
         }
         for (BaseVariableV2 variable : VARIABLE_V2_CLASS.values()) {
-            variable.onUpdate(p, rsNpcConfig);
+            variable.update(p, rsNpcConfig);
             inString = variable.stringReplace(inString);
         }
 

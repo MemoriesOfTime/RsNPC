@@ -56,8 +56,11 @@ public class RsNPC extends PluginBase {
 
     public static final String MINIMUM_GAME_CORE_VERSION = "1.6.5";
     public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.5.0-PM1E";
-    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
-    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
+
+    private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
+
+    private static final String GAME_CORE_URL = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
+    private static final String GAME_CORE_URL_PM1E = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
 
     static {
         Skin skin = new Skin();
@@ -74,8 +77,6 @@ public class RsNPC extends PluginBase {
     @Override
     public void onLoad() {
         rsNPC = this;
-
-        ConfigUpdateUtils.updateConfig(this);
 
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
@@ -106,6 +107,8 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        ConfigUpdateUtils.updateConfig(this);
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
@@ -326,6 +329,26 @@ public class RsNPC extends PluginBase {
             this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
         }
         return this.npcConfigDescription;
+    }
+
+    /**
+     * @return 最低GameCore版本
+     */
+    public String getMinimumGameCoreVersion() {
+        if (this.getServer().getCodename().equals("PM1E")) {
+            return MINIMUM_GAME_CORE_VERSION_PM1E;
+        }
+        return MINIMUM_GAME_CORE_VERSION;
+    }
+
+    /**
+     * @return GameCore下载链接
+     */
+    public String getGameCoreUrl() {
+        if (this.getServer().getCodename().equals("PM1E")) {
+            return MAVEN_URL_CENTRAL + GAME_CORE_URL_PM1E;
+        }
+        return MAVEN_URL_CENTRAL + GAME_CORE_URL;
     }
 
 }

@@ -4,7 +4,9 @@ import cn.lanink.gamecore.utils.VersionUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.level.Location;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.plugin.Plugin;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
@@ -12,14 +14,12 @@ import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.nio.channels.Channels;
 import java.util.List;
 
 public class Utils {
@@ -135,7 +135,7 @@ public class Utils {
     }
 
     public static int checkAndDownloadDepend() {
-        String version = Server.getInstance().getCodename().equals("PM1E") ? RsNPC.MINIMUM_GAME_CORE_VERSION_PM1E : RsNPC.MINIMUM_GAME_CORE_VERSION;
+        String version = RsNPC.getInstance().getMinimumGameCoreVersion();
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
         if (plugin != null) {
@@ -163,10 +163,18 @@ public class Utils {
             String gamecore = Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + version + ".jar";
 
             try {
-                FileOutputStream fos = new FileOutputStream(gamecore);
-                URL url = new URL(Server.getInstance().getCodename().equals("PM1E") ? RsNPC.GAME_CORE_URL_PM1E : RsNPC.GAME_CORE_URL);
+                AtomicDouble last = new AtomicDouble(-10);
+                Download.download(RsNPC.getInstance().getGameCoreUrl(), new File(gamecore), (l, len) -> {
+                    double d = NukkitMath.round(l * 1.0 / len * 100, 2);
+                    if (d - last.get() > 10) {
+                        RsNPC.getInstance().getLogger().info("已下载：" + d + "%");
+                        last.set(d);
+                    }
+                });
+                /*FileOutputStream fos = new FileOutputStream(gamecore);
+                URL url = new URL(RsNPC.getInstance().getGameCoreUrl());
                 fos.getChannel().transferFrom(Channels.newChannel(url.openStream()), 0, Long.MAX_VALUE);
-                fos.close();
+                fos.close();*/
             } catch (Exception e) {
                 RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
                 return 1;

@@ -135,6 +135,13 @@ public class Utils {
     }
 
     public static int checkAndDownloadDepend() {
+        return checkAndDownloadDepend(0);
+    }
+
+    public static int checkAndDownloadDepend(int retry) {
+        if (retry > 0) {
+            RsNPC.getInstance().getLogger().info("尝试更换下载链接为 " + RsNPC.getInstance().getGameCoreUrl(retry));
+        }
         String version = RsNPC.getInstance().getMinimumGameCoreVersion();
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
@@ -164,7 +171,7 @@ public class Utils {
 
             try {
                 AtomicDouble last = new AtomicDouble(-10);
-                Download.download(RsNPC.getInstance().getGameCoreUrl(), new File(gamecore), (l, len) -> {
+                Download.download(RsNPC.getInstance().getGameCoreUrl(retry), new File(gamecore), (l, len) -> {
                     double d = NukkitMath.round(l * 1.0 / len * 100, 2);
                     if (d - last.get() > 10) {
                         RsNPC.getInstance().getLogger().info("已下载：" + d + "%");
@@ -176,8 +183,12 @@ public class Utils {
                 fos.getChannel().transferFrom(Channels.newChannel(url.openStream()), 0, Long.MAX_VALUE);
                 fos.close();*/
             } catch (Exception e) {
-                RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
-                return 1;
+                RsNPC.getInstance().getLogger().error(RsNPC.getInstance().getGameCoreUrl(retry) + " 下载失败！");
+                if (retry >= 1) {
+                    RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
+                    return 1;
+                }
+                return checkAndDownloadDepend(++retry);
             }
 
             RsNPC.getInstance().getLogger().info("MemoriesOfTime-GameCore依赖下载成功！");

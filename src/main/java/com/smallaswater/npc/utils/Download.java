@@ -74,6 +74,9 @@ public class Download {
         // 同步
         while (!pool.awaitTermination(1, TimeUnit.SECONDS)) {
         }
+        if (len < 1 || saveFile.length() < 1) {
+            throw new Exception("下载失败");
+        }
     }
 
     static class DownloadTask extends RecursiveAction {

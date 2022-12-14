@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.entity.provider.CustomClassEntityProvider;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -238,6 +239,7 @@ public class RsNpcConfig {
                         .identifier(config.getString("CustomEntity.identifier"))
                         .spawnEgg(false)
                         .summonable(false).build();
+                Entity.registerCustomEntity(new CustomClassEntityProvider(this.customEntityDefinition, EntityRsNPCCustomEntity.class));
             }
         }
 
@@ -324,8 +326,8 @@ public class RsNpcConfig {
                             .putCompound("Skin", (new CompoundTag())
                                     .putByteArray("Data", this.skin.getSkinData().data)
                                     .putString("ModelId", this.skin.getSkinId())), this);
+                    this.entityRsNpc.setSkin(this.getSkin());
                 }
-                this.entityRsNpc.setSkin(this.getSkin());
                 this.entityRsNpc.setScale(this.scale);
                 this.entityRsNpc.spawnToAll();
             }

@@ -186,6 +186,8 @@ public class Utils {
                 RsNPC.getInstance().getLogger().error(RsNPC.getInstance().getGameCoreUrl(retry) + " 下载失败！");
                 if (retry >= 1) {
                     RsNPC.getInstance().getLogger().error("无法下载MemoriesOfTime-GameCore依赖！", e);
+                    RsNPC.getInstance().getLogger().error("请尝试手动下载依赖！");
+                    RsNPC.getInstance().getLogger().error(RsNPC.getInstance().getGameCoreUrl(retry));
                     return 1;
                 }
                 return checkAndDownloadDepend(++retry);

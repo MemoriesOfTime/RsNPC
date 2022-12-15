@@ -54,14 +54,12 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.7";
-    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.7.0-PM1E";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.7.0-PM1E";
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
     private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
 
     private static final String GAME_CORE_URL = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
-    private static final String GAME_CORE_URL_PM1E = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
 
     static {
         Skin skin = new Skin();
@@ -336,9 +334,6 @@ public class RsNPC extends PluginBase {
      * @return 最低GameCore版本
      */
     public String getMinimumGameCoreVersion() {
-        if (this.getServer().getCodename().equals("PM1E")) {
-            return MINIMUM_GAME_CORE_VERSION_PM1E;
-        }
         return MINIMUM_GAME_CORE_VERSION;
     }
 
@@ -351,9 +346,6 @@ public class RsNPC extends PluginBase {
             maven = MAVEN_URL_LANINK;
         }else {
             maven = MAVEN_URL_CENTRAL;
-        }
-        if (this.getServer().getCodename().equals("PM1E")) {
-            return maven + GAME_CORE_URL_PM1E;
         }
         return maven + GAME_CORE_URL;
     }

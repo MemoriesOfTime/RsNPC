@@ -1,7 +1,6 @@
 package com.smallaswater.npc;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
@@ -33,11 +32,6 @@ public class OnListener implements Listener {
     public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
         if (event.getEntity() instanceof EntityRsNPC) {
             event.setCancelled(true);
-        }
-        if (!Server.getInstance().getCodename().equals("PM1E")) {
-            if (event.getVehicle() instanceof EntityRsNPC) {
-                event.setCancelled(true);
-            }
         }
     }
 

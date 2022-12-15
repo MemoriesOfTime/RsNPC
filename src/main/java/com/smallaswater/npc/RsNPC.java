@@ -54,7 +54,10 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.5.0-PNX";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.7.0-PNX";
+
+    private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
+    private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
 
     public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
 
@@ -73,8 +76,6 @@ public class RsNPC extends PluginBase {
     @Override
     public void onLoad() {
         rsNPC = this;
-
-        ConfigUpdateUtils.updateConfig(this);
 
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
@@ -105,6 +106,8 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        ConfigUpdateUtils.updateConfig(this);
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
@@ -325,6 +328,29 @@ public class RsNPC extends PluginBase {
             this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
         }
         return this.npcConfigDescription;
+    }
+
+    /**
+     * @return 最低GameCore版本
+     */
+    public String getMinimumGameCoreVersion() {
+        if (this.getServer().getCodename().equals("PM1E")) {
+            return MINIMUM_GAME_CORE_VERSION_PM1E;
+        }
+        return MINIMUM_GAME_CORE_VERSION;
+    }
+
+    /**
+     * @return GameCore下载链接
+     */
+    public String getGameCoreUrl(int i) {
+        String maven;
+        if (i > 0) {
+            maven = MAVEN_URL_LANINK;
+        }else {
+            maven = MAVEN_URL_CENTRAL;
+        }
+        return maven + GAME_CORE_URL;
     }
 
 }

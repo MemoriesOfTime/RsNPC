@@ -1,7 +1,6 @@
 package com.smallaswater.npc.entitys;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -10,6 +9,7 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.utils.CustomEntityUtils;
 import lombok.NonNull;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
@@ -42,14 +42,8 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC {
     }
 
     @Override
-    protected void initEntity() {
-        super.initEntity();
-        this.setDataProperty(new IntEntityData(DATA_SKIN_ID, 12));
-    }
-
-    @Override
     public int getNetworkId() {
-        return 0;
+        return CustomEntityUtils.getRuntimeId(this.identifier);
     }
 
     @Override

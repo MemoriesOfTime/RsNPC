@@ -13,6 +13,7 @@ import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPCCustomEntity;
+import com.smallaswater.npc.utils.CustomEntityUtils;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
@@ -233,6 +234,9 @@ public class RsNpcConfig {
             this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
             if (this.enableCustomEntity) {
                 this.customEntityIdentifier = this.config.getString("CustomEntity.identifier");
+                if (CustomEntityUtils.getRuntimeId(this.customEntityIdentifier) == -1) {
+                    CustomEntityUtils.registerCustomEntity(this.customEntityIdentifier);
+                }
             }
         }
 

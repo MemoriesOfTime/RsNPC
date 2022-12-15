@@ -252,11 +252,11 @@ public class RsNpcConfig {
         map.put("yaw", this.location.getYaw());
         this.config.set("坐标", map);
         
-        this.config.set("手持", this.hand.getId() + ":" + this.hand.getDamage());
-        this.config.set("头部", this.armor[0].getId() + ":" + this.armor[0].getDamage());
-        this.config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
-        this.config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
-        this.config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
+        this.config.set("手持", Utils.item2String(this.hand));
+        this.config.set("头部", Utils.item2String(this.armor[0]));
+        this.config.set("胸部", Utils.item2String(this.armor[1]));
+        this.config.set("腿部", Utils.item2String(this.armor[2]));
+        this.config.set("脚部", Utils.item2String(this.armor[3]));
 
         this.config.set("皮肤", this.skinName);
 

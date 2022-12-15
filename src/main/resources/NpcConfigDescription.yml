@@ -69,3 +69,5 @@ route: "路径列表 请使用命令添加！"
   开启此项会自动关闭NPC移动
 对话框.启用: "是否启用对话框"
 对话框.页面: "对话框配置文件名称"
+CustomEntity.enable: "是否启用自定义实体"
+CustomEntity.identifier: "自定义实体标识符（资源包内设置的identifier）"

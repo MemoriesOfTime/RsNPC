@@ -35,7 +35,7 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     @Override
     public int getNetworkId() {
-        return 0;
+        return this.getEntityDefinition().getRuntimeId();
     }
 
     public EntityDefinition getDefinition() {

@@ -234,12 +234,16 @@ public class RsNpcConfig {
 
         if (this.config.exists("CustomEntity")) {
             this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
+            String identifier = config.getString("CustomEntity.identifier");
             if (this.enableCustomEntity) {
-                this.customEntityDefinition = EntityDefinition.builder()
-                        .identifier(config.getString("CustomEntity.identifier"))
-                        .spawnEgg(false)
-                        .implementation(EntityRsNPCCustomEntity.class).build();
-                EntityManager.get().registerDefinition(this.customEntityDefinition);
+                this.customEntityDefinition = EntityManager.get().getDefinition(identifier);
+                if (this.customEntityDefinition == null) { //不存在时注册新的
+                    this.customEntityDefinition = EntityDefinition.builder()
+                            .identifier(identifier)
+                            .spawnEgg(false)
+                            .implementation(EntityRsNPCCustomEntity.class).build();
+                    EntityManager.get().registerDefinition(this.customEntityDefinition);
+                }
             }
         }
 

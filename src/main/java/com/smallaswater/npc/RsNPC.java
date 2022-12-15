@@ -334,9 +334,6 @@ public class RsNPC extends PluginBase {
      * @return 最低GameCore版本
      */
     public String getMinimumGameCoreVersion() {
-        if (this.getServer().getCodename().equals("PM1E")) {
-            return MINIMUM_GAME_CORE_VERSION_PM1E;
-        }
         return MINIMUM_GAME_CORE_VERSION;
     }
 

@@ -11,11 +11,17 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import lombok.NonNull;
 
 /**
- * 基于pnx自定义实体实现的rsnpc实体
+ * 基于自定义实体实现的RsNPC实体
  *
  * @author LT_Name
  */
 public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity {
+
+    private static final EntityDefinition DEFAULT_DEFINITION = EntityDefinition.builder()
+            .identifier("RsNPC")
+            .spawnEgg(false)
+            .implementation(EntityRsNPCCustomEntity.class)
+            .build();
 
     private EntityDefinition definition;
 
@@ -26,7 +32,6 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     public EntityRsNPCCustomEntity(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
         super(chunk, nbt, config);
-        this.definition = EntityDefinition.builder().identifier("RsNPC").spawnEgg(false).implementation(EntityRsNPCCustomEntity.class).build();
     }
 
     public void setDefinition(EntityDefinition definition) {
@@ -44,6 +49,9 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     @Override
     public EntityDefinition getEntityDefinition() {
+        if (this.definition == null) {
+            return DEFAULT_DEFINITION;
+        }
         return this.definition;
     }
 

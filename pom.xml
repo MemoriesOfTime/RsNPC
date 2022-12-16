@@ -44,7 +44,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <lib.GameCore.version>1.6.7</lib.GameCore.version>
-        <lib.GameCore.PM1E.version>1.6.7.0-PM1E</lib.GameCore.PM1E.version>
     </properties>
 
     <distributionManagement>
@@ -151,10 +150,6 @@
                                 <replacement>
                                     <token>MINIMUM_GAME_CORE_VERSION = ".*"</token>
                                     <value>MINIMUM_GAME_CORE_VERSION = "${lib.GameCore.version}"</value>
-                                </replacement>
-                                <replacement>
-                                    <token>MINIMUM_GAME_CORE_VERSION_PM1E = ".*"</token>
-                                    <value>MINIMUM_GAME_CORE_VERSION_PM1E = "${lib.GameCore.PM1E.version}"</value>
                                 </replacement>
                             </replacements>
                         </configuration>

@@ -17,7 +17,7 @@ import lombok.NonNull;
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 /**
- * 基于pnx自定义实体实现的rsnpc实体
+ * 基于自定义实体功能实现的RsNPC实体
  *
  * @author LT_Name
  */

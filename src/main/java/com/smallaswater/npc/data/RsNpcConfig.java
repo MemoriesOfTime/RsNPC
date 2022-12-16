@@ -96,9 +96,9 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
-    private boolean enableCustomEntity = false;
-    private String customEntityIdentifier = null;
-    private int customEntitySkinId = 0;
+    private boolean enableCustomEntity;
+    private String customEntityIdentifier;
+    private int customEntitySkinId;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
@@ -296,11 +296,9 @@ public class RsNpcConfig {
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
 
-
         this.config.set("CustomEntity.enable", this.enableCustomEntity);
         this.config.set("CustomEntity.identifier", this.customEntityIdentifier);
         this.config.set("CustomEntity.skinId", this.customEntitySkinId);
-
 
         this.config.save();
     }

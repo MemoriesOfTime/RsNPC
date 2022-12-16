@@ -33,7 +33,7 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     }
 
     public EntityRsNPCCustomEntity(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
-        super(chunk, nbt.putInt("skinId", 0), config);
+        super(chunk, nbt, config);
     }
 
     public void setDefinition(EntityDefinition definition) {
@@ -79,6 +79,11 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     public void setSkinId(int skinId) {
         this.namedTag.putInt("skinId", skinId);
+        this.setDataProperty(
+                new IntEntityData(EntityUtils.getEntityField("DATA_SKIN_ID", DATA_SKIN_ID),
+                        this.namedTag.getInt("skinId")
+                )
+        );
     }
 
     public int getSkinId() {

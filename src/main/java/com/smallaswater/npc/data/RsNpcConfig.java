@@ -320,21 +320,18 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
+                CompoundTag nbt = Entity.getDefaultNBT(location)
+                        .putString("rsnpcName", this.name)
+                        .putCompound("Skin", (new CompoundTag())
+                                .putByteArray("Data", this.skin.getSkinData().data)
+                                .putString("ModelId", this.skin.getSkinId()));
                 if (this.enableCustomEntity && this.customEntityDefinition != null) {
-                    this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), Entity.getDefaultNBT(location)
-                            .putString("rsnpcName", this.name)
-                            .putCompound("Skin", (new CompoundTag())
-                                    .putByteArray("Data", this.skin.getSkinData().data)
-                                    .putString("ModelId", this.skin.getSkinId())), this);
+                    nbt.putInt("skinId", this.customEntitySkinId);
+                    this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), nbt, this);
                     EntityRsNPCCustomEntity entityRsNPC = (EntityRsNPCCustomEntity) this.entityRsNpc;
                     entityRsNPC.setDefinition(this.customEntityDefinition);
-                    entityRsNPC.setSkinId(this.customEntitySkinId);
                 }else {
-                    this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
-                            .putString("rsnpcName", this.name)
-                            .putCompound("Skin", (new CompoundTag())
-                                    .putByteArray("Data", this.skin.getSkinData().data)
-                                    .putString("ModelId", this.skin.getSkinId())), this);
+                    this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), nbt, this);
                     this.entityRsNpc.setSkin(this.getSkin());
                 }
                 this.entityRsNpc.setScale(this.scale);

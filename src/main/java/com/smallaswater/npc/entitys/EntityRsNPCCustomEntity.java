@@ -1,8 +1,10 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.EntityDefinition;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -51,14 +53,22 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
                 .build();
     }
 
-    public String getIdentifier() {
-        return this.getEntityDefinition().getIdentifier();
-    }
-
+    /**
+     * 获取实体定义
+     * （PNX和PM1E分支独有方法）
+     *
+     * @return 实体定义
+     */
     public EntityDefinition getDefinition() {
         return this.getEntityDefinition();
     }
 
+    /**
+     * 获取实体定义
+     * （PM1E分支独有方法）
+     *
+     * @return 实体定义
+     */
     @Override
     public EntityDefinition getEntityDefinition() {
         if (this.definition == null) {
@@ -73,6 +83,16 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     public int getSkinId() {
         return this.namedTag.getInt("skinId");
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        this.setDataProperty(
+                new IntEntityData(EntityUtils.getEntityField("DATA_SKIN_ID", DATA_SKIN_ID),
+                        this.namedTag.getInt("skinId")
+                )
+        );
     }
 
     @Override

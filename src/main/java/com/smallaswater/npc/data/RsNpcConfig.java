@@ -97,8 +97,9 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
-    private boolean enableCustomEntity = false;
-    private CustomEntityDefinition customEntityDefinition = null;
+    private boolean enableCustomEntity;
+    private CustomEntityDefinition customEntityDefinition
+    private int customEntitySkinId;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
@@ -232,15 +233,19 @@ public class RsNpcConfig {
             throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
         }
 
-        if (this.config.exists("CustomEntity")) {
-            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
+        try {
+            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable", false);
+            String identifier = this.config.getString("CustomEntity.identifier", "RsNPC:Demo");
+            this.customEntitySkinId = this.config.getInt("CustomEntity.skinId", 0);
             if (this.enableCustomEntity) {
                 this.customEntityDefinition = CustomEntityDefinition.builder()
-                        .identifier(config.getString("CustomEntity.identifier"))
+                        .identifier(identifier)
                         .spawnEgg(false)
                         .summonable(false).build();
                 Entity.registerCustomEntity(new CustomClassEntityProvider(this.customEntityDefinition, EntityRsNPCCustomEntity.class));
             }
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 自定义实体配置加载失败！请检查配置文件！", e);
         }
 
         //更新配置文件
@@ -296,10 +301,9 @@ public class RsNpcConfig {
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
 
-        if (this.enableCustomEntity && this.customEntityDefinition != null) {
-            config.set("CustomEntity.enable", true);
-            config.set("CustomEntity.identifier", this.customEntityDefinition.getStringId());
-        }
+        this.config.set("CustomEntity.enable", this.enableCustomEntity);
+        this.config.set("CustomEntity.identifier", this.customEntityDefinition == null ? "RsNPC:Demo" : this.customEntityDefinition.getStringId());
+        this.config.set("CustomEntity.skinId", this.customEntitySkinId);
 
         this.config.save();
     }
@@ -313,19 +317,18 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                if (this.customEntityDefinition != null) {
-                    this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), Entity.getDefaultNBT(location)
-                            .putString("rsnpcName", this.name)
-                            .putCompound("Skin", (new CompoundTag())
-                                    .putByteArray("Data", this.skin.getSkinData().data)
-                                    .putString("ModelId", this.skin.getSkinId())), this);
-                    ((EntityRsNPCCustomEntity) this.entityRsNpc).setDefinition(this.customEntityDefinition);
+                CompoundTag nbt = Entity.getDefaultNBT(location)
+                        .putString("rsnpcName", this.name)
+                        .putCompound("Skin", (new CompoundTag())
+                                .putByteArray("Data", this.skin.getSkinData().data)
+                                .putString("ModelId", this.skin.getSkinId()));
+                if (this.enableCustomEntity && this.customEntityDefinition != null) {
+                    nbt.putInt("skinId", this.customEntitySkinId);
+                    this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), nbt, this);
+                    EntityRsNPCCustomEntity entityRsNPC = (EntityRsNPCCustomEntity) this.entityRsNpc;
+                    entityRsNPC.setDefinition(this.customEntityDefinition);
                 }else {
-                    this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
-                            .putString("rsnpcName", this.name)
-                            .putCompound("Skin", (new CompoundTag())
-                                    .putByteArray("Data", this.skin.getSkinData().data)
-                                    .putString("ModelId", this.skin.getSkinId())), this);
+                    this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), nbt, this);
                     this.entityRsNpc.setSkin(this.getSkin());
                 }
                 this.entityRsNpc.setScale(this.scale);

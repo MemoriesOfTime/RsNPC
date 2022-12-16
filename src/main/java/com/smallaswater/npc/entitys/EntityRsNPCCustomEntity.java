@@ -11,7 +11,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import lombok.NonNull;
 
 /**
- * 基于pnx自定义实体实现的rsnpc实体
+ * 基于自定义实体功能实现的RsNPC实体
  *
  * @author LT_Name
  */
@@ -35,12 +35,43 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     @Override
     public int getNetworkId() {
-        return 0;
+        return this.getDefinition().getRuntimeId();
     }
 
     @Override
     public CustomEntityDefinition getDefinition() {
         return this.definition;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getIdentifier() {
+        return this.identifier;
+    }
+
+    public void setSkinId(int skinId) {
+        this.namedTag.putInt("skinId", skinId);
+        this.setDataProperty(
+                new IntEntityData(EntityUtils.getEntityField("DATA_SKIN_ID", DATA_SKIN_ID),
+                        this.namedTag.getInt("skinId")
+                )
+        );
+    }
+
+    public int getSkinId() {
+        return this.namedTag.getInt("skinId");
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+        this.setDataProperty(
+                new IntEntityData(EntityUtils.getEntityField("DATA_SKIN_ID", DATA_SKIN_ID),
+                        this.namedTag.getInt("skinId")
+                )
+        );
     }
 
     @Override

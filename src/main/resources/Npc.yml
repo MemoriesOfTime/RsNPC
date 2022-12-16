@@ -37,3 +37,4 @@ route: []
 CustomEntity:
   enable: false
   identifier: "RsNPC"
+  skinId: 0

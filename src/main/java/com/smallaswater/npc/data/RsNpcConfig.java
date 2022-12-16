@@ -98,6 +98,8 @@ public class RsNpcConfig {
 
     private boolean enableCustomEntity = false;
     private String customEntityIdentifier = null;
+    private int customEntitySkinId = 0;
+
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
         this.name = name;
@@ -230,14 +232,15 @@ public class RsNpcConfig {
             throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
         }
 
-        if (this.config.exists("CustomEntity")) {
-            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
-            if (this.enableCustomEntity) {
-                this.customEntityIdentifier = this.config.getString("CustomEntity.identifier");
-                if (CustomEntityUtils.getRuntimeId(this.customEntityIdentifier) == -1) {
-                    CustomEntityUtils.registerCustomEntity(this.customEntityIdentifier);
-                }
+        try {
+            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable", false);
+            this.customEntityIdentifier = this.config.getString("CustomEntity.identifier", "RsNPC:Demo");
+            this.customEntitySkinId = this.config.getInt("CustomEntity.skinId", 0);
+            if (this.enableCustomEntity && CustomEntityUtils.getRuntimeId(this.customEntityIdentifier) == -1) {
+                CustomEntityUtils.registerCustomEntity(this.customEntityIdentifier);
             }
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 自定义实体配置加载失败！请检查配置文件！", e);
         }
 
         //更新配置文件
@@ -293,10 +296,11 @@ public class RsNpcConfig {
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
 
-        if (this.enableCustomEntity && this.customEntityIdentifier != null) {
-            config.set("CustomEntity.enable", true);
-            config.set("CustomEntity.identifier", this.customEntityIdentifier);
-        }
+
+        this.config.set("CustomEntity.enable", this.enableCustomEntity);
+        this.config.set("CustomEntity.identifier", this.customEntityIdentifier);
+        this.config.set("CustomEntity.skinId", this.customEntitySkinId);
+
 
         this.config.save();
     }
@@ -316,7 +320,9 @@ public class RsNpcConfig {
                             .putCompound("Skin", (new CompoundTag())
                                     .putByteArray("Data", this.skin.getSkinData().data)
                                     .putString("ModelId", this.skin.getSkinId())), this);
-                    ((EntityRsNPCCustomEntity) this.entityRsNpc).setIdentifier(this.customEntityIdentifier);
+                    EntityRsNPCCustomEntity entityRsNPC = (EntityRsNPCCustomEntity) this.entityRsNpc;
+                    entityRsNPC.setIdentifier(this.customEntityIdentifier);
+                    entityRsNPC.setSkinId(this.customEntitySkinId);
                 }else {
                     this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
                             .putString("rsnpcName", this.name)

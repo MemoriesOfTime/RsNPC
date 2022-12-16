@@ -1,6 +1,8 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -29,8 +31,12 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC {
     }
 
     public EntityRsNPCCustomEntity(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
-        super(chunk, nbt, config);
-        this.identifier = "RsNPC";
+        super(chunk, nbt.putInt("skinId", 0), config);
+    }
+
+    @Override
+    public int getNetworkId() {
+        return CustomEntityUtils.getRuntimeId(this.identifier);
     }
 
     public void setIdentifier(String identifier) {
@@ -41,9 +47,22 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC {
         return this.identifier;
     }
 
+    public void setSkinId(int skinId) {
+        this.namedTag.putInt("skinId", skinId);
+    }
+
+    public int getSkinId() {
+        return this.namedTag.getInt("skinId");
+    }
+
     @Override
-    public int getNetworkId() {
-        return CustomEntityUtils.getRuntimeId(this.identifier);
+    protected void initEntity() {
+        super.initEntity();
+        this.setDataProperty(
+                new IntEntityData(EntityUtils.getEntityField("DATA_SKIN_ID", DATA_SKIN_ID),
+                        this.namedTag.getInt("skinId")
+                )
+        );
     }
 
     @Override

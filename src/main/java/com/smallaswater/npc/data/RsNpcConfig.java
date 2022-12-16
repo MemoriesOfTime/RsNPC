@@ -98,7 +98,7 @@ public class RsNpcConfig {
     private EntityRsNPC entityRsNpc;
 
     private boolean enableCustomEntity;
-    private CustomEntityDefinition customEntityDefinition
+    private CustomEntityDefinition customEntityDefinition;
     private int customEntitySkinId;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {

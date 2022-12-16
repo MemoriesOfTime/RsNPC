@@ -1,8 +1,10 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
+import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,6 +19,12 @@ import lombok.NonNull;
  */
 public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity {
 
+    private static final CustomEntityDefinition DEFAULT_DEFINITION = CustomEntityDefinition.builder()
+            .identifier("RsNPC:Demo")
+            .spawnEgg(false)
+            .summonable(false)
+            .build();
+
     private CustomEntityDefinition definition;
 
     @Deprecated
@@ -26,7 +34,6 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
 
     public EntityRsNPCCustomEntity(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
         super(chunk, nbt, config);
-        this.definition = CustomEntityDefinition.builder().identifier("RsNPC").spawnEgg(false).summonable(false).build();
     }
 
     public void setDefinition(CustomEntityDefinition definition) {
@@ -38,17 +45,30 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
         return this.getDefinition().getRuntimeId();
     }
 
+    /**
+     * 获取实体定义
+     * （PNX和PM1E分支独有方法）
+     *
+     * @return 实体定义
+     */
     @Override
     public CustomEntityDefinition getDefinition() {
+        if (this.definition == null) {
+            return DEFAULT_DEFINITION;
+        }
         return this.definition;
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.definition = CustomEntityDefinition.builder()
+                .identifier(identifier)
+                .spawnEgg(false)
+                .summonable(false)
+                .build();
     }
 
     public String getIdentifier() {
-        return this.identifier;
+        return this.getDefinition().getStringId();
     }
 
     public void setSkinId(int skinId) {

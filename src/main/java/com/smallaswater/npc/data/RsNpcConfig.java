@@ -97,8 +97,9 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
-    private boolean enableCustomEntity = false;
-    private EntityDefinition customEntityDefinition = null;
+    private boolean enableCustomEntity;
+    private EntityDefinition customEntityDefinition;
+    private int customEntitySkinId;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
@@ -232,9 +233,10 @@ public class RsNpcConfig {
             throw new RsNpcConfigLoadException("NPC配置 对话框加载失败！请检查配置文件！", e);
         }
 
-        if (this.config.exists("CustomEntity")) {
-            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable");
-            String identifier = config.getString("CustomEntity.identifier");
+        try {
+            this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable", false);
+            String identifier = this.config.getString("CustomEntity.identifier", "RsNPC:Demo");
+            this.customEntitySkinId = this.config.getInt("CustomEntity.skinId", 0);
             if (this.enableCustomEntity) {
                 this.customEntityDefinition = EntityManager.get().getDefinition(identifier);
                 if (this.customEntityDefinition == null) { //不存在时注册新的
@@ -245,6 +247,8 @@ public class RsNpcConfig {
                     EntityManager.get().registerDefinition(this.customEntityDefinition);
                 }
             }
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 自定义实体配置加载失败！请检查配置文件！", e);
         }
 
         //更新配置文件
@@ -263,11 +267,11 @@ public class RsNpcConfig {
         map.put("yaw", this.location.getYaw());
         this.config.set("坐标", map);
         
-        this.config.set("手持", this.hand.getId() + ":" + this.hand.getDamage());
-        this.config.set("头部", this.armor[0].getId() + ":" + this.armor[0].getDamage());
-        this.config.set("胸部", this.armor[1].getId() + ":" + this.armor[1].getDamage());
-        this.config.set("腿部", this.armor[2].getId() + ":" + this.armor[2].getDamage());
-        this.config.set("脚部", this.armor[3].getId() + ":" + this.armor[3].getDamage());
+        this.config.set("手持", Utils.item2String(this.hand));
+        this.config.set("头部", Utils.item2String(this.armor[0]));
+        this.config.set("胸部", Utils.item2String(this.armor[1]));
+        this.config.set("腿部", Utils.item2String(this.armor[2]));
+        this.config.set("脚部", Utils.item2String(this.armor[3]));
 
         this.config.set("皮肤", this.skinName);
 
@@ -300,10 +304,9 @@ public class RsNpcConfig {
         this.config.set("对话框.启用", this.enabledDialogPages);
         this.config.set("对话框.页面", this.dialogPagesName);
 
-        if (this.enableCustomEntity && this.customEntityDefinition != null) {
-            config.set("CustomEntity.enable", true);
-            config.set("CustomEntity.identifier", this.customEntityDefinition.getIdentifier());
-        }
+        this.config.set("CustomEntity.enable", this.enableCustomEntity);
+        this.config.set("CustomEntity.identifier", this.customEntityDefinition == null ? "RsNPC:Demo" : this.customEntityDefinition.getIdentifier());
+        this.config.set("CustomEntity.skinId", this.customEntitySkinId);
 
         this.config.save();
     }
@@ -317,13 +320,15 @@ public class RsNpcConfig {
                 this.location.getChunk().isLoaded() &&
                 !this.location.getLevel().getPlayers().isEmpty()) {
             if (this.entityRsNpc == null || this.entityRsNpc.isClosed()) {
-                if (this.customEntityDefinition != null) {
+                if (this.enableCustomEntity && this.customEntityDefinition != null) {
                     this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), Entity.getDefaultNBT(location)
                             .putString("rsnpcName", this.name)
                             .putCompound("Skin", (new CompoundTag())
                                     .putByteArray("Data", this.skin.getSkinData().data)
                                     .putString("ModelId", this.skin.getSkinId())), this);
-                    ((EntityRsNPCCustomEntity) this.entityRsNpc).setDefinition(this.customEntityDefinition);
+                    EntityRsNPCCustomEntity entityRsNPC = (EntityRsNPCCustomEntity) this.entityRsNpc;
+                    entityRsNPC.setDefinition(this.customEntityDefinition);
+                    entityRsNPC.setSkinId(this.customEntitySkinId);
                 }else {
                     this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), Entity.getDefaultNBT(location)
                             .putString("rsnpcName", this.name)

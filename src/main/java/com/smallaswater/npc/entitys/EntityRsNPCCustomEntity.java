@@ -31,7 +31,7 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     }
 
     public EntityRsNPCCustomEntity(@NonNull FullChunk chunk, @NonNull CompoundTag nbt, RsNpcConfig config) {
-        super(chunk, nbt, config);
+        super(chunk, nbt.putInt("skinId", 0), config);
     }
 
     public void setDefinition(EntityDefinition definition) {
@@ -41,6 +41,18 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     @Override
     public int getNetworkId() {
         return this.getEntityDefinition().getRuntimeId();
+    }
+
+    public void setIdentifier(String identifier) {
+        this.definition = EntityDefinition.builder()
+                .identifier(identifier)
+                .spawnEgg(false)
+                .implementation(EntityRsNPCCustomEntity.class)
+                .build();
+    }
+
+    public String getIdentifier() {
+        return this.getEntityDefinition().getIdentifier();
     }
 
     public EntityDefinition getDefinition() {
@@ -53,6 +65,14 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
             return DEFAULT_DEFINITION;
         }
         return this.definition;
+    }
+
+    public void setSkinId(int skinId) {
+        this.namedTag.putInt("skinId", skinId);
+    }
+
+    public int getSkinId() {
+        return this.namedTag.getInt("skinId");
     }
 
     @Override

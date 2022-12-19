@@ -43,9 +43,9 @@ public abstract class BaseCommand extends Command {
                     if (command.canUser(sender)) {
                         return command.execute(sender, s, args);
                     }else if (sender.isPlayer()) {
-                        sender.sendMessage("你没有权限使用这个命令！");
+                        sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.command.noPermissions"));
                     }else {
-                        sender.sendMessage("你不能在控制台使用这个命令！");
+                        sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.command.cannotBeUsedInConsole"));
                     }
                 }else {
                     this.sendHelp(sender);
@@ -59,7 +59,7 @@ public abstract class BaseCommand extends Command {
             }
             return true;
         }
-        sender.sendMessage("你没有权限使用这个命令！");
+        sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.command.noPermissions"));
         return true;
     }
 

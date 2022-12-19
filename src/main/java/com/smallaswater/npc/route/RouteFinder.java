@@ -33,7 +33,7 @@ public class RouteFinder {
 
     LinkedList<Node> openNodes = new LinkedList<>();
     ArrayList<Vector3> closeNodes = new ArrayList<>();
-    
+
     LinkedList<Node> nodes = new LinkedList<>();
     
     public RouteFinder(@NotNull Level level, @NotNull Vector3 start, @NotNull Vector3 end) {

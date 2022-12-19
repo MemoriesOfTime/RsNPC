@@ -1,6 +1,7 @@
 package com.smallaswater.npc.data;
 
 import cn.lanink.gamecore.utils.ConfigUtils;
+import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
@@ -13,7 +14,6 @@ import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPCCustomEntity;
-import com.smallaswater.npc.utils.CustomEntityUtils;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;

@@ -1,5 +1,6 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.data.IntEntityData;
@@ -11,7 +12,6 @@ import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.types.EntityLink;
 import com.smallaswater.npc.data.RsNpcConfig;
-import com.smallaswater.npc.utils.CustomEntityUtils;
 import lombok.NonNull;
 
 import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;

@@ -1,5 +1,6 @@
 package com.smallaswater.npc;
 
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
@@ -54,7 +55,7 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.7";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.8";
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
     private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
@@ -105,6 +106,15 @@ public class RsNPC extends PluginBase {
                         this.getLogger().warning("MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！")
                 );
                 break;
+        }
+
+        NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
+        if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX && nukkitType != NukkitTypeUtils.NukkitType.POWER_NUKKIT) {
+            this.getLogger().error("警告！您所使用的插件版本不支持此Nukkit分支！");
+            this.getLogger().error("服务器核心 : " + nukkitType.getShowName() + "  |  插件版本 : " + this.getVersion());
+            this.getLogger().error("请使用NukkitX或PowerNukkit核心！或更换为对应版本的插件！");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
         }
 
         ConfigUpdateUtils.updateConfig(this);
@@ -348,6 +358,12 @@ public class RsNPC extends PluginBase {
             maven = MAVEN_URL_CENTRAL;
         }
         return maven + GAME_CORE_URL;
+    }
+
+    public String getVersion() {
+        Config config = new Config(Config.PROPERTIES);
+        config.load(this.getResource("git.properties"));
+        return config.get("git.build.version", this.getDescription().getVersion()) + " git-" + config.get("git.commit.id.abbrev", "Unknown");
     }
 
 }

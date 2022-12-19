@@ -37,18 +37,18 @@ public class DeleteSubCommand extends BaseSubCommand {
             this.rsNPC.getNpcs().get(name).getEntityRsNpc().close();
             this.rsNPC.getNpcs().remove(name);
             if (!(new File(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml")).delete()) {
-                sender.sendMessage("§c§lNPC " + name + " 文件删除失败！请尝试手动删除！");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.command.npcRemoveFileFailed", name));
             }else {
-                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcRemoveSuccess", name));
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.command.npcRemoveSuccess", name));
             }
         } else {
-            sender.sendMessage("§c§l请输入要删除的NPC的名字！");
+            sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
         }
         return true;
     }
 
     @Override
     public CommandParameter[] getParameters() {
-        return new CommandParameter[] { CommandParameter.newType("NPC名称", CommandParamType.TEXT) };
+        return new CommandParameter[] { CommandParameter.newType("NPC_Name", CommandParamType.TEXT) };
     }
 }

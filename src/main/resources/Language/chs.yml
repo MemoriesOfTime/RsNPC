@@ -22,13 +22,15 @@ tips.npcNotExist: "§c§lNPC %1% 不存在！"
 tips.npcRouteAddSuccess: "§a§l已添加到路径！"
 tips.npcAlreadyExist: "§c§l已存在名为 %1% 的NPC！"
 tips.npcCreateSuccess: "§a§l成功创建NPC %1%！"
-tips.npcRemoveSuccess: "§a§l成功删除NPC %1%！"
+tips.command.npcRemoveSuccess: "§a§l成功删除NPC %1%！"
+tips.command.npcRemoveFileFailed: "§c§lNPC %1% 配置文件删除失败！请尝试手动删除！"
 tips.nameRequired: "§c§l请输入NPC的名称！"
 tips.npcCreationFailed: "§c§lNPC创建失败！"
 tips.reloadSuccess: "§a§l已重载配置！"
 
 tips.command.help: |-
   §a§l >> §eHelp for RsNPC §a<<
+  §a§l/rsnpc §7打开GUI界面
   §a§l/rsnpc create <NPC名称> §7在当前位置创建NPC
   §a§l/rsnpc delete <NPC名称> §7移除NPC
   §a§l/rsnpc addroute <NPC名称> §7将当前位置添加到NPC路径

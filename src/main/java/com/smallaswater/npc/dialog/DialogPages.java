@@ -1,7 +1,10 @@
 package com.smallaswater.npc.dialog;
 
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
+import cn.lanink.gamecore.utils.packet.ProtocolVersion;
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.entitys.EntityRsNPC;
@@ -87,6 +90,20 @@ public class DialogPages {
             }
             final int finalBeforeGameMode = beforeGameMode;
 
+            //1.19.40+ 有两个关闭按钮，上面的关闭按钮无法监听，这里使用Task延迟处理
+            Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
+                if (finalBeforeGameMode != -1) {
+                    player.setGamemode(finalBeforeGameMode);
+                }
+
+                //修复 1.19.40+ 未知原因导致的不显示NPC名称问题
+                if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolVersion.v1_19_40) {
+                    String nameTag = entityRsNpc.getNameTag();
+                    entityRsNpc.setNameTag("re" + nameTag);
+                    entityRsNpc.setNameTag(nameTag);
+                }
+            }, 5);
+
             AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(
                     VariableManage.stringReplace(player, this.title, entityRsNpc.getConfig()),
                     VariableManage.stringReplace(player, this.content, entityRsNpc.getConfig()),
@@ -96,11 +113,7 @@ public class DialogPages {
             windowDialog.setSkinData("{\"picker_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,0,0]},\"portrait_offsets\":{\"scale\":[1.75,1.75,1.75],\"translate\":[0,-50,0]}}");
 
             this.buttons.forEach(button -> {
-                windowDialog.addButton(button.getText()).onClicked((p, response) -> {
-                    if (finalBeforeGameMode != -1) {
-                        p.setGamemode(finalBeforeGameMode);
-                    }
-
+                windowDialog.addAdvancedButton(button.getText()).onClicked((p, response) -> {
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             windowDialog.close(p, response);
@@ -116,9 +129,6 @@ public class DialogPages {
             });
 
             windowDialog.onClosed((p, response) -> {
-                if (finalBeforeGameMode != -1) {
-                    p.setGamemode(finalBeforeGameMode);
-                }
                 if (this.closeGo != null) {
                     this.dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
                 }

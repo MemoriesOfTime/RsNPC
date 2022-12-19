@@ -4,10 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
+import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.route.Node;
@@ -59,7 +62,27 @@ public class EntityRsNPC extends EntityHuman {
         this.getInventory().setItemInHand(config.getHand());
         this.getInventory().setArmorContents(config.getArmor());
     }
-    
+
+    public RsNpcConfig getConfig() {
+        return this.config;
+    }
+
+    @Override
+    public int getNetworkId() {
+        if (this.config == null) {
+            return super.getNetworkId();
+        }
+        return this.config.getNetworkId();
+    }
+
+    @Override
+    protected float getBaseOffset() {
+        if (this.getNetworkId() == -1) {
+            return super.getBaseOffset();
+        }
+        return 0.0F;
+    }
+
     @Override
     public boolean onUpdate(int currentTick) {
         if (this.config == null) {
@@ -170,6 +193,7 @@ public class EntityRsNPC extends EntityHuman {
                         yaw = -yaw + 180.0D;
                     }
                     this.yaw = yaw;
+                    this.headYaw = yaw;
                     this.pitch = 0;
                 }
             }
@@ -191,13 +215,44 @@ public class EntityRsNPC extends EntityHuman {
                     yaw = -yaw + 180.0D;
                 }
                 this.yaw = yaw;
+                this.headYaw = yaw;
                 this.pitch = pitch;
             }
         });
     }
 
-    public RsNpcConfig getConfig() {
-        return this.config;
+    @Override
+    public void spawnTo(Player player) {
+        if (this.getNetworkId() == -1) {
+            super.spawnTo(player);
+        }
+
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
+            this.hasSpawned.put(player.getLoaderId(), player);
+            player.dataPacket(this.createAddEntityPacket());
+        }
+        if (this.riding != null) {
+            this.riding.spawnTo(player);
+            SetEntityLinkPacket pkk = new SetEntityLinkPacket();
+            pkk.vehicleUniqueId = this.riding.getId();
+            pkk.riderUniqueId = this.getId();
+            pkk.type = 1;
+            pkk.immediate = 1;
+            player.dataPacket(pkk);
+        }
     }
 
+    @Override
+    public void despawnFrom(Player player) {
+        if (this.getNetworkId() == -1) {
+            super.despawnFrom(player);
+        }
+
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            RemoveEntityPacket pk = new RemoveEntityPacket();
+            pk.eid = this.getId();
+            player.dataPacket(pk);
+            this.hasSpawned.remove(player.getLoaderId());
+        }
+    }
 }

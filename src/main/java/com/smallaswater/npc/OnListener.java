@@ -1,7 +1,6 @@
 package com.smallaswater.npc;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
@@ -31,13 +30,9 @@ public class OnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
-        if (event.getEntity() instanceof EntityRsNPC) {
+        if (event.getEntity() instanceof EntityRsNPC ||
+                event.getVehicle() instanceof EntityRsNPC) {
             event.setCancelled(true);
-        }
-        if (!Server.getInstance().getCodename().equals("PM1E")) {
-            if (event.getVehicle() instanceof EntityRsNPC) {
-                event.setCancelled(true);
-            }
         }
     }
 
@@ -84,7 +79,15 @@ public class OnListener implements Listener {
 
                     if (rsNpcConfig.isEnabledDialogPages()) {
                         DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
-                        dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
+                        if (dialogConfig != null) {
+                            dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
+                        }else {
+                            String message = "§cNPC " + rsNpcConfig.getName() + " 配置错误！不存在名为 " + rsNpcConfig.getDialogPagesName() + " 的对话框页面！";
+                            this.rsNPC.getLogger().warning(message);
+                            if (player.isOp()) {
+                                player.sendMessage(message);
+                            }
+                        }
                     }
                 }
             }

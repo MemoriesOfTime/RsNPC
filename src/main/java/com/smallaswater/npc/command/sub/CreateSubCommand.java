@@ -43,33 +43,34 @@ public class CreateSubCommand extends BaseSubCommand {
                 sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcAlreadyExist", name));
                 return true;
             }
+            this.rsNPC.saveResource("Npc.yml", "/Npcs/" + name + ".yml", false);
+            Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
+            config.set("name", name);
+            Player player = (Player) sender;
+            LinkedHashMap<String, Object> map = new LinkedHashMap<>();
+            map.put("x", player.getX());
+            map.put("y", player.getY());
+            map.put("z", player.getZ());
+            map.put("yaw", Utils.getYaw(player));
+            map.put("level", player.getLevel().getName());
+            config.set("坐标", map);
+            config.save();
+            RsNpcConfig rsNpcConfig;
             try {
-                this.rsNPC.saveResource("npc.yml", "/Npcs/" + name + ".yml", false);
-                Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
-                config.set("name", name);
-                Player player = (Player) sender;
-                LinkedHashMap<String, Object> map = new LinkedHashMap<>();
-                map.put("x", player.getX());
-                map.put("y", player.getY());
-                map.put("z", player.getZ());
-                map.put("yaw", Utils.getYaw(player));
-                map.put("level", player.getLevel().getName());
-                config.set("坐标", map);
-                config.save();
-                RsNpcConfig rsNpcConfig = new RsNpcConfig(name, config);
-                this.rsNPC.getNpcs().put(name, rsNpcConfig);
-                rsNpcConfig.checkEntity();
-                //玄学解决首次生成不显示的问题
-                Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
-                    rsNpcConfig.getEntityRsNpc().close();
-                    rsNpcConfig.checkEntity();
-                }, 20);
-                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreateSuccess", name));
+                rsNpcConfig = new RsNpcConfig(name, config);
             } catch (Exception e) {
-                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreationFailed"));
-                this.rsNPC.getLogger().error(this.rsNPC.getLanguage().translateString("tips.npcCreationFailed"), e);
+                sender.sendMessage("创建NPC失败！请查看控制台错误信息！");
+                this.rsNPC.getLogger().error("创建NPC失败！", e);
                 return true;
             }
+            this.rsNPC.getNpcs().put(name, rsNpcConfig);
+            rsNpcConfig.checkEntity();
+            //玄学解决首次生成不显示的问题
+            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
+                rsNpcConfig.getEntityRsNpc().close();
+                rsNpcConfig.checkEntity();
+            }, 20);
+            sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreateSuccess", name));
         } else {
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
         }

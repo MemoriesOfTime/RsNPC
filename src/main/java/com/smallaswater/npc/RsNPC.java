@@ -1,5 +1,6 @@
 package com.smallaswater.npc;
 
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.lanink.gamecore.utils.Language;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
@@ -51,12 +52,19 @@ public class RsNPC extends PluginBase {
     @Getter
     private DialogManager dialogManager;
 
+    /**
+     * Npc配置文件描述
+     */
+    private Config npcConfigDescription;
+
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.3";
-    public static final String MINIMUM_GAME_CORE_VERSION_PM1E = "1.6.3.0-PM1E";
-    public static final String GAME_CORE_URL = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
-    public static final String GAME_CORE_URL_PM1E = "https://repo1.maven.org/maven2/cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION_PM1E + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION_PM1E + ".jar";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.8";
+
+    private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
+    private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
+
+    private static final String GAME_CORE_URL = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
 
     static {
         Skin skin = new Skin();
@@ -75,8 +83,6 @@ public class RsNPC extends PluginBase {
         rsNPC = this;
 
         this.loadLanguage();
-
-        ConfigUpdateUtils.updateConfig(this);
 
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
@@ -107,6 +113,17 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
+        if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX && nukkitType != NukkitTypeUtils.NukkitType.POWER_NUKKIT) {
+            this.getLogger().error("警告！您所使用的插件版本不支持此Nukkit分支！");
+            this.getLogger().error("服务器核心 : " + nukkitType.getShowName() + "  |  插件版本 : " + this.getVersion());
+            this.getLogger().error("请使用NukkitX或PowerNukkit核心！或更换为对应版本的插件！");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        ConfigUpdateUtils.updateConfig(this);
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
@@ -155,17 +172,24 @@ public class RsNPC extends PluginBase {
 
     private void loadNpcs() {
         File[] files = (new File(getDataFolder() + "/Npcs")).listFiles();
-        if (files != null && files.length > 0) {
+        if (files != null) {
             for (File file : files) {
                 if (!file.isFile() && file.getName().endsWith(".yml")) {
                     continue;
                 }
                 String npcName = file.getName().split("\\.")[0];
+                Config config;
+                try {
+                    config = new Config(file, Config.YAML);
+                }catch (Exception e) {
+                    this.getLogger().error("§c NPC " + npcName + " 配置文件格式严重错误！请检查配置文件！", e);
+                    continue;
+                }
                 RsNpcConfig rsNpcConfig;
                 try {
-                    rsNpcConfig = new RsNpcConfig(npcName, new Config(file, Config.YAML));
+                    rsNpcConfig = new RsNpcConfig(npcName, config);
                 } catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.loadNPCError"), e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.loadNPCError", npcName), e);
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);
@@ -177,18 +201,28 @@ public class RsNPC extends PluginBase {
 
     private void loadSkins() {
         File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
-        if (files == null || files.length == 0) {
+        if (files == null) {
             return;
         }
         for (File file : files) {
             String skinName = file.getName();
 
             File skinDataFile = null;
+            boolean isSlim = true;
             if (file.isFile() && skinName.endsWith(".png")) {
                 skinName = skinName.replace(".png", "");
                 skinDataFile = file;
+                if (skinName.contains("_slim")) {
+                    skinName = skinName.replace("_slim", "");
+                } else {
+                    isSlim = false;
+                }
             }else if (file.isDirectory()) {
-                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin_slim.png");
+                if (!skinDataFile.exists()) {
+                    skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
+                    isSlim = false;
+                }
             }
 
             if (skinDataFile != null && skinDataFile.exists()) {
@@ -199,6 +233,10 @@ public class RsNPC extends PluginBase {
                 try {
                     skin.setSkinData(ImageIO.read(skinDataFile));
                     SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+
+                    if (isSlim) {
+                        skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
+                    }
                 } catch (Exception e) {
                     this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.dataError", skinName), e);
                     continue;
@@ -306,6 +344,40 @@ public class RsNPC extends PluginBase {
             skin = DEFAULT_SKIN;
         }
         return skin;
+    }
+
+    public Config getNpcConfigDescription() {
+        if (this.npcConfigDescription == null) {
+            this.npcConfigDescription = new Config();
+            this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
+        }
+        return this.npcConfigDescription;
+    }
+
+    /**
+     * @return 最低GameCore版本
+     */
+    public String getMinimumGameCoreVersion() {
+        return MINIMUM_GAME_CORE_VERSION;
+    }
+
+    /**
+     * @return GameCore下载链接
+     */
+    public String getGameCoreUrl(int i) {
+        String maven;
+        if (i > 0) {
+            maven = MAVEN_URL_LANINK;
+        }else {
+            maven = MAVEN_URL_CENTRAL;
+        }
+        return maven + GAME_CORE_URL;
+    }
+
+    public String getVersion() {
+        Config config = new Config(Config.PROPERTIES);
+        config.load(this.getResource("git.properties"));
+        return config.get("git.build.version", this.getDescription().getVersion()) + " git-" + config.get("git.commit.id.abbrev", "Unknown");
     }
 
 }

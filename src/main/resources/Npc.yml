@@ -14,13 +14,14 @@ name: "NPC1"
 腿部: ""
 脚部: ""
 皮肤: "默认"
+实体NetworkId: -1
 实体大小: 1.0
 看向玩家: true
 表情动作:
   启用: false
   表情ID:
     - "4c8ae710-df2e-47cd-814d-cc7bf21a3d67"
-  间隔(秒): 10
+  间隔: 10
 允许抛射物触发: true
 点击执行指令:
   - "give @p 260 1&con"
@@ -34,3 +35,7 @@ route: []
 对话框:
   启用: false
   页面: "demo"
+CustomEntity:
+  enable: false
+  identifier: "RsNPC"
+  skinId: 0

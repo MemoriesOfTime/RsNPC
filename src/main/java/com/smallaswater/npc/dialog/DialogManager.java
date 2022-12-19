@@ -1,5 +1,6 @@
 package com.smallaswater.npc.dialog;
 
+import cn.lanink.gamecore.utils.ConfigUtils;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +17,11 @@ public class DialogManager {
     private final RsNPC rsNPC;
     private final HashMap<String, DialogPages> dialogConfigs = new HashMap<>();
 
+    private final Config description = new Config();
+
     public DialogManager(@NotNull RsNPC rsNPC) {
         this.rsNPC = rsNPC;
+        this.description.load(rsNPC.getResource("Dialog/DialogConfigDescription.yml"));
         this.loadAllDialog();
     }
 
@@ -43,6 +47,7 @@ public class DialogManager {
 
     public void loadDialog(@NotNull String name) {
         Config config = new Config(this.rsNPC.getDataFolder() + "/Dialog/" + name + ".yml", Config.YAML);
+        ConfigUtils.addDescription(config, this.description); //添加描述
         this.dialogConfigs.put(name, new DialogPages(name, config));
     }
 

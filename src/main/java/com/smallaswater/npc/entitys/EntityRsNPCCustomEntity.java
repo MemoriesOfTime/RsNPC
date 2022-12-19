@@ -1,5 +1,6 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.custom.CustomEntity;

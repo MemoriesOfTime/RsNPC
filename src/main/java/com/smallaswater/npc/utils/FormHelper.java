@@ -31,7 +31,9 @@ public class FormHelper {
 
     public static void sendMain(@NotNull Player player) {
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNPC - 主菜单<<");
-        simple.setContent(getRandomMessage() + "\n\n");
+        if ("chs".equalsIgnoreCase(Server.getInstance().getLanguage().getLang())) {
+            simple.setContent(getRandomMessage() + "\n\n");
+        }
 
         simple.addButton(new ResponseElementButton("创建NPC").onClicked(FormHelper::sendCreateNpc));
         simple.addButton(new ResponseElementButton("管理NPC").onClicked(FormHelper::sendAdminNpcAll));

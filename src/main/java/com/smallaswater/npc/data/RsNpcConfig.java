@@ -1,6 +1,7 @@
 package com.smallaswater.npc.data;
 
 import cn.lanink.gamecore.utils.ConfigUtils;
+import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;

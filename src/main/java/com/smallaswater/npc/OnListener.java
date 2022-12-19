@@ -30,8 +30,7 @@ public class OnListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityVehicleEnter(EntityVehicleEnterEvent event) {
-        if (event.getEntity() instanceof EntityRsNPC ||
-                event.getVehicle() instanceof EntityRsNPC) {
+        if (event.getEntity() instanceof EntityRsNPC) {
             event.setCancelled(true);
         }
     }

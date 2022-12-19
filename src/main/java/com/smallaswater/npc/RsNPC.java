@@ -55,7 +55,7 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.7.0-PM1E";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.8.0-PM1E";
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
     private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";

@@ -1,7 +1,7 @@
 package com.smallaswater.npc;
 
-import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.lanink.gamecore.utils.Language;
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.Skin;
@@ -101,7 +101,7 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.getLogger().info("plugin.load.startLoad");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 
         switch (Utils.checkAndDownloadDepend()) {
             case 1:
@@ -130,10 +130,10 @@ public class RsNPC extends PluginBase {
         this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoadDialog"));
         this.dialogManager = new DialogManager(this);
 
-        this.getLogger().info("plugin.load.startLoadSkin");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoadSkin"));
         this.loadSkins();
 
-        this.getLogger().info("plugin.load.startLoadNPC");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.startLoad"));
         this.loadNpcs();
 
         this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
@@ -148,7 +148,7 @@ public class RsNPC extends PluginBase {
 
         }
 
-        this.getLogger().info("plugin.load.complete");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.complete"));
     }
 
     @Override
@@ -159,9 +159,12 @@ public class RsNPC extends PluginBase {
             }
         }
         this.npcs.clear();
-        this.getLogger().info("plugin.disable.complete");
+        this.getLogger().info(this.getLanguage().translateString("plugin.disable.complete"));
     }
 
+    /**
+     * 加载语言文件
+     */
     private void loadLanguage() {
         String setLang = this.getServer().getLanguage().getLang();
         Config config = new Config();
@@ -182,19 +185,19 @@ public class RsNPC extends PluginBase {
                 try {
                     config = new Config(file, Config.YAML);
                 }catch (Exception e) {
-                    this.getLogger().error("§c NPC " + npcName + " 配置文件格式严重错误！请检查配置文件！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadConfigError", npcName), e);
                     continue;
                 }
                 RsNpcConfig rsNpcConfig;
                 try {
                     rsNpcConfig = new RsNpcConfig(npcName, config);
                 } catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.loadNPCError", npcName), e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadError", npcName), e);
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
-                this.getLogger().info(this.getLanguage().translateString("plugin.load.loadNPCComplete", rsNpcConfig.getName()));
+                this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
             }
         }
     }

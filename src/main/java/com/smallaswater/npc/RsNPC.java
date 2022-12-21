@@ -1,5 +1,6 @@
 package com.smallaswater.npc;
 
+import cn.lanink.gamecore.utils.Language;
 import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
@@ -41,6 +42,9 @@ public class RsNPC extends PluginBase {
     private static RsNPC rsNPC;
 
     @Getter
+    private Language language;
+
+    @Getter
     private final HashMap<String, Skin> skins = new HashMap<>();
     @Getter
     private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
@@ -78,6 +82,8 @@ public class RsNPC extends PluginBase {
     public void onLoad() {
         rsNPC = this;
 
+        this.loadLanguage();
+
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
 
@@ -95,7 +101,7 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.getLogger().info("RsNPC开始加载");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 
         switch (Utils.checkAndDownloadDepend()) {
             case 1:
@@ -103,7 +109,7 @@ public class RsNPC extends PluginBase {
                 return;
             case 2:
                 this.getServer().getScheduler().scheduleTask(this, () ->
-                        this.getLogger().warning("MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！")
+                        this.getLogger().warning(this.getLanguage().translateString("plugin.depend.gamecore.needReload"))
                 );
                 break;
         }
@@ -121,13 +127,13 @@ public class RsNPC extends PluginBase {
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
-        this.getLogger().info("开始加载对话页面数据");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoadDialog"));
         this.dialogManager = new DialogManager(this);
 
-        this.getLogger().info("开始加载皮肤");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoadSkin"));
         this.loadSkins();
 
-        this.getLogger().info("开始加载NPC");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.startLoad"));
         this.loadNpcs();
 
         this.getServer().getPluginManager().registerEvents(new OnListener(this), this);
@@ -142,7 +148,7 @@ public class RsNPC extends PluginBase {
 
         }
 
-        this.getLogger().info("RsNPC加载完成");
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.complete"));
     }
 
     @Override
@@ -153,7 +159,18 @@ public class RsNPC extends PluginBase {
             }
         }
         this.npcs.clear();
-        this.getLogger().info("RsNPC卸载完成");
+        this.getLogger().info(this.getLanguage().translateString("plugin.disable.complete"));
+    }
+
+    /**
+     * 加载语言文件
+     */
+    private void loadLanguage() {
+        String setLang = this.getServer().getLanguage().getLang();
+        Config config = new Config();
+        config.load(this.getResource("Language/" + setLang + ".yml"));
+        this.language = new Language(config);
+        this.getLogger().info("§aLanguage: " + setLang + " loaded !");
     }
 
     private void loadNpcs() {
@@ -168,19 +185,19 @@ public class RsNPC extends PluginBase {
                 try {
                     config = new Config(file, Config.YAML);
                 }catch (Exception e) {
-                    this.getLogger().error("§c NPC " + npcName + " 配置文件格式严重错误！请检查配置文件！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadConfigError", npcName), e);
                     continue;
                 }
                 RsNpcConfig rsNpcConfig;
                 try {
                     rsNpcConfig = new RsNpcConfig(npcName, config);
                 } catch (Exception e) {
-                    this.getLogger().error("§c NPC: " + npcName + " 配置文件出现错误！无法正常加载！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadError", npcName), e);
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
-                this.getLogger().info("NPC: " + rsNpcConfig.getName() + " 加载完成！");
+                this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
             }
         }
     }
@@ -224,7 +241,7 @@ public class RsNPC extends PluginBase {
                         skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
                     }
                 } catch (Exception e) {
-                    this.getLogger().error("皮肤 " + skinName + " 读取错误，请检查图片格式或图片尺寸！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.dataError", skinName), e);
                     continue;
                 }
 

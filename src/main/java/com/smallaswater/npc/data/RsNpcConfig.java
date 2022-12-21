@@ -40,6 +40,10 @@ public class RsNpcConfig {
     @Setter
     private String showName;
 
+    @Setter
+    @Getter
+    private boolean nameTagAlwaysVisible;
+
     private final String levelName;
     private final Location location;
 
@@ -110,6 +114,12 @@ public class RsNpcConfig {
             this.showName = config.getString("name");
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 显示名称配置错误！请检查配置文件！", e);
+        }
+
+        try {
+            this.nameTagAlwaysVisible = config.getBoolean("nameTagAlwaysVisible", true);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 nameTagAlwaysVisible配置错误！请检查配置文件！", e);
         }
 
         try {
@@ -256,6 +266,8 @@ public class RsNpcConfig {
     
     public void save() {
         this.config.set("name", this.showName);
+
+        this.config.set("nameTagAlwaysVisible", this.nameTagAlwaysVisible);
     
         HashMap<String, Object> map = this.config.get("坐标", new HashMap<>());
         map.put("level", this.levelName);

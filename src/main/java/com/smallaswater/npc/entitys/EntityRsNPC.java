@@ -54,7 +54,7 @@ public class EntityRsNPC extends EntityHuman {
             this.close();
             return;
         }
-        this.setNameTagAlwaysVisible();
+        this.setNameTagAlwaysVisible(config.isNameTagAlwaysVisible());
         this.setNameTagVisible();
         this.setNameTag(config.getShowName());
         this.setMaxHealth(20);

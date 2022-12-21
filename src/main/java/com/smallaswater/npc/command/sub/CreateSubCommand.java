@@ -36,11 +36,11 @@ public class CreateSubCommand extends BaseSubCommand {
         if (args.length > 1) {
             String name = args[1].trim();
             if ("".equals(name)) {
-                sender.sendMessage("§c§lNPC的名字不能是空格！");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
                 return true;
             }
             if (this.rsNPC.getNpcs().containsKey(name)) {
-                sender.sendMessage("§c§lNPC " + name + "已经存在...");
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcAlreadyExist", name));
                 return true;
             }
             this.rsNPC.saveResource("Npc.yml", "/Npcs/" + name + ".yml", false);
@@ -70,15 +70,15 @@ public class CreateSubCommand extends BaseSubCommand {
                 rsNpcConfig.getEntityRsNpc().close();
                 rsNpcConfig.checkEntity();
             }, 20);
-            sender.sendMessage("§a§lNPC " + name + "创建成功!!");
+            sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreateSuccess", name));
         } else {
-            sender.sendMessage("§c§l请输入要创建的NPC的名字！");
+            sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
         }
         return true;
     }
 
     @Override
     public CommandParameter[] getParameters() {
-        return new CommandParameter[] { CommandParameter.newType("NPC名称", CommandParamType.TEXT) };
+        return new CommandParameter[] { CommandParameter.newType("NPC_Name", CommandParamType.TEXT) };
     }
 }

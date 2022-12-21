@@ -122,6 +122,7 @@ public class FormHelper {
         simple.setContent(
                 "名称: " + rsNpcConfig.getName() +
                 "\n显示名称: " + rsNpcConfig.getShowName() +
+                "\n显示名称一直可见: " + (rsNpcConfig.isNameTagAlwaysVisible() ? "是" : "否") +
                 "\n坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
                 "\n  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
                 "\n  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) + "" +
@@ -178,12 +179,13 @@ public class FormHelper {
         Item hand = rsNpcConfig.getHand();
         Item[] armor = rsNpcConfig.getArmor();
         custom.addElement(new ElementInput("显示名称", "", rsNpcConfig.getShowName())); //0
+        custom.addElement(new ElementToggle("显示名称一直可见", rsNpcConfig.isNameTagAlwaysVisible())); //1
         //物品
-        custom.addElement(new ElementInput("手持", "0:0", hand.getId() + ":" + hand.getDamage())); //1
-        custom.addElement(new ElementInput("头部", "0:0", armor[0].getId() + ":" + armor[0].getDamage())); //2
-        custom.addElement(new ElementInput("胸部", "0:0", armor[1].getId() + ":" + armor[1].getDamage())); //3
-        custom.addElement(new ElementInput("腿部", "0:0", armor[2].getId() + ":" + armor[2].getDamage())); //4
-        custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //5
+        custom.addElement(new ElementInput("手持", "0:0", hand.getId() + ":" + hand.getDamage())); //2
+        custom.addElement(new ElementInput("头部", "0:0", armor[0].getId() + ":" + armor[0].getDamage())); //3
+        custom.addElement(new ElementInput("胸部", "0:0", armor[1].getId() + ":" + armor[1].getDamage())); //4
+        custom.addElement(new ElementInput("腿部", "0:0", armor[2].getId() + ":" + armor[2].getDamage())); //5
+        custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //6
         //皮肤
         ArrayList<String> skinOptions = new ArrayList<>(RsNPC.getInstance().getSkins().keySet());
         skinOptions.add("Default Skin");
@@ -194,12 +196,12 @@ public class FormHelper {
                 break;
             }
         }
-        custom.addElement(new ElementDropdown("皮肤", skinOptions, defaultOption)); //6
-        custom.addElement(new ElementInput("实体NetworkId", "-1", rsNpcConfig.getNetworkId() + "")); //7
-        custom.addElement(new ElementInput("实体大小", "1.0", rsNpcConfig.getScale() + "")); //8
-        custom.addElement(new ElementToggle("看向玩家", rsNpcConfig.isLookAtThePlayer())); //9
-        custom.addElement(new ElementToggle("允许抛射物触发", rsNpcConfig.isCanProjectilesTrigger())); //10
-        custom.addElement(new ElementToggle("启用对话框", rsNpcConfig.isEnabledDialogPages())); //11
+        custom.addElement(new ElementDropdown("皮肤", skinOptions, defaultOption)); //7
+        custom.addElement(new ElementInput("实体NetworkId", "-1", rsNpcConfig.getNetworkId() + "")); //8
+        custom.addElement(new ElementInput("实体大小", "1.0", rsNpcConfig.getScale() + "")); //9
+        custom.addElement(new ElementToggle("看向玩家", rsNpcConfig.isLookAtThePlayer())); //10
+        custom.addElement(new ElementToggle("允许抛射物触发", rsNpcConfig.isCanProjectilesTrigger())); //11
+        custom.addElement(new ElementToggle("启用对话框", rsNpcConfig.isEnabledDialogPages())); //12
         ArrayList<String> dialogOptions = new ArrayList<>(RsNPC.getInstance().getDialogManager().getDialogConfigs().keySet());
         if (dialogOptions.isEmpty()) {
             dialogOptions.add("Null");
@@ -211,7 +213,7 @@ public class FormHelper {
                 break;
             }
         }
-        custom.addElement(new ElementDropdown("对话框配置", dialogOptions, defaultOption)); //12
+        custom.addElement(new ElementDropdown("对话框配置", dialogOptions, defaultOption)); //13
 
         custom.onResponded((formResponseCustom, cp) -> {
             String showName = formResponseCustom.getInputResponse(0);
@@ -220,22 +222,23 @@ public class FormHelper {
                 return;
             }
             rsNpcConfig.setShowName(showName);
+            rsNpcConfig.setNameTagAlwaysVisible(formResponseCustom.getToggleResponse(1));
             //物品
-            rsNpcConfig.setHand(Item.fromString(formResponseCustom.getInputResponse(1)));
+            rsNpcConfig.setHand(Item.fromString(formResponseCustom.getInputResponse(2)));
             Item[] items = new Item[4];
-            items[0] = Item.fromString(formResponseCustom.getInputResponse(2));
-            items[1] = Item.fromString(formResponseCustom.getInputResponse(3));
-            items[2] = Item.fromString(formResponseCustom.getInputResponse(4));
-            items[3] = Item.fromString(formResponseCustom.getInputResponse(5));
+            items[0] = Item.fromString(formResponseCustom.getInputResponse(3));
+            items[1] = Item.fromString(formResponseCustom.getInputResponse(4));
+            items[2] = Item.fromString(formResponseCustom.getInputResponse(5));
+            items[3] = Item.fromString(formResponseCustom.getInputResponse(6));
             rsNpcConfig.setArmor(items);
             //皮肤
-            String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(6).getElementID());
+            String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(7).getElementID());
             rsNpcConfig.setSkinName(skinName);
             rsNpcConfig.setSkin(RsNPC.getInstance().getSkinByName(skinName));
             //实体NetworkId
-            rsNpcConfig.setNetworkId(Integer.parseInt(formResponseCustom.getInputResponse(7)));
+            rsNpcConfig.setNetworkId(Integer.parseInt(formResponseCustom.getInputResponse(8)));
             //实体大小
-            String scaleString = formResponseCustom.getInputResponse(8);
+            String scaleString = formResponseCustom.getInputResponse(9);
             float scale = rsNpcConfig.getScale();
             try {
                 scale = (float) Double.parseDouble(scaleString);
@@ -247,10 +250,10 @@ public class FormHelper {
                 }
             }
             rsNpcConfig.setScale(scale);
-            rsNpcConfig.setLookAtThePlayer(formResponseCustom.getToggleResponse(9));
-            rsNpcConfig.setCanProjectilesTrigger(formResponseCustom.getToggleResponse(10));
-            rsNpcConfig.setEnabledDialogPages(formResponseCustom.getToggleResponse(11));
-            rsNpcConfig.setDialogPagesName(formResponseCustom.getDropdownResponse(12).getElementContent());
+            rsNpcConfig.setLookAtThePlayer(formResponseCustom.getToggleResponse(10));
+            rsNpcConfig.setCanProjectilesTrigger(formResponseCustom.getToggleResponse(11));
+            rsNpcConfig.setEnabledDialogPages(formResponseCustom.getToggleResponse(12));
+            rsNpcConfig.setDialogPagesName(formResponseCustom.getDropdownResponse(13).getElementContent());
             //保存并重载
             rsNpcConfig.save();
             if (rsNpcConfig.getEntityRsNpc() != null) {

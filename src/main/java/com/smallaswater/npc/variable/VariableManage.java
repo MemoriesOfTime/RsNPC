@@ -42,7 +42,7 @@ public class VariableManage {
         RsNPC.getInstance().getLogger().warning("有插件注册了一个弃用的变量类！名字:" + name + " 类:" + variableClass + " 这可能会导致一些安全问题！");
         try {
             BaseVariable variable = variableClass.newInstance();
-            VariableManage.VARIABLE_CLASS.put(name, variable);
+            VARIABLE_CLASS.put(name, variable);
         } catch (Exception e) {
             RsNPC.getInstance().getLogger().error("添加变量时出错", e);
         }
@@ -51,10 +51,17 @@ public class VariableManage {
     public static void addVariableV2(@NotNull String name, @NotNull Class<? extends BaseVariableV2> variableClass) {
         try {
             BaseVariableV2 variable = variableClass.getDeclaredConstructor().newInstance();
-            VariableManage.VARIABLE_V2_CLASS.put(name, variable);
+            VARIABLE_V2_CLASS.put(name, variable);
         } catch (Exception e) {
             RsNPC.getInstance().getLogger().error("添加变量时出错", e);
         }
+    }
+
+    public static void removeVariable(@NotNull String name) {
+        VARIABLES.remove(name);
+        VARIABLES_SUPPLIER.remove(name);
+        VARIABLE_CLASS.remove(name);
+        VARIABLE_V2_CLASS.remove(name);
     }
 
     public static String stringReplace(IPlayer player, @NotNull String inString, @NotNull RsNpcConfig rsNpcConfig) {

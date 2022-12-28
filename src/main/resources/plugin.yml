@@ -1,9 +1,7 @@
 name: RsNPC
 main: com.smallaswater.npc.RsNPC
-version: "2.2.5-PM1E-SNAPSHOT"
-api:
-  - "1.0.9"
-  - "1.0.11"
+version: "2.3.0-PM1E"
+api: ["Nukkit-PM1E"]
 authors: ["若水", "LT_Name"]
 load: POSTWORLD
 softdepend:

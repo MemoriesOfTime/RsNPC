@@ -14,6 +14,7 @@ import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogManager;
 import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.tasks.CheckNpcEntityTask;
+import com.smallaswater.npc.utils.GameCoreDownload;
 import com.smallaswater.npc.utils.MetricsLite;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
@@ -59,13 +60,6 @@ public class RsNPC extends PluginBase {
 
     private static final Skin DEFAULT_SKIN;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.8.0-PM1E";
-
-    private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
-    private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
-
-    private static final String GAME_CORE_URL = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
-
     static {
         Skin skin = new Skin();
         skin.setTrusted(true);
@@ -81,8 +75,6 @@ public class RsNPC extends PluginBase {
     @Override
     public void onLoad() {
         rsNPC = this;
-
-        this.loadLanguage();
 
         VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
         VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
@@ -101,9 +93,7 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
-
-        switch (Utils.checkAndDownloadDepend()) {
+        switch (GameCoreDownload.checkAndDownload()) {
             case 1:
                 Server.getInstance().getPluginManager().disablePlugin(this);
                 return;
@@ -113,6 +103,10 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        this.loadLanguage();
+
+        this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
         if (nukkitType != NukkitTypeUtils.NukkitType.PM1E) {
@@ -355,26 +349,6 @@ public class RsNPC extends PluginBase {
             this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
         }
         return this.npcConfigDescription;
-    }
-
-    /**
-     * @return 最低GameCore版本
-     */
-    public String getMinimumGameCoreVersion() {
-        return MINIMUM_GAME_CORE_VERSION;
-    }
-
-    /**
-     * @return GameCore下载链接
-     */
-    public String getGameCoreUrl(int i) {
-        String maven;
-        if (i > 0) {
-            maven = MAVEN_URL_LANINK;
-        }else {
-            maven = MAVEN_URL_CENTRAL;
-        }
-        return maven + GAME_CORE_URL;
     }
 
     public String getVersion() {

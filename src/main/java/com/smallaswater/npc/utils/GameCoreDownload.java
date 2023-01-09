@@ -74,9 +74,7 @@ public class GameCoreDownload {
             return 1;
         }
         String url = GAME_CORE_URL_LIST.get(retry);
-        if (retry > 0) {
-            RsNPC.getInstance().getLogger().info("尝试从 " + url + " 下载 GameCore");
-        }
+
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
         if (plugin != null) {
@@ -93,9 +91,7 @@ public class GameCoreDownload {
                     } catch (IOException ignored) {
 
                     }
-                    if (file != null) {
-                        file.delete();
-                    }
+                    file.delete();
                 }else {
                     RsNPC.getInstance().getLogger().error("删除旧版本失败！请手动删除！");
                 }
@@ -103,7 +99,8 @@ public class GameCoreDownload {
         }
 
         if (plugin == null || plugin.isDisabled()) {
-            RsNPC.getInstance().getLogger().info("下载MemoriesOfTime-GameCore依赖中...");
+            RsNPC.getInstance().getLogger().info("尝试从 " + url + " 下载 MemoriesOfTime-GameCore 中...");
+            //RsNPC.getInstance().getLogger().info("下载MemoriesOfTime-GameCore依赖中...");
 
             File file = new File(Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar");
 
@@ -186,7 +183,7 @@ public class GameCoreDownload {
             callback.accept(atomicLong.get(), len);
         }));
         pool.shutdown();
-        // 同步
+        // 同步  等待所有线程完成操作
         while (!pool.awaitTermination(1, TimeUnit.SECONDS)) {
         }
         if (len < 1 || saveFile.length() < 1) {

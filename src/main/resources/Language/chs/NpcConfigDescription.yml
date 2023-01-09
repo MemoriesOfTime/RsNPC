@@ -8,8 +8,6 @@ footer: |-
   你已经到达配置文件的底部啦
 
 ConfigVersion: |-
-  -
-  -
   配置文件的版本号
   警告！ 除非您明确知道您在干什么，否则不要尝试改动此项配置！
 
@@ -73,6 +71,7 @@ route: "路径列表 请使用命令添加！"
   开启此项会自动关闭NPC移动
 对话框.启用: "是否启用对话框"
 对话框.页面: "对话框配置文件名称"
+
 CustomEntity: |-
   自定义实体相关配置
   注意！此功能需要配合材质包使用！
@@ -80,3 +79,9 @@ CustomEntity: |-
 CustomEntity.enable: "是否启用自定义实体"
 CustomEntity.identifier: "自定义实体标识符（资源包内设置的identifier）"
 CustomEntity.skinId: "实体皮肤（变种）id 一般默认为0"
+
+CustomCollisionSize: |-
+  自定义碰撞大小
+  如果NPC使用的皮肤形状特殊，可以调整此配置
+  让玩家在游戏中更好点击到NPC实体
+CustomCollisionSize.enable: "是否启用自定义碰撞大小"

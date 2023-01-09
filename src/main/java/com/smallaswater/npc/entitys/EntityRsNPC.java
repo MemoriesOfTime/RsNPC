@@ -68,6 +68,30 @@ public class EntityRsNPC extends EntityHuman {
     }
 
     @Override
+    public float getWidth() {
+        if (this.config != null && this.config.isEnableCustomCollisionSize()) {
+            return this.config.getCustomCollisionSizeWidth();
+        }
+        return super.getWidth();
+    }
+
+    @Override
+    public float getLength() {
+        if (this.config != null && this.config.isEnableCustomCollisionSize()) {
+            return this.config.getCustomCollisionSizeLength();
+        }
+        return super.getLength();
+    }
+
+    @Override
+    public float getHeight() {
+        if (this.config != null && this.config.isEnableCustomCollisionSize()) {
+            return this.config.getCustomCollisionSizeHeight();
+        }
+        return super.getHeight();
+    }
+
+    @Override
     public int getNetworkId() {
         if (this.config == null) {
             return super.getNetworkId();

@@ -100,11 +100,22 @@ public class RsNpcConfig {
     @Getter
     private String dialogPagesName;
 
-    private EntityRsNPC entityRsNpc;
-
+    // 自定义实体
     private boolean enableCustomEntity;
     private EntityDefinition customEntityDefinition;
     private int customEntitySkinId;
+
+    //自定义碰撞大小
+    @Getter
+    private boolean enableCustomCollisionSize;
+    @Getter
+    private float customCollisionSizeWidth;
+    @Getter
+    private float customCollisionSizeLength;
+    @Getter
+    private float customCollisionSizeHeight;
+
+    private EntityRsNPC entityRsNpc;
 
     public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
@@ -262,6 +273,15 @@ public class RsNpcConfig {
             throw new RsNpcConfigLoadException("NPC配置 自定义实体配置加载失败！请检查配置文件！", e);
         }
 
+        try {
+            this.enableCustomCollisionSize = this.config.getBoolean("CustomCollisionSize.enable", false);
+            this.customCollisionSizeWidth = (float) this.config.getDouble("CustomCollisionSize.width", 0.6);
+            this.customCollisionSizeLength = (float) this.config.getDouble("CustomCollisionSize.length", 0.6);
+            this.customCollisionSizeHeight = (float) this.config.getDouble("CustomCollisionSize.height", 1.8);
+        }catch (Exception e) {
+            throw new RsNpcConfigLoadException("NPC配置 自定义尺寸配置加载失败！请检查配置文件！", e);
+        }
+
         //更新配置文件
         this.save();
         ConfigUtils.addDescription(this.config, RsNPC.getInstance().getNpcConfigDescription());
@@ -320,6 +340,11 @@ public class RsNpcConfig {
         this.config.set("CustomEntity.enable", this.enableCustomEntity);
         this.config.set("CustomEntity.identifier", this.customEntityDefinition == null ? "RsNPC:Demo" : this.customEntityDefinition.getIdentifier());
         this.config.set("CustomEntity.skinId", this.customEntitySkinId);
+
+        this.config.set("CustomCollisionSize.enable", this.enableCustomCollisionSize);
+        this.config.set("CustomCollisionSize.width", this.customCollisionSizeWidth);
+        this.config.set("CustomCollisionSize.length", this.customCollisionSizeLength);
+        this.config.set("CustomCollisionSize.height", this.customCollisionSizeHeight);
 
         this.config.save();
     }

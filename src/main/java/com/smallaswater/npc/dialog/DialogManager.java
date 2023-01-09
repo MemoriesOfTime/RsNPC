@@ -6,6 +6,7 @@ import com.smallaswater.npc.RsNPC;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -21,7 +22,11 @@ public class DialogManager {
 
     public DialogManager(@NotNull RsNPC rsNPC) {
         this.rsNPC = rsNPC;
-        this.description.load(rsNPC.getResource("Dialog/DialogConfigDescription.yml"));
+        InputStream resource = rsNPC.getResource("Language/" + rsNPC.getSetLang() + "/DialogConfigDescription.yml");
+        if (resource == null) {
+            resource = rsNPC.getResource("Language/chs/DialogConfigDescription.yml");
+        }
+        this.description.load(resource);
         this.loadAllDialog();
     }
 

@@ -23,6 +23,7 @@ import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -42,6 +43,8 @@ public class RsNPC extends PluginBase {
 
     private static RsNPC rsNPC;
 
+    @Getter
+    private String setLang = "chs";
     @Getter
     private Language language;
 
@@ -160,11 +163,17 @@ public class RsNPC extends PluginBase {
      * 加载语言文件
      */
     private void loadLanguage() {
-        String setLang = this.getServer().getLanguage().getLang();
+        this.setLang = this.getServer().getLanguage().getLang();
         Config config = new Config();
-        config.load(this.getResource("Language/" + setLang + ".yml"));
+        InputStream resource = this.getResource("Language/" + this.setLang + "/Language.yml");
+        if (resource == null) {
+            this.setLang = "chs";
+            resource = this.getResource("Language/chs/Language.yml");
+            this.getLogger().error("Language file not found: " + this.setLang + ".yml");
+        }
+        config.load(resource);
         this.language = new Language(config);
-        this.getLogger().info("§aLanguage: " + setLang + " loaded !");
+        this.getLogger().info("§aLanguage: " + this.setLang + " loaded !");
     }
 
     private void loadNpcs() {
@@ -346,7 +355,11 @@ public class RsNPC extends PluginBase {
     public Config getNpcConfigDescription() {
         if (this.npcConfigDescription == null) {
             this.npcConfigDescription = new Config();
-            this.npcConfigDescription.load(this.getResource("NpcConfigDescription.yml"));
+            InputStream resource = this.getResource("Language/" + this.setLang + "/NpcConfigDescription.yml");
+            if (resource == null) {
+                resource = this.getResource("Language/chs/NpcConfigDescription.yml");
+            }
+            this.npcConfigDescription.load(resource);
         }
         return this.npcConfigDescription;
     }

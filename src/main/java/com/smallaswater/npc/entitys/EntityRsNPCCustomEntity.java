@@ -96,6 +96,11 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     }
 
     @Override
+    public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
+        this.level.addEntityMovement(this, x, y, z, yaw, pitch, headYaw);
+    }
+
+    @Override
     public void spawnTo(Player player) {
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);

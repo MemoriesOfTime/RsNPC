@@ -216,57 +216,66 @@ public class FormHelper {
         custom.addElement(new ElementDropdown("对话框配置", dialogOptions, defaultOption)); //13
 
         custom.onResponded((formResponseCustom, cp) -> {
-            String showName = formResponseCustom.getInputResponse(0);
-            if ("".equals(showName.trim())) {
-                cp.sendMessage("显示名称不能为空！");
-                return;
-            }
-            rsNpcConfig.setShowName(showName);
-            rsNpcConfig.setNameTagAlwaysVisible(formResponseCustom.getToggleResponse(1));
-            //物品
-            rsNpcConfig.setHand(Item.fromString(formResponseCustom.getInputResponse(2)));
-            Item[] items = new Item[4];
-            items[0] = Item.fromString(formResponseCustom.getInputResponse(3));
-            items[1] = Item.fromString(formResponseCustom.getInputResponse(4));
-            items[2] = Item.fromString(formResponseCustom.getInputResponse(5));
-            items[3] = Item.fromString(formResponseCustom.getInputResponse(6));
-            rsNpcConfig.setArmor(items);
-            //皮肤
-            String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(7).getElementID());
-            rsNpcConfig.setSkinName(skinName);
-            rsNpcConfig.setSkin(RsNPC.getInstance().getSkinByName(skinName));
-            //实体NetworkId
-            rsNpcConfig.setNetworkId(Integer.parseInt(formResponseCustom.getInputResponse(8)));
-            //实体大小
-            String scaleString = formResponseCustom.getInputResponse(9);
-            float scale = rsNpcConfig.getScale();
             try {
-                scale = (float) Double.parseDouble(scaleString);
-            } catch (Exception ignored) {
-                try {
-                    scale = Integer.parseInt(scaleString);
-                } catch (Exception e) {
-                    player.sendMessage("实体大小应为数字！");
+                String showName = formResponseCustom.getInputResponse(0);
+                if ("".equals(showName.trim())) {
+                    cp.sendMessage("显示名称不能为空！");
+                    return;
                 }
+                rsNpcConfig.setShowName(showName);
+                rsNpcConfig.setNameTagAlwaysVisible(formResponseCustom.getToggleResponse(1));
+                //物品
+                rsNpcConfig.setHand(Item.fromString(formResponseCustom.getInputResponse(2)));
+                Item[] items = new Item[4];
+                items[0] = Item.fromString(formResponseCustom.getInputResponse(3));
+                items[1] = Item.fromString(formResponseCustom.getInputResponse(4));
+                items[2] = Item.fromString(formResponseCustom.getInputResponse(5));
+                items[3] = Item.fromString(formResponseCustom.getInputResponse(6));
+                rsNpcConfig.setArmor(items);
+                //皮肤
+                String skinName = skinOptions.get(formResponseCustom.getDropdownResponse(7).getElementID());
+                rsNpcConfig.setSkinName(skinName);
+                rsNpcConfig.setSkin(RsNPC.getInstance().getSkinByName(skinName));
+                //实体NetworkId
+                try {
+                    rsNpcConfig.setNetworkId(Integer.parseInt(formResponseCustom.getInputResponse(8)));
+                }catch (Exception e) {
+                    player.sendMessage("实体NetworkId必须是数字！");
+                }
+                //实体大小
+                String scaleString = formResponseCustom.getInputResponse(9);
+                float scale = rsNpcConfig.getScale();
+                try {
+                    scale = (float) Double.parseDouble(scaleString);
+                } catch (Exception ignored) {
+                    try {
+                        scale = Integer.parseInt(scaleString);
+                    } catch (Exception e) {
+                        player.sendMessage("实体大小必须是数字！");
+                    }
+                }
+                rsNpcConfig.setScale(scale);
+                rsNpcConfig.setLookAtThePlayer(formResponseCustom.getToggleResponse(10));
+                rsNpcConfig.setCanProjectilesTrigger(formResponseCustom.getToggleResponse(11));
+                rsNpcConfig.setEnabledDialogPages(formResponseCustom.getToggleResponse(12));
+                rsNpcConfig.setDialogPagesName(formResponseCustom.getDropdownResponse(13).getElementContent());
+                //保存并重载
+                rsNpcConfig.save();
+                if (rsNpcConfig.getEntityRsNpc() != null) {
+                    rsNpcConfig.getEntityRsNpc().close();
+                }
+                rsNpcConfig.checkEntity();
+                AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
+                        ">>RsNPC - 设置NPC<<",
+                        "NPC: " + rsNpcConfig.getName() + " 配置保存成功！",
+                        "返回",
+                        "关闭");
+                modal.onClickedTrue(cp2 -> sendAdminNpc(cp2, rsNpcConfig));
+                cp.showFormWindow(modal);
+            }catch (Exception e) { //针对漏掉的错误部分
+                cp.sendMessage("设置失败！请检查输入参数是否正确！");
+                RsNPC.getInstance().getLogger().error("GUI配置NPC时出错！", e);
             }
-            rsNpcConfig.setScale(scale);
-            rsNpcConfig.setLookAtThePlayer(formResponseCustom.getToggleResponse(10));
-            rsNpcConfig.setCanProjectilesTrigger(formResponseCustom.getToggleResponse(11));
-            rsNpcConfig.setEnabledDialogPages(formResponseCustom.getToggleResponse(12));
-            rsNpcConfig.setDialogPagesName(formResponseCustom.getDropdownResponse(13).getElementContent());
-            //保存并重载
-            rsNpcConfig.save();
-            if (rsNpcConfig.getEntityRsNpc() != null) {
-                rsNpcConfig.getEntityRsNpc().close();
-            }
-            rsNpcConfig.checkEntity();
-            AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
-                    ">>RsNPC - 设置NPC<<",
-                    "NPC: " + rsNpcConfig.getName() + " 配置保存成功！",
-                    "返回",
-                    "关闭");
-            modal.onClickedTrue(cp2 -> sendAdminNpc(cp2, rsNpcConfig));
-            cp.showFormWindow(modal);
         });
         custom.onClosed(cp -> sendAdminNpc(cp, rsNpcConfig));
 

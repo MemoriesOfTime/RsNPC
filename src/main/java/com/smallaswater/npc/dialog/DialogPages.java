@@ -120,7 +120,9 @@ public class DialogPages {
                         }else if (buttonAction.getType() == Button.ButtonActionType.GOTO) {
                             dialogPages.getDialogPage(buttonAction.getData()).send(entityRsNpc, player);
                         }else if (buttonAction.getType() == Button.ButtonActionType.EXECUTE_COMMAND) {
-                            Utils.executeCommand(p, entityRsNpc.getConfig(), buttonAction.getListData());
+                            Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
+                                Utils.executeCommand(p, entityRsNpc.getConfig(), buttonAction.getListData());
+                            }, 10);
                         }
                         //TODO 其他点击操作
 

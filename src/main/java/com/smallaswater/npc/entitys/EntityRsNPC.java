@@ -1,5 +1,6 @@
 package com.smallaswater.npc.entitys;
 
+import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockLiquid;
@@ -61,6 +62,14 @@ public class EntityRsNPC extends EntityHuman {
         this.setHealth(20.0F);
         this.getInventory().setItemInHand(config.getHand());
         this.getInventory().setArmorContents(config.getArmor());
+
+        //以下内容在initEntity()中执行，需要在获取到config后再执行一次
+        if (config.isEnableCustomCollisionSize()) {
+            this.dataProperties.putFloat(EntityUtils.getEntityField("DATA_BOUNDING_BOX_HEIGHT", DATA_BOUNDING_BOX_HEIGHT), this.getHeight());
+            this.dataProperties.putFloat(EntityUtils.getEntityField("DATA_BOUNDING_BOX_WIDTH", DATA_BOUNDING_BOX_WIDTH), this.getWidth());
+            this.dataProperties.putInt(EntityUtils.getEntityField("DATA_HEALTH", DATA_HEALTH), (int) this.getHealth());
+            this.sendData(this.getViewers().values().toArray(new Player[0]));
+        }
     }
 
     public RsNpcConfig getConfig() {

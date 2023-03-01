@@ -347,8 +347,9 @@ public class RsNpcConfig {
     }
 
     public void checkEntity() {
-        if (this.location.getLevel() == null && !Server.getInstance().loadLevel(this.levelName)) {
-            RsNPC.getInstance().getLogger().error("世界: " + this.levelName + " 不存在！NPC: " + this.name + "无法生成！");
+        this.location.setLevel(Server.getInstance().getLevelByName(this.levelName));
+        if ((this.location.getLevel() == null && !Server.getInstance().loadLevel(this.levelName)) || this.location.getLevel().getProvider() == null) {
+            RsNPC.getInstance().getLogger().error("世界: " + this.levelName + " 无法加载！NPC: " + this.name + "无法生成！");
             return;
         }
         if (this.location.getChunk() != null &&

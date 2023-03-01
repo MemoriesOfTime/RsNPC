@@ -1,6 +1,5 @@
 package com.smallaswater.npc.entitys;
 
-import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
 import cn.nukkit.entity.custom.CustomEntity;
@@ -66,10 +65,6 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
                 .spawnEgg(false)
                 .summonable(false)
                 .build();
-    }
-
-    public String getIdentifier() {
-        return this.getDefinition().getStringId();
     }
 
     public void setSkinId(int skinId) {

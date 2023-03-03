@@ -4,6 +4,7 @@ import cn.lanink.gamecore.form.element.ResponseElementButton;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowCustom;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowModal;
 import cn.lanink.gamecore.form.windows.AdvancedFormWindowSimple;
+import cn.lanink.gamecore.utils.Language;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.form.element.ElementDropdown;
@@ -30,14 +31,16 @@ public class FormHelper {
     }
 
     public static void sendMain(@NotNull Player player) {
-        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNPC - 主菜单<<");
+        Language language = RsNPC.getInstance().getLanguage();
+
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.main.title"));
         if ("chs".equalsIgnoreCase(Server.getInstance().getLanguage().getLang())) {
             simple.setContent(getRandomMessage() + "\n\n");
         }
 
-        simple.addButton(new ResponseElementButton("创建NPC").onClicked(FormHelper::sendCreateNpc));
-        simple.addButton(new ResponseElementButton("管理NPC").onClicked(FormHelper::sendAdminNpcAll));
-        simple.addButton(new ResponseElementButton("重载配置")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.createNPCText")).onClicked(FormHelper::sendCreateNpc));
+        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.adminNPCText")).onClicked(FormHelper::sendAdminNpcSelect));
+        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.reloadText"))
                 .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpc reload"))
         );
 
@@ -45,9 +48,11 @@ public class FormHelper {
     }
 
     public static void sendCreateNpc(@NotNull Player player) {
-        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNPC - 创建NPC<<");
+        Language language = RsNPC.getInstance().getLanguage();
 
-        custom.addElement(new ElementInput("Npc名称"));
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(language.translateString("gui.createNPC.title"));
+
+        custom.addElement(new ElementInput(language.translateString("gui.createNPC.input.npcNameText")));
 
         custom.onResponded((formResponseCustom, cp) -> {
             String name = formResponseCustom.getInputResponse(0);
@@ -58,9 +63,11 @@ public class FormHelper {
         player.showFormWindow(custom);
     }
 
-    public static void sendAdminNpcAll(@NotNull Player player) {
-        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNPC - 管理NPC<<");
-        simple.setContent("请选择要设置的Npc");
+    public static void sendAdminNpcSelect(@NotNull Player player) {
+        Language language = RsNPC.getInstance().getLanguage();
+
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.adminNPCSelect.title"));
+        simple.setContent(language.translateString("gui.adminNPCSelect.content"));
 
         for (Map.Entry<String, RsNpcConfig> entry : RsNPC.getInstance().getNpcs().entrySet()) {
             simple.addButton(new ResponseElementButton(entry.getKey())
@@ -72,14 +79,16 @@ public class FormHelper {
     }
 
     public static void sendAdminNpc(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
-        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(">>RsNPC - 管理NPC<<");
+        Language language = RsNPC.getInstance().getLanguage();
+
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.adminNPC.title"));
 
         Item hand = rsNpcConfig.getHand();
         Item[] armor = rsNpcConfig.getArmor();
 
         StringBuilder emotes = new StringBuilder();
         if (rsNpcConfig.getEmoteIDs().isEmpty()) {
-            emotes.append("无");
+            emotes.append(language.translateString("gui.adminNPC.text.empty"));
         }else {
             for (String s : rsNpcConfig.getEmoteIDs()) {
                 emotes.append("\n    ").append(s);
@@ -88,7 +97,7 @@ public class FormHelper {
 
         StringBuilder cmds = new StringBuilder();
         if (rsNpcConfig.getCmds().isEmpty()) {
-            cmds.append("无");
+            cmds.append(language.translateString("gui.adminNPC.text.empty"));
         }else {
             for (String s : rsNpcConfig.getCmds()) {
                 cmds.append("\n  ").append(s);
@@ -97,7 +106,7 @@ public class FormHelper {
 
         StringBuilder messages = new StringBuilder();
         if (rsNpcConfig.getMessages().isEmpty()) {
-            messages.append("无");
+            messages.append(language.translateString("gui.adminNPC.text.empty"));
         }else {
             for (String s : rsNpcConfig.getMessages()) {
                 messages.append("\n  ").append(s);
@@ -106,7 +115,7 @@ public class FormHelper {
 
         StringBuilder route = new StringBuilder();
         if (rsNpcConfig.getRoute().isEmpty()) {
-            route.append("无(不移动)");
+            route.append(language.translateString("gui.adminNPC.text.empty"));
         }else {
             for (Vector3 vector3 : rsNpcConfig.getRoute()) {
                 route.append("\n  ")
@@ -122,7 +131,7 @@ public class FormHelper {
         simple.setContent(
                 "名称: " + rsNpcConfig.getName() +
                 "\n显示名称: " + rsNpcConfig.getShowName() +
-                "\n显示名称一直可见: " + (rsNpcConfig.isNameTagAlwaysVisible() ? "是" : "否") +
+                "\n显示名称一直可见: " + toAdminNpcBooleanShowText(rsNpcConfig.isNameTagAlwaysVisible()) +
                 "\n坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
                 "\n  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
                 "\n  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) + "" +
@@ -136,35 +145,39 @@ public class FormHelper {
                 "\n皮肤: " + rsNpcConfig.getSkinName() +
                 "\n实体NetworkId: " + rsNpcConfig.getNetworkId() +
                 "\n实体大小: " + rsNpcConfig.getScale() +
-                "\n看向玩家: " + (rsNpcConfig.isLookAtThePlayer() ? "是" : "否") +
-                "\n表情动作:\n  启用: " + (rsNpcConfig.isEnableEmote() ? "是" : "否") +
+                "\n看向玩家: " + toAdminNpcBooleanShowText(rsNpcConfig.isLookAtThePlayer()) +
+                "\n表情动作:\n  启用: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnableEmote()) +
                 "\n  表情ID: " + emotes +
                 "\n  间隔(秒): " + rsNpcConfig.getShowEmoteInterval() +
-                "\n允许抛射物触发: " + (rsNpcConfig.isCanProjectilesTrigger() ? "是" : "否") +
+                "\n允许抛射物触发: " + toAdminNpcBooleanShowText(rsNpcConfig.isCanProjectilesTrigger()) +
                 "\n点击执行指令: " + cmds +
                 "\n点击发送消息: " + messages +
                 "\n对话框:" +
-                "\n  启用对话框: " + (rsNpcConfig.isEnabledDialogPages() ? "是" : "否") +
+                "\n  启用对话框: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnabledDialogPages()) +
                 "\n  对话框配置: " + rsNpcConfig.getDialogPagesName() +
                 "\n移动:" +
                 "\n  基础移动速度: " + rsNpcConfig.getBaseMoveSpeed() +
-                "\n  启用辅助寻路: " + (rsNpcConfig.isEnablePathfinding() ? "是" : "否") +
+                "\n  启用辅助寻路: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnablePathfinding()) +
                 "\n  路径: " + route +
                 "\n\n");
 
-        simple.addButton(new ResponseElementButton("修改基础配置")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyBasicConfig"))
                 .onClicked(cp -> sendAdminNpcConfig(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("修改表情动作")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyEmote"))
                 .onClicked(cp -> sendAdminNpcConfigEmote(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("修改点击命令")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyCommand"))
                 .onClicked(cp -> sendAdminNpcConfigCommand(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("修改点击消息")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyMessage"))
                 .onClicked(cp -> sendAdminNpcConfigMessage(cp, rsNpcConfig)));
-        simple.addButton(new ResponseElementButton("删除NPC")
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.deleteNPC"))
                 .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpc delete " + rsNpcConfig.getName())));
-        simple.onClosed(FormHelper::sendAdminNpcAll);
+        simple.onClosed(FormHelper::sendAdminNpcSelect);
 
         player.showFormWindow(simple);
+    }
+
+    private static String toAdminNpcBooleanShowText(boolean b) {
+        return b ? RsNPC.getInstance().getLanguage().translateString("gui.adminNPC.text.true") : RsNPC.getInstance().getLanguage().translateString("gui.adminNPC.text.false");
     }
 
     /**
@@ -174,18 +187,20 @@ public class FormHelper {
      * @param rsNpcConfig npc配置
      */
     public static void sendAdminNpcConfig(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
-        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(">>RsNPC - 设置NPC<<");
+        Language language = RsNPC.getInstance().getLanguage();
+
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(language.translateString("gui.adminNpcConfig.title"));
 
         Item hand = rsNpcConfig.getHand();
         Item[] armor = rsNpcConfig.getArmor();
-        custom.addElement(new ElementInput("显示名称", "", rsNpcConfig.getShowName())); //0
-        custom.addElement(new ElementToggle("显示名称一直可见", rsNpcConfig.isNameTagAlwaysVisible())); //1
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.displayName"), "", rsNpcConfig.getShowName())); //0
+        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.input.displayNameAlwaysVisible"), rsNpcConfig.isNameTagAlwaysVisible())); //1
         //物品
-        custom.addElement(new ElementInput("手持", "0:0", hand.getId() + ":" + hand.getDamage())); //2
-        custom.addElement(new ElementInput("头部", "0:0", armor[0].getId() + ":" + armor[0].getDamage())); //3
-        custom.addElement(new ElementInput("胸部", "0:0", armor[1].getId() + ":" + armor[1].getDamage())); //4
-        custom.addElement(new ElementInput("腿部", "0:0", armor[2].getId() + ":" + armor[2].getDamage())); //5
-        custom.addElement(new ElementInput("脚部", "0:0", armor[3].getId() + ":" + armor[3].getDamage())); //6
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemHand"), "0:0", Utils.item2String(hand))); //2
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemHelmet"), "0:0", Utils.item2String(armor[0]))); //3
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemChestplate"), "0:0", Utils.item2String(armor[1]))); //4
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemLeggings"), "0:0", Utils.item2String(armor[2]))); //5
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemBoots"), "0:0", Utils.item2String(armor[3]))); //6
         //皮肤
         ArrayList<String> skinOptions = new ArrayList<>(RsNPC.getInstance().getSkins().keySet());
         skinOptions.add("Default Skin");
@@ -196,12 +211,12 @@ public class FormHelper {
                 break;
             }
         }
-        custom.addElement(new ElementDropdown("皮肤", skinOptions, defaultOption)); //7
-        custom.addElement(new ElementInput("实体NetworkId", "-1", rsNpcConfig.getNetworkId() + "")); //8
-        custom.addElement(new ElementInput("实体大小", "1.0", rsNpcConfig.getScale() + "")); //9
-        custom.addElement(new ElementToggle("看向玩家", rsNpcConfig.isLookAtThePlayer())); //10
-        custom.addElement(new ElementToggle("允许抛射物触发", rsNpcConfig.isCanProjectilesTrigger())); //11
-        custom.addElement(new ElementToggle("启用对话框", rsNpcConfig.isEnabledDialogPages())); //12
+        custom.addElement(new ElementDropdown(language.translateString("gui.adminNPCConfig.dropdown.skin"), skinOptions, defaultOption)); //7
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.entityNetworkId"), "-1", rsNpcConfig.getNetworkId() + "")); //8
+        custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.entityScale"), "1.0", rsNpcConfig.getScale() + "")); //9
+        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.toggle.lookAtThePlayer"), rsNpcConfig.isLookAtThePlayer())); //10
+        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.toggle.CanProjectilesTrigger"), rsNpcConfig.isCanProjectilesTrigger())); //11
+        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.toggle.EnabledDialogPages"), rsNpcConfig.isEnabledDialogPages())); //12
         ArrayList<String> dialogOptions = new ArrayList<>(RsNPC.getInstance().getDialogManager().getDialogConfigs().keySet());
         if (dialogOptions.isEmpty()) {
             dialogOptions.add("Null");
@@ -213,7 +228,7 @@ public class FormHelper {
                 break;
             }
         }
-        custom.addElement(new ElementDropdown("对话框配置", dialogOptions, defaultOption)); //13
+        custom.addElement(new ElementDropdown(language.translateString("gui.adminNPCConfig.dropdown.DialogConfig"), dialogOptions, defaultOption)); //13
 
         custom.onResponded((formResponseCustom, cp) -> {
             try {

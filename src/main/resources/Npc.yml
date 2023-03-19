@@ -1,6 +1,6 @@
 #NPC 配置文件
 ---
-configVersion: 1
+configVersion: 2.2.3
 name: "NPC1"
 nameTagAlwaysVisible: true
 坐标:

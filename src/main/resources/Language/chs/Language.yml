@@ -1,6 +1,9 @@
 plugin.depend.gamecore.needReload: "MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！"
 
 plugin.load.startLoad: "RsNPC开始加载"
+plugin.load.pluginBranchError: |-
+  警告！您所使用的插件版本不支持此Nukkit分支！
+  服务器核心 : %1% |  插件版本 : %2%
 plugin.load.startLoadDialog: "开始加载对话页面数据"
 plugin.load.startLoadSkin: "开始加载皮肤"
 plugin.load.NPC.startLoad: "开始加载NPC"
@@ -36,3 +39,38 @@ tips.command.help: |-
   §a§l/rsnpc addroute <NPC名称> §7将当前位置添加到NPC路径
   §a§l/rsnpc reload §7重载NPC
   §a§l >> §eHelp for RsNPC §a<<
+
+gui.main.title: "§b>>§rRsNPC - 主菜单§b<<"
+gui.main.button.createNPCText: "§e§l创建NPC"
+gui.main.button.adminNPCText: "§e§l管理NPC"
+gui.main.button.reloadText: "§e§l重载配置"
+gui.createNPC.title: "§b>>§rRsNPC - 创建NPC§b<<"
+gui.createNPC.input.npcNameText: "NPC名称"
+gui.adminNPCSelect.title: "§b>>§rRsNPC - 管理NPC§b<<"
+gui.adminNPCSelect.content: "§e§l请选择要设置的NPC"
+gui.adminNPC.title: "§b>>§rRsNPC - 管理NPC§b<<"
+gui.adminNPC.text.empty: "无"
+gui.adminNPC.text.true: "是"
+gui.adminNPC.text.false: "否"
+
+gui.adminNPC.button.modifyBasicConfig: "§e§l修改基础配置"
+gui.adminNPC.button.modifyEmote: "§e§l修改表情动作"
+gui.adminNPC.button.modifyCommand: "§e§l修改点击命令"
+gui.adminNPC.button.modifyMessage: "§e§l修改点击消息"
+gui.adminNPC.button.deleteNPC: "§c§l删除NPC"
+
+gui.adminNPCConfig.title: "§b>>§rRsNPC - 设置NPC§b<<"
+gui.adminNPCConfig.input.displayName: "NPC显示名称"
+gui.adminNPCConfig.toggle.displayNameAlwaysVisible: "显示名称一直可见"
+gui.adminNPCConfig.input.itemHand: "NPC手持物品"
+gui.adminNPCConfig.input.itemHelmet: "NPC头盔"
+gui.adminNPCConfig.input.itemChestplate: "NPC胸甲"
+gui.adminNPCConfig.input.itemLeggings: "NPC护腿"
+gui.adminNPCConfig.input.itemBoots: "NPC靴子"
+gui.adminNPCConfig.dropdown.skin: "NPC皮肤"
+gui.adminNPCConfig.input.entityNetworkId: "实体NetworkId"
+gui.adminNPCConfig.input.entityScale: "实体大小"
+gui.adminNPCConfig.toggle.lookAtThePlayer: "看向玩家"
+gui.adminNPCConfig.toggle.CanProjectilesTrigger: "允许抛射物触发"
+gui.adminNPCConfig.toggle.EnabledDialogPages: "启用对话框"
+gui.adminNPCConfig.dropdown.DialogConfig: "对话框配置"

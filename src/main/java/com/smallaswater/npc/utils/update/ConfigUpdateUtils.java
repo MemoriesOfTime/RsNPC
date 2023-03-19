@@ -20,18 +20,18 @@ import java.util.HashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigUpdateUtils {
 
-    public static void updateConfig(RsNPC rsNPC) {
-        //RsNPC 1.X.X -- RsNpcX 1.X.X 暂时不需要更新
-        updateRsNpcX1_X_X_To_RsNPC2_0_0(rsNPC);
+    public static void updateConfig() {
+        //RsNPC 1.X.X -- RsNpcX 1.X.X 不需要更新
+        updateRsNpcX1_X_X_To_RsNPC2_0_0();
         updateRsNPC2_0_0_To_RsNPC2_2_3();
     }
 
     /**
      * 从RsNPCX 1.X.X 更新到 RsNPC 2.0.0
      */
-    private static void updateRsNpcX1_X_X_To_RsNPC2_0_0(RsNPC rsNPC) {
+    private static void updateRsNpcX1_X_X_To_RsNPC2_0_0() {
         //卸载并删除RsNPCX插件
-        Plugin rsNPCX = rsNPC.getServer().getPluginManager().getPlugin("RsNPCX");
+        Plugin rsNPCX = RsNPC.getInstance().getServer().getPluginManager().getPlugin("RsNPCX");
         if (rsNPCX != null) {
             try {
                 Class.forName("com.smallaswater.npc.RsNpcX"); //防止误操作其他重名插件
@@ -49,12 +49,12 @@ public class ConfigUpdateUtils {
             }
         }
         //文件夹名称修改
-        File file = new File(rsNPC.getServer().getPluginPath() + "/RsNPCX");
+        File file = new File(RsNPC.getInstance().getServer().getPluginPath() + "/RsNPCX");
         if (file.exists()) {
-            if (file.renameTo(rsNPC.getDataFolder())) {
-                rsNPC.getLogger().info("[ConfigUpdateUtils](updateRsNpcX1_X_X_To_RsNPC2_0_0) 配置文件更新成功！");
+            if (file.renameTo(RsNPC.getInstance().getDataFolder())) {
+                RsNPC.getInstance().getLogger().info("[ConfigUpdateUtils](updateRsNpcX1_X_X_To_RsNPC2_0_0) 配置文件更新成功！");
             }else {
-                rsNPC.getLogger().error("[ConfigUpdateUtils](updateRsNpcX1_X_X_To_RsNPC2_0_0) RsNPCX文件夹重命名失败，请手动将文件夹重命名为RsNPC");
+                RsNPC.getInstance().getLogger().error("[ConfigUpdateUtils](updateRsNpcX1_X_X_To_RsNPC2_0_0) RsNPCX文件夹重命名失败，请手动将文件夹重命名为RsNPC");
             }
         }
     }
@@ -64,7 +64,7 @@ public class ConfigUpdateUtils {
      */
     private static void updateRsNPC2_0_0_To_RsNPC2_2_3() {
         File[] files = (new File(RsNPC.getInstance().getDataFolder() + "/Npcs")).listFiles();
-        if (files != null && files.length > 0) {
+        if (files != null) {
             for (File file : files) {
                 if (!file.isFile() && file.getName().endsWith(".yml")) {
                     continue;

@@ -111,6 +111,7 @@ public class RsNPC extends PluginBase {
 
         this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 
+        //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
         if (nukkitType != NukkitTypeUtils.NukkitType.POWER_NUKKIT_X) {
             this.getLogger().error("警告！您所使用的插件版本不支持此Nukkit分支！");
@@ -120,7 +121,7 @@ public class RsNPC extends PluginBase {
             return;
         }
 
-        ConfigUpdateUtils.updateConfig(this);
+        ConfigUpdateUtils.updateConfig();
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
@@ -167,9 +168,9 @@ public class RsNPC extends PluginBase {
         Config config = new Config();
         InputStream resource = this.getResource("Language/" + this.setLang + "/Language.yml");
         if (resource == null) {
+            this.getLogger().error("Language file not found: " + this.setLang + ".yml");
             this.setLang = "chs";
             resource = this.getResource("Language/chs/Language.yml");
-            this.getLogger().error("Language file not found: " + this.setLang + ".yml");
         }
         config.load(resource);
         this.language = new Language(config);

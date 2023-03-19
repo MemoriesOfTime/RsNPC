@@ -1,0 +1,22 @@
+# 对话框 配置文件描述
+header: |-
+  RsNPC - dialog configuration file
+  Warning! Make sure you have mastered the YAML syntax before editing this file!
+footer: |-
+  You have reached the bottom of the configuration file
+
+defaultPage: "The page opened by default, fill in the key in the pages below"
+pages: |-
+  page format：
+  - key: "1" #page key
+    title: "Presentation dialog" #page title
+    content: "This is a demo dialog" #page content
+    buttons: #button
+      - text: "close" #button display name
+        action: "close" #leave this blank to close the dialog by default
+        cmd: #excuting an order
+          - "me hello" #Player permissions to execute commands
+          - "say hello @p&op" #op permission to execute commands
+          - "tell @p this is a test command&con" #consolePrivilegesToExecuteCommands
+      - text: "next page" #button display name
+        go: "2" #Go to other pages and fill in the key of other pages

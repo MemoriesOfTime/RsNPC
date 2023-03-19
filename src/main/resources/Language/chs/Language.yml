@@ -44,15 +44,17 @@ gui.main.title: "§b>>§rRsNPC - 主菜单§b<<"
 gui.main.button.createNPCText: "§e§l创建NPC"
 gui.main.button.adminNPCText: "§e§l管理NPC"
 gui.main.button.reloadText: "§e§l重载配置"
+
 gui.createNPC.title: "§b>>§rRsNPC - 创建NPC§b<<"
 gui.createNPC.input.npcNameText: "NPC名称"
+
 gui.adminNPCSelect.title: "§b>>§rRsNPC - 管理NPC§b<<"
 gui.adminNPCSelect.content: "§e§l请选择要设置的NPC"
+
 gui.adminNPC.title: "§b>>§rRsNPC - 管理NPC§b<<"
 gui.adminNPC.text.empty: "无"
 gui.adminNPC.text.true: "是"
 gui.adminNPC.text.false: "否"
-
 gui.adminNPC.button.modifyBasicConfig: "§e§l修改基础配置"
 gui.adminNPC.button.modifyEmote: "§e§l修改表情动作"
 gui.adminNPC.button.modifyCommand: "§e§l修改点击命令"

@@ -1,0 +1,137 @@
+plugin.depend.gamecore.needReload: "MemoriesOfTime-GameCore Dependency download complete! It is strongly recommended to restart the server to ensure proper loading!"
+
+plugin.load.startLoad: "RsNPC start loading"
+plugin.load.pluginBranchError: |-
+  warn! The plugin version you are using does not support this Nukkit branch!
+  Server Core: %1% | Plugin Version: %2%
+plugin.load.startLoadDialog: "Start loading conversation page data"
+plugin.load.startLoadSkin: "start loading skin"
+plugin.load.NPC.startLoad: "start loading npc"
+plugin.load.NPC.loadConfigError: "§cNPC: %1% The format of the configuration file is seriously wrong! Please check the configuration file!"
+plugin.load.NPC.loadError: "NPC: Error loading %1%!"
+plugin.load.NPC.loadComplete: "NPC: %1% loading complete!"
+plugin.load.complete: "RsNPC loading complete"
+plugin.load.skin.dataError: "Skin %1% read error, please check the image format or image size!"
+
+plugin.load.dialog.dataError: "Chat page %1% read error, please check the file format!"
+plugin.load.dialog.loadComplete: "Successfully loaded: %1% chat page configurations"
+
+plugin.disable.complete: "RsNPC disable complete"
+
+tips.command.noPermissions: "You do not have permission to use this command!"
+tips.command.cannotBeUsedInConsole: "You can't use this command in the console!"
+
+tips.npcNotExist: "§c§lNPC %1% does not exist!"
+tips.npcRouteAddSuccess: "§a§l has been added to the path!"
+tips.npcAlreadyExist: "§c§lAn NPC named %1% already exists!"
+tips.npcCreateSuccess: "§a§lSuccessfully created NPC %1%!"
+tips.command.npcRemoveSuccess: "§a§lSuccessfully deleted NPC %1%!"
+tips.command.npcRemoveFileFailed: "§c§lNPC %1% configuration file deletion failed! Please try to delete manually!"
+tips.nameRequired: "§c§lPlease enter the name of the NPC!"
+tips.npcCreationFailed: "§c§l NPC creation failed!"
+tips.reloadSuccess: "§a§lConfiguration reloaded!"
+
+tips.command.help: |-
+  §a§l >> §eHelp for RsNPC §a<<
+  §a§l/rsnpc §7Open the GUI interface
+  §a§l/rsnpc create <NPC Name> §7Create an NPC at the current location
+  §a§l/rsnpc delete <NPC Name> §7Remove NPC
+  §a§l/rsnpc addroute <NPC Name> §7Add current location to NPC paths
+  §a§l/rsnpc reload §7reload NPC
+  §a§l >> §eHelp for RsNPC §a<<
+
+gui.main.title: "§b>>§rRsNPC - MainMenu§b<<"
+gui.main.button.createNPCText: "§e§lCreate NPC"
+gui.main.button.adminNPCText: "§e§lManage NPC"
+gui.main.button.reloadText: "§e§lreload configuration"
+
+gui.createNPC.title: "§b>>§rRsNPC - CreateNPC§b<<"
+gui.createNPC.input.npcNameText: "NPC Name"
+
+gui.adminNPCSelect.title: "§b>>§rRsNPC - ManageNPC§b<<"
+gui.adminNPCSelect.content: "§e§lPlease select the NPC to set"
+
+gui.adminNPC.title: "§b>>§rRsNPC - ManageNPC§b<<"
+gui.adminNPC.text.empty: "Empty"
+gui.adminNPC.text.true: "true"
+gui.adminNPC.text.false: "false"
+gui.adminNPC.button.modifyBasicConfig: "§e§lModify the basic configuration"
+gui.adminNPC.button.modifyEmote: "§e§lModify emotes"
+gui.adminNPC.button.modifyCommand: "§e§lModify the click command"
+gui.adminNPC.button.modifyMessage: "§e§lModify click message"
+gui.adminNPC.button.deleteNPC: "§c§ldelete npc"
+
+gui.adminNPCConfig.title: "§b>>§rRsNPC - SetUpNPC§b<<"
+gui.adminNPCConfig.input.displayName: "npc display name"
+gui.adminNPCConfig.toggle.displayNameAlwaysVisible: "display name is always visible"
+gui.adminNPCConfig.input.itemHand: "npc holding items"
+gui.adminNPCConfig.input.itemHelmet: "npc helmet"
+gui.adminNPCConfig.input.itemChestplate: "npc chestplate"
+gui.adminNPCConfig.input.itemLeggings: "NPC leggings"
+gui.adminNPCConfig.input.itemBoots: "NPC Boots"
+gui.adminNPCConfig.dropdown.skin: "NPC Skin"
+gui.adminNPCConfig.input.entityNetworkId: "Entity NetworkId"
+gui.adminNPCConfig.input.entityScale: "entity size"
+gui.adminNPCConfig.toggle.lookAtThePlayer: "look at player"
+gui.adminNPCConfig.toggle.CanProjectilesTrigger: "Allows projectiles to trigger"
+gui.adminNPCConfig.toggle.EnabledDialogPages: "enable dialog"
+gui.adminNPCConfig.dropdown.DialogConfig: "dialog configuration"
+gui.adminNPCConfig.responded.showNameNull: "display name cannot be empty"
+gui.adminNPCConfig.responded.networkIdError: "entity network id must be a number"
+gui.adminNPCConfig.responded.scaleError: "entity size must be a number"
+gui.adminNPCConfig.responded.error: "Setup failed! Please check that the input parameters are correct!"
+gui.adminNPCConfig.responded.errorConsoleMessage: "error configuring npc in gui"
+gui.adminNPCConfig.respondedWindowModal.content: "NPC: %1% Configuration saved successfully!"
+gui.adminNPCConfig.respondedWindowModal.button.true: "return"
+gui.adminNPCConfig.respondedWindowModal.button.false: "close"
+
+gui.adminNPCConfigEmote.title: "§b>>§rRsNPC - SetNPCEmote§b<<"
+gui.adminNPCConfigEmote.label.tip: "Note: This function will not work properly after the NPC adds the path!"
+gui.adminNPCConfigEmote.toggle.enableEmote: "enable emotes"
+gui.adminNPCConfigEmote.input.emoteID: "emoticon id(For multiple use ; split)"
+gui.adminNPCConfigEmote.input.emoteInterval: "interval seconds"
+gui.adminNPCConfigEmote.responded.emoteIntervalError: "interval must be a positive integer"
+gui.adminNPCConfigEmote.respondedWindowModal.content: "NPC: %1% The emote settings are saved successfully!"
+gui.adminNPCConfigEmote.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigEmote.respondedWindowModal.button.false: "close"
+
+gui.adminNPCConfigCommand.title: "§b>>§rRsNPC - SetNPCCommand§b<<"
+gui.adminNPCConfigCommand.content: "Current setting NPC: %1%"
+gui.adminNPCConfigCommand.button.addNewCommand: "add new command"
+gui.adminNPCConfigCommand.button.deleteCommand: "delete existing command"
+
+gui.adminNPCConfigCommandAdd.title: "§b>>§rRsNPC - add new command§b<<"
+gui.adminNPCConfigCommandAdd.label.tip: "Current setting NPC: %1%"
+gui.adminNPCConfigCommandAdd.input.command: "Command (you can use @p to represent player)"
+gui.adminNPCConfigCommandAdd.dropdown.permission: "execute permissions"
+gui.adminNPCConfigCommandAdd.dropdown.permission.player: "Player"
+gui.adminNPCConfigCommandAdd.dropdown.permission.op: "OP"
+gui.adminNPCConfigCommandAdd.dropdown.permission.console: "Console"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.content: "Command: %1% added successfully!"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.button.false: "close"
+
+gui.adminNPCConfigCommandDelete.title: "§b>>§rRsNPC - delete existing command§b<<"
+gui.adminNPCConfigCommandDelete.content: "Current setting NPC: %1%\nPlease select the command to delete"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.content: "Command: %1% Deleted successfully!"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.button.false: "close"
+
+gui.adminNPCConfigMessage.title: "§b>>§rRsNPC - Set NPC message§b<<"
+gui.adminNPCConfigMessage.content: "Current setting NPC: %1%"
+gui.adminNPCConfigMessage.button.addNewMessage: "add new message"
+gui.adminNPCConfigMessage.button.deleteMessage: "delete existing message"
+
+gui.adminNPCConfigMessageAdd.title: "§b>>§rRsNPC - add new message§b<<"
+gui.adminNPCConfigMessageAdd.content: "Current setting NPC: %1%"
+gui.adminNPCConfigMessageAdd.input.message: "Message (you can use @p to represent player)"
+gui.adminNPCConfigMessageAdd.responded.messageNull: "Message cannot be empty!"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "Message: %1% added successfully!"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "close"
+
+gui.AdminNPCConfigMessageDelete.title: "§b>>§rRsNPC - delete existing message§b<<"
+gui.AdminNPCConfigMessageDelete.content: "Current setting NPC: %1%\nPlease select a message to delete"
+gui.AdminNPCConfigMessageDelete.respondedWindowModal.content: "Message: %1% deleted successfully!"
+gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true: "return"
+gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false: "close"

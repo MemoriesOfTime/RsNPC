@@ -266,13 +266,12 @@ public class RsNPC extends PluginBase {
                             case "1.12.0":
                                 geometryName = getGeometryName(skinJsonFile);
                                 if (geometryName.equals("nullvalue")) {
-                                    this.getLogger().error("RsNPC 暂不支持" + skinName + "皮肤所用格式！请等待更新！");
+                                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataIncompatible", skinName));
                                 } else {
                                     skin.generateSkinId(skinName);
                                     skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
                                     skin.setGeometryName(geometryName);
                                     skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                    this.getLogger().info("皮肤 " + skinName + " 读取中");
                                 }
                                 break;
                             default:
@@ -296,19 +295,19 @@ public class RsNPC extends PluginBase {
                         }
                     }
                 }catch (Exception e) {
-                    this.getLogger().error("皮肤 " + skinName + " 模型加载失败，请检查模型文件！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataError", skinName), e);
                 }
 
                 skin.setTrusted(true);
 
                 if (skin.isValid()) {
                     this.skins.put(skinName, skin);
-                    this.getLogger().info("皮肤 " + skinName + " 读取完成");
+                    this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
                 } else {
-                    this.getLogger().error("皮肤 " + skinName + " 验证失败，请检查皮肤文件完整性！");
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.loadFailure", skinName));
                 }
             } else {
-                this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png 模型文件命名为 skin.json");
+                this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.nameError", skinName));
             }
         }
     }

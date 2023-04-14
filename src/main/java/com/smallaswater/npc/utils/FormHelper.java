@@ -189,12 +189,12 @@ public class FormHelper {
     public static void sendAdminNpcConfig(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
         Language language = RsNPC.getInstance().getLanguage();
 
-        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(language.translateString("gui.adminNpcConfig.title"));
+        AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(language.translateString("gui.adminNPCConfig.title"));
 
         Item hand = rsNpcConfig.getHand();
         Item[] armor = rsNpcConfig.getArmor();
         custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.displayName"), "", rsNpcConfig.getShowName())); //0
-        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.input.displayNameAlwaysVisible"), rsNpcConfig.isNameTagAlwaysVisible())); //1
+        custom.addElement(new ElementToggle(language.translateString("gui.adminNPCConfig.toggle.displayNameAlwaysVisible"), rsNpcConfig.isNameTagAlwaysVisible())); //1
         //物品
         custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemHand"), "0:0", Utils.item2String(hand))); //2
         custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfig.input.itemHelmet"), "0:0", Utils.item2String(armor[0]))); //3

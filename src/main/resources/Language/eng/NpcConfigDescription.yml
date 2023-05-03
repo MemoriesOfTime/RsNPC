@@ -1,0 +1,84 @@
+# NPC 配置文件描述
+header: |-
+  RsNPC - NPC configuration file
+  warn! Please make sure you have mastered the YAML syntax before editing this file!
+footer: |-
+  You have reached the bottom of the configuration file
+
+ConfigVersion: |-
+  Version number of configuration file WARNING! Do not attempt to change this configuration unless you know exactly what you are doing!
+
+name: "NPC's display name (overhead name)"
+nameTagAlwaysVisible: |-
+  Whether the NPC's display name (overhead name) is always visible
+  true - always visible
+  false - Visible only when the player is pointing at the NPC
+坐标: "NPC coordinates"
+手持: "Handheld item id such as 267:0 will not be displayed if it is empty"
+头部: "The item id of the head armor, such as 298:0, will not be displayed if it is empty"
+胸部: "The item id of the chest armor, such as 299:0, will not be displayed if it is empty"
+腿部: "The item id of the leg armor, such as 300:0, will not be displayed if it is empty"
+脚部: "The item id of foot armor, such as 301:0, will not be displayed if it is empty"
+皮肤: "The name of the skin used"
+实体NetworkId: |-
+  The entity Network Id used when sending the package to the player
+  For entity ID introduction, please refer to：https://minecraft.fandom.com/wiki/Java_Edition_data_values/Pre-flattening/Entity_IDs
+  If there is no special requirement, please set it to -1 to use a fake player entity
+实体大小: "entity size"
+看向玩家: "whether to look at the player"
+表情动作.启用: "whether the npc plays emotes"
+表情动作.表情ID: |-
+  Known emoticon IDs: https://github.com/lt-name/GetEmoteID/blob/master/README.md
+  Please note! This configuration is List type!
+  format:
+   - "ID1"
+   - "ID2"
+表情动作.间隔: "The interval for NPC to play emoticons Unit: second"
+允许抛射物触发: "Whether to allow projectile triggers such as arrows, snowballs, etc."
+点击执行指令: |-
+  click on the npc to execute the command
+  Please note! This configuration is List type!
+  format:
+   - "Command1&Permissions"
+   - "Command2&Permissions"
+  The front of the & is the command, and the back is the permission. The permission does not write the default player permission.
+  &con execute commands with console privileges
+  &op Execute commands with op privileges
+  forExample:
+   - "give @p 260 1&con"
+   - "say @p hello&con"
+发送消息: |-
+  clickOnTheMessageSentByTheNPC
+  Please note! This configuration is List type!
+  format:
+   - "message1"
+   - "message2"
+  forExample：
+   - "%npcName%： @p Hello"
+   - "Send you an apple!"
+基础移动速度: "npc movement speed"
+route: "Path list Please use the command to add!"
+启用辅助寻路: |-
+  assisted wayfinding
+  After enabling, the NPC will automatically move around obstacles to the target point (recommended when the terrain changes)
+  Do not enable NPC to ignore obstacles and move directly to the target point (save performance when the terrain remains unchanged)
+旋转: |-
+  The rotation angle of the NPC is set to a negative number to reverse the rotation
+  canBeUsedToRotateSkins
+  Turning this on will automatically turn off NPC movement
+对话框.启用: "whether to enable the dialog"
+对话框.页面: "Dialog configuration file name"
+
+CustomEntity: |-
+  Custom entity related configuration
+  Notice! This function needs to be used in conjunction with the texture pack!
+  Notice! After the custom entity is registered, the player needs to re-enter the server to display it. It is recommended to modify this configuration after closing the server!
+CustomEntity.enable: "whether to enable custom entities"
+CustomEntity.identifier: "Custom entity identifier (identifier set in resource bundle)"
+CustomEntity.skinId: "Entity skin (variant) id generally defaults to 0"
+
+CustomCollisionSize: |-
+  custom collision size
+  If the NPC uses a special skin shape, you can adjust this configuration
+  Allow players to better click on NPC entities in the game
+CustomCollisionSize.enable: "whether to enable custom collision size"

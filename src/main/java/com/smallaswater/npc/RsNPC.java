@@ -18,6 +18,7 @@ import com.smallaswater.npc.utils.GameCoreDownload;
 import com.smallaswater.npc.utils.MetricsLite;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
+import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -79,8 +80,7 @@ public class RsNPC extends PluginBase {
     public void onLoad() {
         rsNPC = this;
 
-        VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
-        VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
+        VariableManage.addVariableV2("default", DefaultVariable.class);
 
         File skinFile = new File(getDataFolder() + "/Skins");
         if (!skinFile.exists() && !skinFile.mkdirs()) {
@@ -111,16 +111,15 @@ public class RsNPC extends PluginBase {
 
         this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 
+        //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
         if (nukkitType != NukkitTypeUtils.NukkitType.PM1E) {
-            this.getLogger().error("警告！您所使用的插件版本不支持此Nukkit分支！");
-            this.getLogger().error("服务器核心 : " + nukkitType.getShowName() + "  |  插件版本 : " + this.getVersion());
-            this.getLogger().error("请使用Nukkit-PM1E核心！或更换为对应版本的插件！");
+            this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        ConfigUpdateUtils.updateConfig(this);
+        ConfigUpdateUtils.updateConfig();
 
         Entity.registerEntity("EntityRsNpc", EntityRsNPC.class);
 
@@ -167,9 +166,9 @@ public class RsNPC extends PluginBase {
         Config config = new Config();
         InputStream resource = this.getResource("Language/" + this.setLang + "/Language.yml");
         if (resource == null) {
+            this.getLogger().error("Language file not found: " + this.setLang + ".yml");
             this.setLang = "chs";
             resource = this.getResource("Language/chs/Language.yml");
-            this.getLogger().error("Language file not found: " + this.setLang + ".yml");
         }
         config.load(resource);
         this.language = new Language(config);
@@ -267,13 +266,12 @@ public class RsNPC extends PluginBase {
                             case "1.12.0":
                                 geometryName = getGeometryName(skinJsonFile);
                                 if (geometryName.equals("nullvalue")) {
-                                    this.getLogger().error("RsNPC 暂不支持" + skinName + "皮肤所用格式！请等待更新！");
+                                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataIncompatible", skinName));
                                 } else {
                                     skin.generateSkinId(skinName);
                                     skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
                                     skin.setGeometryName(geometryName);
                                     skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                    this.getLogger().info("皮肤 " + skinName + " 读取中");
                                 }
                                 break;
                             default:
@@ -297,19 +295,19 @@ public class RsNPC extends PluginBase {
                         }
                     }
                 }catch (Exception e) {
-                    this.getLogger().error("皮肤 " + skinName + " 模型加载失败，请检查模型文件！", e);
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataError", skinName), e);
                 }
 
                 skin.setTrusted(true);
 
                 if (skin.isValid()) {
                     this.skins.put(skinName, skin);
-                    this.getLogger().info("皮肤 " + skinName + " 读取完成");
+                    this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
                 } else {
-                    this.getLogger().error("皮肤 " + skinName + " 验证失败，请检查皮肤文件完整性！");
+                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.loadFailure", skinName));
                 }
             } else {
-                this.getLogger().error("皮肤 " + skinName + " 错误的名称格式，请将皮肤文件命名为 skin.png 模型文件命名为 skin.json");
+                this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.nameError", skinName));
             }
         }
     }

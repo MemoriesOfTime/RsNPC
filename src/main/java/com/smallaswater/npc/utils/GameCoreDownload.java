@@ -7,7 +7,6 @@ import cn.nukkit.plugin.Plugin;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.smallaswater.npc.RsNPC;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -34,20 +33,35 @@ public class GameCoreDownload {
     // 每个任务下载 128 kb数据
     private static final int THRESHOLD = 128 * 1024;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.8.0-PNX";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.9";
+    private static String ACTUAL_MINIMUM_GAME_CORE_VERSION;
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
+    private static final String MAVEN_URL_HUAWEI = "https://repo.huaweicloud.com/repository/maven/";
     private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
-
-    private static final String GAME_CORE_URL_SUFFIX = "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
 
     private static final List<String> GAME_CORE_URL_LIST;
 
     static {
+        //为了防止编译依赖和实际环境区别，这里重新检查GameCore完整版本号
+        ACTUAL_MINIMUM_GAME_CORE_VERSION = MINIMUM_GAME_CORE_VERSION.split("-")[0];
+        String codename = Server.getInstance().getCodename();
+        if ("PowerNukkitX".equalsIgnoreCase(codename)/* || "PowerNukkit".equalsIgnoreCase(codename)*/) {
+            ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PNX";
+        } else if ("PM1E".equalsIgnoreCase(codename)) {
+            ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PM1E";
+        }
+
         GAME_CORE_URL_LIST = Collections.unmodifiableList(Arrays.asList(
-                MAVEN_URL_CENTRAL + GAME_CORE_URL_SUFFIX,
-                MAVEN_URL_LANINK + GAME_CORE_URL_SUFFIX
+                getGameCoreUrl(MAVEN_URL_CENTRAL),
+                getGameCoreUrl(MAVEN_URL_HUAWEI),
+                getGameCoreUrl(MAVEN_URL_LANINK)
         ));
+    }
+
+    private static String getGameCoreUrl(String mavenUrl) {
+        //插件完整下载地址
+        return mavenUrl + "cn/lanink/MemoriesOfTime-GameCore/" + ACTUAL_MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + ACTUAL_MINIMUM_GAME_CORE_VERSION + ".jar";
     }
 
     private GameCoreDownload() {
@@ -78,7 +92,7 @@ public class GameCoreDownload {
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
         if (plugin != null) {
-            if (!VersionUtils.checkMinimumVersion(plugin, MINIMUM_GAME_CORE_VERSION)) {
+            if (!VersionUtils.checkMinimumVersion(plugin, ACTUAL_MINIMUM_GAME_CORE_VERSION)) {
                 RsNPC.getInstance().getLogger().warning("MemoriesOfTime-GameCore依赖版本太低！正在尝试更新版本...");
                 File file = getPluginFile(plugin);
                 if (file != null) {
@@ -100,15 +114,14 @@ public class GameCoreDownload {
 
         if (plugin == null || plugin.isDisabled()) {
             RsNPC.getInstance().getLogger().info("尝试从 " + url + " 下载 MemoriesOfTime-GameCore 中...");
-            //RsNPC.getInstance().getLogger().info("下载MemoriesOfTime-GameCore依赖中...");
 
-            File file = new File(Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar");
+            File file = new File(Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + ACTUAL_MINIMUM_GAME_CORE_VERSION + ".jar");
 
             try {
-                AtomicDouble last = new AtomicDouble(-10);
-                download(url, file, (l, len) -> {
-                    double d = NukkitMath.round(l * 1.0 / len * 100, 2);
-                    if (d - last.get() > 10) { // 每10%提示一次
+                AtomicDouble last = new AtomicDouble(-16);
+                download(url, file, (len, fullLength) -> {
+                    double d = NukkitMath.round(len * 1.0 / fullLength * 100, 2);
+                    if (d - last.get() > 15) { // 每15%提示一次
                         RsNPC.getInstance().getLogger().info("已下载：" + d + "%");
                         last.set(d);
                     }
@@ -157,7 +170,7 @@ public class GameCoreDownload {
         connection.setReadTimeout(5000);
 
 
-        long len = connection.getContentLength();
+        long fullLength = connection.getContentLength();
         if ("chunked".equals(connection.getHeaderField("Transfer-Encoding"))) { // chunked transfer 采用单线程下载
             RandomAccessFile out = new RandomAccessFile(saveFile, "rw");
             out.seek(0);
@@ -169,7 +182,7 @@ public class GameCoreDownload {
                 out.write(b, 0, read);
                 count += read;
                 if (callback != null) {
-                    callback.accept(count, len);
+                    callback.accept(count, fullLength);
                 }
             }
             in.close();
@@ -178,15 +191,15 @@ public class GameCoreDownload {
         }
         ForkJoinPool pool = new ForkJoinPool();
         AtomicLong atomicLong = new AtomicLong();
-        pool.submit(new DownloadTask(strUrl,0, len, saveFile, (l) -> {
+        pool.submit(new DownloadTask(strUrl,0, fullLength, saveFile, (l) -> {
             atomicLong.addAndGet(l);
-            callback.accept(atomicLong.get(), len);
+            callback.accept(atomicLong.get(), fullLength);
         }));
         pool.shutdown();
         // 同步  等待所有线程完成操作
         while (!pool.awaitTermination(1, TimeUnit.SECONDS)) {
         }
-        if (len < 1 || saveFile.length() < 1) {
+        if (fullLength < 1 || saveFile.length() < 1) {
             throw new Exception("下载失败");
         }
     }
@@ -208,29 +221,49 @@ public class GameCoreDownload {
             this.callback = callback;
         }
 
-        @SneakyThrows
         @Override
         protected void compute() {
-            long l = end - start;
-            if (l < THRESHOLD) {
-                HttpURLConnection connection = getConnection();
-                connection.setRequestProperty("Range", "bytes=" + start + "-" + end);
+            RandomAccessFile out = null;
+            InputStream in = null;
+            try {
+                long l = end - start;
+                if (l < THRESHOLD) {
+                    HttpURLConnection connection = getConnection();
+                    connection.setRequestProperty("Range", "bytes=" + start + "-" + end);
 
-                RandomAccessFile out = new RandomAccessFile(file, "rw");
-                out.seek(start);
-                InputStream in = connection.getInputStream();
-                byte[] b = new byte[1024];
-                int len;
-                while ((len = in.read(b)) >= 0) {
-                    out.write(b, 0, len);
-                    callback.accept(len);
+                    out = new RandomAccessFile(file, "rw");
+                    out.seek(start);
+                    in = connection.getInputStream();
+                    byte[] b = new byte[1024];
+                    int len;
+                    while ((len = in.read(b)) >= 0) {
+                        out.write(b, 0, len);
+                        callback.accept(len);
+                    }
+                    in.close();
+                    out.close();
+                } else {
+                    long mid = (start + end) / 2;
+                    new SubDownloadTask(strUrl, start, mid, file, callback).fork();
+                    new SubDownloadTask(strUrl, mid, end, file, callback).fork();
                 }
-                in.close();
-                out.close();
-            }else {
-                long mid = (start + end) / 2;
-                new SubDownloadTask(strUrl, start, mid, file, callback).fork();
-                new SubDownloadTask(strUrl, mid, end, file, callback).fork();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
 

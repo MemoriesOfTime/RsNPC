@@ -18,6 +18,7 @@ import com.smallaswater.npc.utils.GameCoreDownload;
 import com.smallaswater.npc.utils.MetricsLite;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
+import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
@@ -79,8 +80,7 @@ public class RsNPC extends PluginBase {
     public void onLoad() {
         rsNPC = this;
 
-        VariableManage.addVariable("%npcName%", (player, rsNpcConfig) -> rsNpcConfig.getName());
-        VariableManage.addVariable("@p", (player, rsNpcConfig) -> player.getName());
+        VariableManage.addVariableV2("default", DefaultVariable.class);
 
         File skinFile = new File(getDataFolder() + "/Skins");
         if (!skinFile.exists() && !skinFile.mkdirs()) {

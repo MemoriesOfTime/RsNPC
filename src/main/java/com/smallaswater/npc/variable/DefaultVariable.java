@@ -13,7 +13,7 @@ public class DefaultVariable extends BaseVariableV2 {
         if (rsNpcConfig != null) {
             this.addVariable("%npcName%", rsNpcConfig.getName());
         }
-        if (player != null) {
+        if (player != null && player.isOnline()) {
             this.addVariable("@p", player.getName());
         }
     }

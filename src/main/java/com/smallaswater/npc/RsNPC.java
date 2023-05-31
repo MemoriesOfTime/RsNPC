@@ -114,7 +114,7 @@ public class RsNPC extends PluginBase {
 
         //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
-        if (nukkitType != NukkitTypeUtils.NukkitType.PM1E) {
+        if (nukkitType != NukkitTypeUtils.NukkitType.PM1E && nukkitType != NukkitTypeUtils.NukkitType.MOT) {
             this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
             this.getServer().getPluginManager().disablePlugin(this);
             return;

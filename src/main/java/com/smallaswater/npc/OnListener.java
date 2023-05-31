@@ -67,7 +67,6 @@ public class OnListener implements Listener {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
                 if (damage instanceof Player) {
                     Player player = (Player) damage;
-                    Api.hideCustomSkin(player); //test
                     EntityRsNPC entityRsNpc = (EntityRsNPC) entity;
                     RsNpcConfig rsNpcConfig = entityRsNpc.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&

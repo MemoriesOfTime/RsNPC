@@ -225,8 +225,7 @@ public class RsNPC extends PluginBase {
 
                 this.skins.put("private_" + skinName, skin);
             } catch (Exception e) {
-                e.printStackTrace();
-                continue;
+                this.getLogger().error("Plugin built-in skin loading failed!", e);
             }
         }
     }

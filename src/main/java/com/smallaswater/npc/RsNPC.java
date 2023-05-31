@@ -23,6 +23,7 @@ import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
@@ -127,6 +128,7 @@ public class RsNPC extends PluginBase {
         this.dialogManager = new DialogManager(this);
 
         this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoadSkin"));
+        this.loadPrivateSkins();
         this.loadSkins();
 
         this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.startLoad"));
@@ -200,6 +202,30 @@ public class RsNPC extends PluginBase {
                 this.npcs.put(npcName, rsNpcConfig);
                 rsNpcConfig.checkEntity();
                 this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
+            }
+        }
+    }
+
+    /**
+     * 加载内置皮肤
+     */
+    private void loadPrivateSkins() {
+        String[] skins = { "阳", "糖菲_slim", "玉茗_slim" };
+        for (String skinName : skins) {
+            try {
+                ImageInputStream imageInputStream = ImageIO.createImageInputStream(this.getResource("Skins/" + skinName + ".png"));
+                Skin skin = new Skin();
+                skin.setSkinData(ImageIO.read(imageInputStream));
+                SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+
+                if (skinName.contains("_slim")) {
+                    skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
+                }
+                skin.setTrusted(true);
+
+                this.skins.put("private_" + skinName, skin);
+            } catch (Exception e) {
+                this.getLogger().error("Plugin built-in skin loading failed!", e);
             }
         }
     }

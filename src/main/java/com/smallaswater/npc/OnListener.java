@@ -10,6 +10,8 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityVehicleEnterEvent;
 import cn.nukkit.event.player.PlayerInteractEntityEvent;
+import cn.nukkit.event.server.DataPacketSendEvent;
+import cn.nukkit.network.protocol.PlayerListPacket;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.dialog.DialogPages;
 import com.smallaswater.npc.entitys.EntityRsNPC;
@@ -88,6 +90,25 @@ public class OnListener implements Listener {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onDataPacketSend(DataPacketSendEvent event) {
+        if (Api.isHideCustomSkin(event.getPlayer())) {
+            if (event.getPacket() instanceof PlayerListPacket) {
+                PlayerListPacket packet = (PlayerListPacket) event.getPacket();
+                for (PlayerListPacket.Entry entry : packet.entries) {
+                    for (RsNpcConfig config : this.rsNPC.getNpcs().values()) {
+                        EntityRsNPC entityRsNpc = config.getEntityRsNpc();
+                        if (entityRsNpc != null && entityRsNpc.getUniqueId() == entry.uuid) {
+                            entry.skin = this.rsNPC.getSkinByName("默认皮肤");
+                            break;
+                        }
+                    }
+                }
+                packet.encode();
             }
         }
     }

@@ -210,7 +210,7 @@ public class RsNPC extends PluginBase {
      * 加载内置皮肤
      */
     private void loadPrivateSkins() {
-        String[] skins = { "阳", "糖菲_slim" };
+        String[] skins = { "阳", "糖菲_slim", "玉茗_slim" };
         for (String skinName : skins) {
             try {
                 ImageInputStream imageInputStream = ImageIO.createImageInputStream(this.getResource("Skins/" + skinName + ".png"));

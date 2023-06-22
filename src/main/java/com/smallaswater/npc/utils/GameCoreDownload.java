@@ -48,7 +48,7 @@ public class GameCoreDownload {
         String codename = Server.getInstance().getCodename();
         if ("PowerNukkitX".equalsIgnoreCase(codename)/* || "PowerNukkit".equalsIgnoreCase(codename)*/) {
             ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PNX";
-        } else if ("PM1E".equalsIgnoreCase(codename)) {
+        } else if ("MOT".equalsIgnoreCase(codename) || "PM1E".equalsIgnoreCase(codename)) {
             ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PM1E";
         }
 

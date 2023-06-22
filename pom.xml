@@ -43,7 +43,7 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <lib.GameCore.version>1.6.10-PNX</lib.GameCore.version>
+        <lib.GameCore.version>1.6.11-PNX</lib.GameCore.version>
     </properties>
 
     <distributionManagement>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>cn.powernukkitx</groupId>
             <artifactId>powernukkitx</artifactId>
-            <version>1.19.80-r2</version>
+            <version>1.20.0-r2</version>
             <scope>provided</scope>
         </dependency>
 

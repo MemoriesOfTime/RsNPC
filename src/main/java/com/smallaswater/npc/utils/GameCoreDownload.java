@@ -33,7 +33,7 @@ public class GameCoreDownload {
     // 每个任务下载 128 kb数据
     private static final int THRESHOLD = 128 * 1024;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.10";
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.11";
     private static String ACTUAL_MINIMUM_GAME_CORE_VERSION;
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";

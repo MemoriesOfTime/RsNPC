@@ -326,7 +326,18 @@ public class RsNPC extends PluginBase {
 
                 skin.setTrusted(true);
 
-                if (skin.isValid()) {
+                boolean skinIsValid = false;
+                try {
+                    skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, this.getServer().doNotLimitSkinGeometry);
+                } catch (Exception exception) {
+                    try {
+                        skinIsValid = (boolean) Skin.class.getMethod("isValid").invoke(skin);
+                    } catch (Exception e) {
+                        this.getLogger().error("Skin validation failed!", e);
+                    }
+                }
+
+                if (skinIsValid) {
                     this.skins.put(skinName, skin);
                     this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
                 } else {

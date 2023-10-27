@@ -1,6 +1,7 @@
 package com.smallaswater.npc.entitys;
 
 import cn.lanink.gamecore.utils.EntityUtils;
+import cn.lanink.gamecore.utils.packet.ProtocolVersion;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockLiquid;
@@ -10,6 +11,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EmotePacket;
+import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import com.smallaswater.npc.RsNPC;
@@ -151,6 +153,10 @@ public class EntityRsNPC extends EntityHuman {
                         packet.runtimeId = this.getId();
                         packet.emoteID = this.config.getEmoteIDs().get(RsNPC.RANDOM.nextInt(this.config.getEmoteIDs().size()));
                         packet.flags = 0;
+                        if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolVersion.v1_20_0_23) {
+                            packet.xuid = "";
+                            packet.platformId = "";
+                        }
                         Server.broadcastPacket(this.getViewers().values(), packet);
                     }
                 }

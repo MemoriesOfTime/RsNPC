@@ -43,7 +43,7 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <lib.GameCore.version>1.6.10-PM1E</lib.GameCore.version>
+        <lib.GameCore.version>1.6.11-PM1E</lib.GameCore.version>
     </properties>
 
     <distributionManagement>
@@ -80,7 +80,7 @@
         </repository>
         <repository>
             <id>repo-lanink-cn</id>
-            <url>https://repo.lanink.cn/</url>
+            <url>https://repo.lanink.cn/repository/maven-public/</url>
         </repository>
     </repositories>
 

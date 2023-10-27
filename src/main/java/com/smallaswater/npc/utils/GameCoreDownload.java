@@ -38,7 +38,7 @@ public class GameCoreDownload {
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
     private static final String MAVEN_URL_HUAWEI = "https://repo.huaweicloud.com/repository/maven/";
-    private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/";
+    private static final String MAVEN_URL_LANINK = "https://repo.lanink.cn/repository/maven-public/";
 
     private static final List<String> GAME_CORE_URL_LIST;
 
@@ -48,7 +48,7 @@ public class GameCoreDownload {
         String codename = Server.getInstance().getCodename();
         if ("PowerNukkitX".equalsIgnoreCase(codename)/* || "PowerNukkit".equalsIgnoreCase(codename)*/) {
             ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PNX";
-        } else if ("PM1E".equalsIgnoreCase(codename)) {
+        } else if ("MOT".equalsIgnoreCase(codename) || "PM1E".equalsIgnoreCase(codename)) {
             ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PM1E";
         }
 

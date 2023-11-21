@@ -13,8 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
@@ -52,11 +50,11 @@ public class GameCoreDownload {
             ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PM1E";
         }
 
-        GAME_CORE_URL_LIST = Collections.unmodifiableList(Arrays.asList(
+        GAME_CORE_URL_LIST = List.of(
                 getGameCoreUrl(MAVEN_URL_CENTRAL),
                 getGameCoreUrl(MAVEN_URL_HUAWEI),
                 getGameCoreUrl(MAVEN_URL_LANINK)
-        ));
+        );
     }
 
     private static String getGameCoreUrl(String mavenUrl) {

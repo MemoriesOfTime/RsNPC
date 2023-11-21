@@ -138,8 +138,17 @@ public class RsNpcConfig {
                 throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
             }
             Level level = Server.getInstance().getLevelByName(this.levelName);
-            this.location = new Location((double) map.get("x"), (double) map.get("y"), (double) map.get("z"),
-                    (double) map.getOrDefault("yaw", 0D), 0, level);
+            if (level == null) {
+                throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
+            }
+            this.location = new Location(
+                    Utils.toDouble(map.get("x")),
+                    Utils.toDouble(map.get("y")),
+                    Utils.toDouble(map.get("z")),
+                    Utils.toDouble(map.getOrDefault("yaw", 0D)),
+                    0,
+                    level
+            );
         } catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 位置/世界配置错误！请检查配置文件！", e);
         }

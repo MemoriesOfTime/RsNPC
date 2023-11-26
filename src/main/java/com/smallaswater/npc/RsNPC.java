@@ -21,6 +21,7 @@ import com.smallaswater.npc.utils.update.ConfigUpdateUtils;
 import com.smallaswater.npc.variable.DefaultVariable;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
+import updata.AutoData;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -97,6 +98,8 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
+        this.loadLanguage();
+
         switch (GameCoreDownload.checkAndDownload()) {
             case 1:
                 Server.getInstance().getPluginManager().disablePlugin(this);
@@ -108,7 +111,15 @@ public class RsNPC extends PluginBase {
                 break;
         }
 
-        this.loadLanguage();
+        try {
+            if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {
+                if (AutoData.defaultUpDataByMaven(this, this.getFile(), "com.smallaswater", "RsNPC", "PM1E")) {
+                    return;
+                }
+            }
+        } catch (Throwable e) {
+            this.getLogger().warning(this.getLanguage().translateString("plugin.depend.autoupdata.error"));
+        }
 
         this.getLogger().info(this.getLanguage().translateString("plugin.load.startLoad"));
 

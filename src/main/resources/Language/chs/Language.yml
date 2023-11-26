@@ -1,4 +1,5 @@
 plugin.depend.gamecore.needReload: "MemoriesOfTime-GameCore依赖下载完成！强烈建议重启服务器以保证正确加载！"
+plugin.depend.autoupdata.error: "插件自动更新失败！请检查AutoUpData前置插件！"
 
 plugin.load.startLoad: "RsNPC开始加载"
 plugin.load.pluginBranchError: |-

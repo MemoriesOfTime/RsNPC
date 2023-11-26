@@ -1,4 +1,5 @@
 plugin.depend.gamecore.needReload: "MemoriesOfTime-GameCore Dependency download complete! It is strongly recommended to restart the server to ensure proper loading!"
+plugin.depend.autoupdata.error: "Plugin auto update failed! Please check the AutoUpData plugin!"
 
 plugin.load.startLoad: "RsNPC start loading"
 plugin.load.pluginBranchError: |-

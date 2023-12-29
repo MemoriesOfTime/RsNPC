@@ -70,10 +70,18 @@ public class VariableManage {
         }
 
         for (Map.Entry<String, Supplier<Object>> entry : VARIABLES_SUPPLIER.entrySet()) {
-            inString = inString.replace(entry.getKey(), String.valueOf(entry.getValue().get()));
+            try {
+                inString = inString.replace(entry.getKey(), String.valueOf(entry.getValue().get()));
+            } catch (Throwable t) {
+                RsNPC.getInstance().getLogger().error("Variables " + entry.getKey() + " Error executing get() method!", t);
+            }
         }
         for (Map.Entry<String, BiFunction<IPlayer, RsNpcConfig, Object>> entry : VARIABLES.entrySet()) {
-            inString = inString.replace(entry.getKey(), String.valueOf(entry.getValue().apply(player, rsNpcConfig)));
+            try {
+                inString = inString.replace(entry.getKey(), String.valueOf(entry.getValue().apply(player, rsNpcConfig)));
+            } catch (Throwable t) {
+                RsNPC.getInstance().getLogger().error("Variables " + entry.getKey() + " Error executing apply() method!", t);
+            }
         }
 
         Player p = null;
@@ -81,11 +89,19 @@ public class VariableManage {
             p = (Player) player;
         }
         for (BaseVariable variable : VARIABLE_CLASS.values()) {
-            inString = variable.stringReplace(p, inString, rsNpcConfig);
+            try {
+                inString = variable.stringReplace(p, inString, rsNpcConfig);
+            } catch (Throwable t) {
+                RsNPC.getInstance().getLogger().error("Variables " + variable.getClass().getName() + " Error executing stringReplace() method!", t);
+            }
         }
         for (BaseVariableV2 variable : VARIABLE_V2_CLASS.values()) {
-            variable.update(p, rsNpcConfig);
-            inString = variable.stringReplace(inString);
+            try {
+                variable.update(p, rsNpcConfig);
+                inString = variable.stringReplace(inString);
+            } catch (Throwable t) {
+                RsNPC.getInstance().getLogger().error("Variables " + variable.getClass().getName() + " Error executing onUpdate() method!", t);
+            }
         }
 
         return inString;

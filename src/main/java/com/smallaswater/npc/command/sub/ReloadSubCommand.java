@@ -15,7 +15,7 @@ public class ReloadSubCommand extends BaseSubCommand {
 
     @Override
     public boolean canUser(CommandSender sender) {
-        return sender.isOp();
+        return sender.hasPermission("RsNPC.reload");
     }
 
     @Override

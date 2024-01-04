@@ -13,15 +13,15 @@ permissions:
   RsNPC.admin:
     default: op
     description: "RsNPC插件主命令"
-  RsNPC.create:
+  RsNPC.admin.create:
     default: op
     description: "创建npc的命令"
-  RsNPC.delete:
+  RsNPC.admin.delete:
     default: op
     description: "删除npc的命令"
-  RsNPC.reload:
+  RsNPC.admin.reload:
     default: op
     description: "重载NPC配置文件的命令"
-  RsNPC.addroute:
+  RsNPC.admin.addroute:
     default: op
     description: "添加npc移动路径的命令"

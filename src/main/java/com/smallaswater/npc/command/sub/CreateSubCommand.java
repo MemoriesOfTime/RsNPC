@@ -23,7 +23,7 @@ public class CreateSubCommand extends BaseSubCommand {
 
     @Override
     public boolean canUser(CommandSender sender) {
-        return sender.isPlayer() && sender.hasPermission("RsNPC.create");
+        return sender.isPlayer() && sender.hasPermission("RsNPC.admin.create");
     }
 
     @Override

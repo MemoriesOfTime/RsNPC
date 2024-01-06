@@ -101,8 +101,6 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.loadLanguage();
-
         switch (GameCoreDownload.checkAndDownload()) {
             case 1:
                 Server.getInstance().getPluginManager().disablePlugin(this);
@@ -113,6 +111,8 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        this.loadLanguage();
 
         try {
             if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {
@@ -226,6 +226,7 @@ public class RsNPC extends PluginBase {
      * 加载内置皮肤
      */
     private void loadPrivateSkins() {
+        this.skins.put("private_steve", DEFAULT_SKIN);
         String[] skins = { "阳", "糖菲_slim", "玉茗_slim" };
         for (String skinName : skins) {
             try {

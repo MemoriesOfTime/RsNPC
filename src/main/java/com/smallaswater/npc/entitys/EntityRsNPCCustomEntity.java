@@ -5,12 +5,19 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.custom.CustomEntity;
 import cn.nukkit.entity.custom.CustomEntityDefinition;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.entity.data.Skin;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.types.EntityLink;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.variable.VariableManage;
 import lombok.NonNull;
+
+import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 /**
  * 基于自定义实体功能实现的RsNPC实体
@@ -99,7 +106,7 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     public void spawnTo(Player player) {
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
-            player.dataPacket(createAddEntityPacket());
+            player.dataPacket(createAddEntityPacket(player));
         }
 
         if (this.riding != null) {
@@ -115,4 +122,17 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
         }
     }
 
+    public DataPacket createAddEntityPacket(Player player) {
+        AddEntityPacket pk = (AddEntityPacket) this.createAddEntityPacket();
+        pk.metadata.putString(
+                EntityUtils.getEntityField("DATA_NAMETAG", DATA_NAMETAG),
+                VariableManage.stringReplace(player, this.getNameTag(), this.getConfig())
+        );
+        return pk;
+    }
+
+    @Override
+    public void setSkin(Skin skin) {
+        this.skin = skin;
+    }
 }

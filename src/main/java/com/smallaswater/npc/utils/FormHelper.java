@@ -38,11 +38,17 @@ public class FormHelper {
             simple.setContent(getRandomMessage() + "\n\n");
         }
 
-        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.createNPCText")).onClicked(FormHelper::sendCreateNpc));
-        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.adminNPCText")).onClicked(FormHelper::sendAdminNpcSelect));
-        simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.reloadText"))
-                .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpc reload"))
-        );
+        if (player.hasPermission("RsNPC.admin.create")) {
+            simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.createNPCText")).onClicked(FormHelper::sendCreateNpc));
+            if (player.hasPermission("RsNPC.admin.delete")) {
+                simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.adminNPCText")).onClicked(FormHelper::sendAdminNpcSelect));
+            }
+        }
+        if (player.hasPermission("RsNPC.admin.reload")) {
+            simple.addButton(new ResponseElementButton(language.translateString("gui.main.button.reloadText"))
+                    .onClicked(cp -> Server.getInstance().dispatchCommand(cp, "rsnpc reload"))
+            );
+        }
 
         player.showFormWindow(simple);
     }

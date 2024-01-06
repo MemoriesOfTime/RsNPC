@@ -18,7 +18,7 @@ public class DeleteSubCommand extends BaseSubCommand {
 
     @Override
     public boolean canUser(CommandSender sender) {
-        return sender.isOp();
+        return sender.hasPermission("RsNPC.admin.delete");
     }
 
     @Override

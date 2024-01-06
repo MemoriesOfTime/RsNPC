@@ -17,7 +17,6 @@ import com.smallaswater.npc.entitys.EntityRsNPCCustomEntity;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
-import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -164,7 +163,7 @@ public class RsNpcConfig {
         }
 
         try {
-            this.skinName = config.getString("皮肤", "默认");
+            this.skinName = config.getString("皮肤", "private_steve");
             if (!RsNPC.getInstance().getSkins().containsKey(this.skinName)) {
                 RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
             }
@@ -386,7 +385,7 @@ public class RsNpcConfig {
             if (!this.lookAtThePlayer) {
                 this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
             }
-            this.entityRsNpc.setNameTag(VariableManage.stringReplace(null, this.showName, this));
+            this.entityRsNpc.setNameTag(this.showName /*VariableManage.stringReplace(null, this.showName, this)*/);
         }
     }
 

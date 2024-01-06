@@ -65,11 +65,9 @@ public class CreateSubCommand extends BaseSubCommand {
             }
             this.rsNPC.getNpcs().put(name, rsNpcConfig);
             rsNpcConfig.checkEntity();
-            //玄学解决首次生成不显示的问题
-            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> {
-                rsNpcConfig.getEntityRsNpc().close();
-                rsNpcConfig.checkEntity();
-            }, 20);
+            //修复首次生成不显示的问题 通过重复生成实体解决nk未能及时发送PlayerListPacket的问题
+            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, () -> rsNpcConfig.getEntityRsNpc().close(), 20);
+            Server.getInstance().getScheduler().scheduleDelayedTask(this.rsNPC, rsNpcConfig::checkEntity, 40);
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcCreateSuccess", name));
         } else {
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));

@@ -101,8 +101,6 @@ public class RsNPC extends PluginBase {
 
     @Override
     public void onEnable() {
-        this.loadLanguage();
-
         switch (GameCoreDownload.checkAndDownload()) {
             case 1:
                 Server.getInstance().getPluginManager().disablePlugin(this);
@@ -113,6 +111,8 @@ public class RsNPC extends PluginBase {
                 );
                 break;
         }
+
+        this.loadLanguage();
 
         try {
             if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {

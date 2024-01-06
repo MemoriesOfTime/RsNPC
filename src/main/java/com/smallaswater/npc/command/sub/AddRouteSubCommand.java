@@ -21,7 +21,7 @@ public class AddRouteSubCommand extends BaseSubCommand {
 
     @Override
     public boolean canUser(CommandSender sender) {
-        return sender.isPlayer() && sender.isOp();
+        return sender.isPlayer() && sender.hasPermission("RsNPC.admin.addroute");
     }
 
     @Override

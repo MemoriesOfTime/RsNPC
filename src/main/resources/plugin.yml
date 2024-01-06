@@ -1,7 +1,9 @@
 name: RsNPC
 main: com.smallaswater.npc.RsNPC
-version: "2.4.2-PM1E"
-api: ["Nukkit-PM1E"]
+version: "2.4.3-PM1E"
+api:
+  - "Nukkit-MOT"
+  - "Nukkit-PM1E"
 authors: ["若水", "LT_Name"]
 load: POSTWORLD
 softdepend:
@@ -10,4 +12,16 @@ softdepend:
 permissions:
   RsNPC.admin:
     default: op
-    description: "RsNPC插件主命令"
+    description: "RsNPC 插件主命令"
+  RsNPC.admin.create:
+    default: op
+    description: "RsNPC 创建NPC命令"
+  RsNPC.admin.delete:
+    default: op
+    description: "RsNPC 删除NPC命令"
+  RsNPC.admin.reload:
+    default: op
+    description: "RsNPC 重载配置文件命令"
+  RsNPC.admin.addroute:
+    default: op
+    description: "RsNPC 添加NPC移动路径命令"

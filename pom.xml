@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.4.2-PM1E<!-- -SNAPSHOT--></version>
+    <version>2.4.3-PM1E<!-- -SNAPSHOT--></version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>cn.nukkit</groupId>
             <artifactId>Nukkit</artifactId>
-            <version>PM1E_1.20.50.3397</version>
+            <version>MOT-java8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

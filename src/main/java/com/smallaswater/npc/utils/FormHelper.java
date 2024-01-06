@@ -134,7 +134,7 @@ public class FormHelper {
                 "\n显示名称一直可见: " + toAdminNpcBooleanShowText(rsNpcConfig.isNameTagAlwaysVisible()) +
                 "\n坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
                 "\n  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
-                "\n  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) + "" +
+                "\n  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) +
                 "\n  yaw: " + NukkitMath.round(rsNpcConfig.getLocation().getYaw(), 3) +
                 "\n  世界: " + rsNpcConfig.getLocation().getLevel().getName() +
                 "\n物品:\n  手持: " + hand.getId() + ":" + hand.getDamage() +
@@ -233,7 +233,7 @@ public class FormHelper {
         custom.onResponded((formResponseCustom, cp) -> {
             try {
                 String showName = formResponseCustom.getInputResponse(0);
-                if ("".equals(showName.trim())) {
+                if (showName.trim().isEmpty()) {
                     cp.sendMessage(language.translateString("gui.adminNPCConfig.responded.showNameNull"));
                     return;
                 }
@@ -324,7 +324,7 @@ public class FormHelper {
             rsNpcConfig.getEmoteIDs().clear();
             String[] emoteIDs = formResponseCustom.getInputResponse(2).split(";");
             for (String id : emoteIDs) {
-                if (!"".equals(id.trim())) {
+                if (!id.trim().isEmpty()) {
                     rsNpcConfig.getEmoteIDs().add(id);
                 }
             }
@@ -393,7 +393,7 @@ public class FormHelper {
 
         custom.onResponded((formResponseCustom, cp) -> {
             String cmd = formResponseCustom.getInputResponse(1).replace("&", "");
-            if ("".equals(cmd.trim())) {
+            if (cmd.trim().isEmpty()) {
                 cp.sendMessage("命令不能为空！");
                 return;
             }
@@ -483,7 +483,7 @@ public class FormHelper {
 
         custom.onResponded((formResponseCustom, cp) -> {
             String message = formResponseCustom.getInputResponse(1);
-            if ("".equals(message.trim())) {
+            if (message.trim().isEmpty()) {
                 cp.sendMessage(language.translateString("gui.adminNPCConfigMessageAdd.responded.messageNull"));
                 return;
             }

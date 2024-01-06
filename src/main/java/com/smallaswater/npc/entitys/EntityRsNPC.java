@@ -6,26 +6,28 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.entity.data.Skin;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.EmotePacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.*;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.route.Node;
 import com.smallaswater.npc.route.RouteFinder;
+import com.smallaswater.npc.variable.VariableManage;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class EntityRsNPC extends EntityHuman {
 
+    @Getter
     private final RsNpcConfig config;
     private int emoteSecond = 0;
     private int nextRouteIndex = 0;
@@ -70,12 +72,7 @@ public class EntityRsNPC extends EntityHuman {
             this.dataProperties.putFloat(EntityUtils.getEntityField("DATA_BOUNDING_BOX_HEIGHT", DATA_BOUNDING_BOX_HEIGHT), this.getHeight());
             this.dataProperties.putFloat(EntityUtils.getEntityField("DATA_BOUNDING_BOX_WIDTH", DATA_BOUNDING_BOX_WIDTH), this.getWidth());
             this.dataProperties.putInt(EntityUtils.getEntityField("DATA_HEALTH", DATA_HEALTH), (int) this.getHealth());
-            this.sendData(this.getViewers().values().toArray(new Player[0]));
         }
-    }
-
-    public RsNpcConfig getConfig() {
-        return this.config;
     }
 
     @Override
@@ -273,11 +270,13 @@ public class EntityRsNPC extends EntityHuman {
     public void spawnTo(Player player) {
         if (this.getNetworkId() == -1) {
             super.spawnTo(player);
+            this.sendData(player);
         }
 
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
             player.dataPacket(this.createAddEntityPacket());
+            this.sendData(player);
         }
         if (this.riding != null) {
             this.riding.spawnTo(player);
@@ -301,6 +300,53 @@ public class EntityRsNPC extends EntityHuman {
             pk.eid = this.getId();
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
+        }
+    }
+
+    @Override
+    public void setSkin(Skin skin) {
+        Skin oldSkin = this.getSkin();
+        super.setSkin(skin);
+        this.sendSkin(oldSkin);
+    }
+
+    protected void sendSkin(Skin oldSkin) {
+        PlayerSkinPacket packet = new PlayerSkinPacket();
+        packet.skin = this.getSkin();
+        packet.newSkinName = this.getSkin().getSkinId();
+        packet.oldSkinName = oldSkin != null ? oldSkin.getSkinId() : "old";
+        packet.uuid = this.getUniqueId();
+        HashSet<Player> players = new HashSet<>(this.getViewers().values());
+        if (!players.isEmpty()) {
+            Server.broadcastPacket(players, packet);
+        }
+    }
+
+    @Override
+    public void sendData(Player player, EntityMetadata data) {
+        SetEntityDataPacket pk = new SetEntityDataPacket();
+        pk.eid = this.getId();
+        pk.metadata = data == null ? this.dataProperties : data;
+        pk.metadata.putString(
+                EntityUtils.getEntityField("DATA_NAMETAG", DATA_NAMETAG),
+                VariableManage.stringReplace(player, this.getNameTag(), this.getConfig())
+        );
+        player.dataPacket(pk);
+    }
+
+    @Override
+    public void sendData(Player[] players, EntityMetadata data) {
+        SetEntityDataPacket pk = new SetEntityDataPacket();
+        pk.eid = this.getId();
+        pk.metadata = data == null ? this.dataProperties : data;
+
+        for(Player player : players) {
+            SetEntityDataPacket clone = (SetEntityDataPacket) pk.clone();
+            clone.metadata.putString(
+                    EntityUtils.getEntityField("DATA_NAMETAG", DATA_NAMETAG),
+                    VariableManage.stringReplace(player, this.getNameTag(), this.getConfig())
+            );
+            player.dataPacket(clone);
         }
     }
 }

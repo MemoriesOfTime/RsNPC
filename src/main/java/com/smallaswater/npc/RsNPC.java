@@ -224,6 +224,7 @@ public class RsNPC extends PluginBase {
      * 加载内置皮肤
      */
     private void loadPrivateSkins() {
+        this.skins.put("private_steve", DEFAULT_SKIN);
         String[] skins = { "阳", "糖菲_slim", "玉茗_slim" };
         for (String skinName : skins) {
             try {

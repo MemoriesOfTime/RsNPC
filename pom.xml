@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.4.3-PM1E<!-- -SNAPSHOT--></version>
+    <version>2.4.4-PM1E-SNAPSHOT</version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>

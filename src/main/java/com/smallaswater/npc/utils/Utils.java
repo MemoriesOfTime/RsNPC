@@ -1,8 +1,10 @@
 package com.smallaswater.npc.utils;
 
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Location;
 import cn.nukkit.plugin.Plugin;
 import com.smallaswater.npc.RsNPC;
@@ -28,6 +30,11 @@ public class Utils {
      * @return 保存用字符串ID
      */
     public static String item2String(Item item) {
+        if (NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT) {
+            if (item instanceof StringItem) {
+                return item.getNamespaceId();
+            }
+        }
         return item.getId() + ":" + item.getDamage();
     }
 

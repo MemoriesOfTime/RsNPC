@@ -18,6 +18,7 @@ import com.smallaswater.npc.entitys.EntityRsNPCCustomEntity;
 import com.smallaswater.npc.utils.Utils;
 import com.smallaswater.npc.utils.exception.RsNpcConfigLoadException;
 import com.smallaswater.npc.utils.exception.RsNpcLoadException;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -45,10 +46,7 @@ public class RsNpcConfig {
     private final String levelName;
     private final Location location;
 
-    @Setter
-    private Item hand;
-    @Setter
-    private Item[] armor = new Item[4];
+    private final ItemData itemData;
 
     @Setter
     @Getter
@@ -153,15 +151,14 @@ public class RsNpcConfig {
             throw new RsNpcConfigLoadException("NPC配置 位置/世界配置错误！请检查配置文件！", e);
         }
 
+        ItemData itemDataCache;
         try {
-            this.hand = Item.fromString("".equals(config.getString("手持", "")) ? "0:0" : config.getString("手持", ""));
-            this.armor[0] = Item.fromString("".equals(config.getString("头部")) ? "0:0" : config.getString("头部"));
-            this.armor[1] = Item.fromString("".equals(config.getString("胸部")) ? "0:0" : config.getString("胸部"));
-            this.armor[2] = Item.fromString("".equals(config.getString("腿部")) ? "0:0" : config.getString("腿部"));
-            this.armor[3] = Item.fromString("".equals(config.getString("脚部")) ? "0:0" : config.getString("脚部"));
+            itemDataCache = ItemData.of(config);
         }catch (Exception e) {
+            itemDataCache = ItemData.empty();
             throw new RsNpcConfigLoadException("NPC配置 手持物品/护甲加载失败！请检查配置文件！", e);
         }
+        this.itemData = itemDataCache;
 
         try {
             this.skinName = config.getString("皮肤", "private_steve");
@@ -310,12 +307,12 @@ public class RsNpcConfig {
         map.put("z", this.location.getZ());
         map.put("yaw", this.location.getYaw());
         this.config.set("坐标", map);
-        
-        this.config.set("手持", Utils.item2String(this.hand));
-        this.config.set("头部", Utils.item2String(this.armor[0]));
-        this.config.set("胸部", Utils.item2String(this.armor[1]));
-        this.config.set("腿部", Utils.item2String(this.armor[2]));
-        this.config.set("脚部", Utils.item2String(this.armor[3]));
+
+        if (this.itemData != null) {
+            this.itemData.save(this.config);
+        } else {
+            ItemData.empty().save(this.config);
+        }
 
         this.config.set("皮肤", this.skinName);
 
@@ -414,11 +411,23 @@ public class RsNpcConfig {
     }
 
     public Item getHand() {
-        return this.hand;
+        return this.itemData.getHand();
+    }
+
+    public void setHand(Item item) {
+        this.itemData.hand = item;
+        this.itemData.handString = Utils.item2String(item);
     }
 
     public Item[] getArmor() {
-        return this.armor;
+        return this.itemData.getArmor();
+    }
+
+    public void setArmor(Item[] items) {
+        this.itemData.armor = items;
+        for (int i = 0; i < items.length; i++) {
+            this.itemData.armorString[i] = Utils.item2String(items[i]);
+        }
     }
 
     public Skin getSkin() {
@@ -458,6 +467,74 @@ public class RsNpcConfig {
             networkId = -1;
         }
         this.networkId = networkId;
+    }
+
+    @EqualsAndHashCode(of = {"handString", "armorString"})
+    public static class ItemData {
+
+        private String handString = "0:0";
+        private String[] armorString = new String[]{"0:0", "0:0", "0:0", "0:0"};
+        private Item hand;
+        private Item[] armor = new Item[4];
+
+        public static ItemData of(Config config) {
+            ItemData itemData = new ItemData();
+
+            itemData.handString = config.getString("手持", "");
+            itemData.armorString[0] = config.getString("头部");
+            itemData.armorString[1] = config.getString("胸部");
+            itemData.armorString[2] = config.getString("腿部");
+            itemData.armorString[3] = config.getString("脚部");
+
+            return itemData;
+        }
+
+        public static ItemData empty() {
+            return new ItemData();
+        }
+
+        public void save(Config config) {
+            config.set("手持", this.handString);
+            config.set("头部", this.armorString[0]);
+            config.set("胸部", this.armorString[1]);
+            config.set("腿部", this.armorString[2]);
+            config.set("脚部", this.armorString[3]);
+        }
+
+        public Item getHand() {
+            if (this.hand == null || this.hand.getId() == 0) {
+                String string = this.handString;
+                if (string.trim().isEmpty()) {
+                    string = "0:0";
+                }
+                try {
+                    this.hand = Item.fromString(string);
+                } catch (Exception e) {
+                    this.hand = Item.get(Item.INFO_UPDATE);
+                    RsNPC.getInstance().getLogger().warning("NPC配置 手持物品 " + string + " 加载失败！请检查配置文件！");
+                }
+            }
+            return this.hand;
+        }
+
+        public Item[] getArmor() {
+            for (int i = 0; i < this.armor.length; i++) {
+                if (this.armor[i] == null || this.armor[i].getId() == 0) {
+                    String string = this.armorString[i];
+                    if (string.trim().isEmpty()) {
+                        string = "0:0";
+                    }
+                    try {
+                        this.armor[i] = Item.fromString(string);
+                    } catch (Exception e) {
+                        this.armor[i] = Item.get(Item.INFO_UPDATE);
+                        RsNPC.getInstance().getLogger().warning("NPC配置 护甲 " + string + " 加载失败！请检查配置文件！");
+                    }
+                }
+            }
+            return this.armor;
+        }
+
     }
 
 }

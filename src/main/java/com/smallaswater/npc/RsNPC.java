@@ -214,10 +214,14 @@ public class RsNPC extends PluginBase {
                     continue;
                 }
                 this.npcs.put(npcName, rsNpcConfig);
-                rsNpcConfig.checkEntity();
                 this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
             }
         }
+        this.getServer().getScheduler().scheduleDelayedTask(this, () -> {
+            for (RsNpcConfig config : this.npcs.values()) {
+                config.checkEntity();
+            }
+        }, 1);
     }
 
     /**

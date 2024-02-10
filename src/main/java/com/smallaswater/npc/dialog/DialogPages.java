@@ -14,10 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author LT_Name
@@ -43,9 +40,10 @@ public class DialogPages {
                 DialogPage dialogPage = new DialogPage(this, page);
                 this.dialogPageMap.put(dialogPage.getKey(), dialogPage);
             } catch (Exception e) {
-                RsNPC.getInstance().getLogger().error("加载对话页面失败：" + this.name + "." + page.get("key"), e);
+                RsNPC.getInstance().getLogger().error(RsNPC.getInstance().getLanguage().translateString("plugin.load.dialog.dataError", this.name + "." + page.get("key")), e);
             }
         });
+        Objects.requireNonNull(getDefaultDialogPage(), "Default dialog page cannot be null");
     }
 
     public DialogPage getDefaultDialogPage() {

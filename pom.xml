@@ -6,7 +6,7 @@
 
     <groupId>com.smallaswater</groupId>
     <artifactId>RsNPC</artifactId>
-    <version>2.4.4-PM1E-SNAPSHOT</version>
+    <version>2.4.4-PM1E<!-- -SNAPSHOT--></version>
 
     <name>RsNPC</name>
     <description>RsNPC -- NPC plugin for Nukkit</description>
@@ -154,6 +154,10 @@
                                 <replacement>
                                     <token>version: ".*"</token>
                                     <value>version: "${project.version}"</value>
+                                </replacement>
+                                <replacement>
+                                    <token>VERSION = ".*"</token>
+                                    <value>VERSION = "${project.version}"</value>
                                 </replacement>
                                 <replacement>
                                     <token>MINIMUM_GAME_CORE_VERSION = ".*"</token>

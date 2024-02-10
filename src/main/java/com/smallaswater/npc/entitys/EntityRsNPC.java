@@ -149,7 +149,7 @@ public class EntityRsNPC extends EntityHuman {
                         EmotePacket packet = new EmotePacket();
                         packet.runtimeId = this.getId();
                         packet.emoteID = this.config.getEmoteIDs().get(RsNPC.RANDOM.nextInt(this.config.getEmoteIDs().size()));
-                        packet.flags = 0;
+                        packet.flags = 0x3; // FLAG_SERVER | FLAG_MUTE_ANNOUNCEMENT
                         if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolVersion.v1_20_0_23) {
                             packet.xuid = "";
                             packet.platformId = "";

@@ -144,6 +144,7 @@ public class RsNpcConfig {
                     Utils.toDouble(map.get("z")),
                     Utils.toDouble(map.getOrDefault("yaw", 0D)),
                     0,
+                    Utils.toDouble(map.getOrDefault("headYaw", 0D)),
                     level
             );
         } catch (Exception e) {
@@ -298,6 +299,7 @@ public class RsNpcConfig {
         map.put("y", this.location.getY());
         map.put("z", this.location.getZ());
         map.put("yaw", this.location.getYaw());
+        map.put("headYaw", this.location.getHeadYaw());
         this.config.set("坐标", map);
 
         if (this.itemData != null) {

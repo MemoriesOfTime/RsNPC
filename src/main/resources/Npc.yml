@@ -8,6 +8,7 @@ nameTagAlwaysVisible: true
   y: 0
   z: 0
   yaw: 0.0
+  headYaw: 0.0
   level: "world"
 手持: "267:0"
 头部: ""

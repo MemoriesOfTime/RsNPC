@@ -382,7 +382,7 @@ public class RsNpcConfig {
                 this.entityRsNpc.setPosition(this.location);
             }
             if (!this.lookAtThePlayer) {
-                this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
+                this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch, this.location.headYaw);
             }
             this.entityRsNpc.setNameTag(this.showName /*VariableManage.stringReplace(null, this.showName, this)*/);
         }

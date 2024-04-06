@@ -138,11 +138,15 @@ public class RsNpcConfig {
             if (level == null) {
                 throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
             }
+            double yaw = Utils.toDouble(map.getOrDefault("yaw", 0D));
+            if (!map.containsKey("headYaw")) {
+                map.put("headYaw", yaw);
+            }
             this.location = new Location(
                     Utils.toDouble(map.get("x")),
                     Utils.toDouble(map.get("y")),
                     Utils.toDouble(map.get("z")),
-                    Utils.toDouble(map.getOrDefault("yaw", 0D)),
+                    yaw,
                     0,
                     Utils.toDouble(map.getOrDefault("headYaw", 0D)),
                     level

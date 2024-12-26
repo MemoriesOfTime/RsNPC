@@ -349,4 +349,10 @@ public class EntityRsNPC extends EntityHuman {
             player.dataPacket(clone);
         }
     }
+
+    //为了兼容PM1E，我们不使用setCanBeSavedWithChunk()方法
+    @Override
+    public boolean canBeSavedWithChunk() {
+        return false;
+    }
 }

@@ -13,6 +13,9 @@ pages: |-
   - key: "1" #页面的key
     title: "演示对话框" #页面标题
     content: "这是一个演示对话框" #页面内容
+    sound: #打开对话框时播放的音效
+      enable: false
+      sound: "random.levelup"
     buttons: #按钮
       - text: "关闭" #按钮显示名称
         action: "close" #此项留空默认关闭对话框
@@ -22,3 +25,5 @@ pages: |-
           - "tell @p 这是一个测试命令&con" #控制台权限执行命令
       - text: "下一页" #按钮显示名称
         go: "2" #前往其他页面 填写其他页面的key
+    close: #对话框关闭时跳转的页面，不填则不跳转
+      go: "4" #key

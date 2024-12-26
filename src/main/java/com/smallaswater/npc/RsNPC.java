@@ -118,7 +118,7 @@ public class RsNPC extends PluginBase {
 
         try {
             if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {
-                if (AutoData.defaultUpDataByMaven(this, this.getFile(), "com.smallaswater", "RsNPC", null)) {
+                if (AutoData.defaultUpDataByMaven(this, this.getFile(), "com.smallaswater", "RsNPC", "")) {
                     return;
                 }
             }
@@ -130,9 +130,9 @@ public class RsNPC extends PluginBase {
 
         //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
-        if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX && nukkitType != NukkitTypeUtils.NukkitType.POWER_NUKKIT) {
+        if (nukkitType != NukkitTypeUtils.NukkitType.PM1E && nukkitType != NukkitTypeUtils.NukkitType.MOT) {
             this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
-            this.getServer().getPluginManager().disablePlugin(this);
+            //this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
@@ -347,7 +347,18 @@ public class RsNPC extends PluginBase {
 
                 skin.setTrusted(true);
 
-                if (skin.isValid()) {
+                boolean skinIsValid = false;
+                try {
+                    skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, this.getServer().doNotLimitSkinGeometry);
+                } catch (Exception exception) {
+                    try {
+                        skinIsValid = (boolean) Skin.class.getMethod("isValid").invoke(skin);
+                    } catch (Exception e) {
+                        this.getLogger().error("Skin validation failed!", e);
+                    }
+                }
+
+                if (skinIsValid) {
                     this.skins.put(skinName, skin);
                     this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
                 } else {

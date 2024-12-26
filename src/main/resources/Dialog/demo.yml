@@ -4,6 +4,9 @@ pages:
   - key: "1"
     title: "演示对话框"
     content: "这是一个演示对话框"
+    sound:
+      enable: false
+      sound: "random.levelup"
     buttons:
       - text: "关闭"
         action: "close" #此项留空默认关闭对话框

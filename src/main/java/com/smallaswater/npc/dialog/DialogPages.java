@@ -4,6 +4,7 @@ import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
 import cn.lanink.gamecore.utils.packet.ProtocolVersion;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
@@ -61,6 +62,7 @@ public class DialogPages {
         private final String key;
         private final String title;
         private final String content;
+        private final Sound sound;
         private final ArrayList<Button> buttons = new ArrayList<>();
 
         private String closeGo;
@@ -70,6 +72,7 @@ public class DialogPages {
             this.key = (String) map.get("key");
             this.title = (String) map.get("title");
             this.content = (String) map.get("content");
+            this.sound = new Sound((Map<String, Object>) map.getOrDefault("sound", new HashMap<>()));
             ((List<Map<String, Object>>) map.get("buttons")).forEach(button -> this.buttons.add(new Button(button)));
             if (map.containsKey("close")) {
                 Map<String, Object> closeMap = (Map<String, Object>) map.get("close");
@@ -101,6 +104,17 @@ public class DialogPages {
                     entityRsNpc.setNameTag(nameTag);
                 }
             }, 5);
+
+            if (this.sound.isEnable() && !"".equals(this.sound.getIdentifier())) {
+                PlaySoundPacket packet = new PlaySoundPacket();
+                packet.name = this.sound.getIdentifier();
+                packet.volume = 1;
+                packet.pitch = 1;
+                packet.x = player.getFloorX();
+                packet.y = player.getFloorY();
+                packet.z = player.getFloorZ();
+                player.dataPacket(packet);
+            }
 
             AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(
                     VariableManage.stringReplace(player, this.title, entityRsNpc.getConfig()),
@@ -137,12 +151,23 @@ public class DialogPages {
             windowDialog.send(player);
         }
 
+        @Getter
+        public static class Sound {
+
+            private final boolean enable;
+            private final String identifier;
+
+            public Sound(@NotNull Map<String, Object> map) {
+                this.enable = (boolean) map.getOrDefault("enable", false);
+                this.identifier = (String) map.getOrDefault("identifier", "");
+            }
+        }
+
+        @Getter
         public static class Button {
 
-            @Getter
             private final String text;
 
-            @Getter
             private final List<ButtonAction> buttonActions = new ArrayList<>();
 
             public Button(@NotNull Map<String, Object> map) {
@@ -170,18 +195,14 @@ public class DialogPages {
                 }
             }
 
+            @Setter
+            @Getter
             public static class ButtonAction {
 
-                @Getter
-                @Setter
                 private ButtonActionType type;
 
-                @Getter
-                @Setter
                 private String data;
 
-                @Getter
-                @Setter
                 private List<String> listData = new ArrayList<>();
 
                 public ButtonAction(@NotNull ButtonActionType type) {

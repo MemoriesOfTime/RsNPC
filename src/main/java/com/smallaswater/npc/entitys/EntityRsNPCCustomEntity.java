@@ -1,8 +1,9 @@
 package com.smallaswater.npc.entitys;
 
-import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.lanink.gamecore.utils.EntityUtils;
 import cn.nukkit.Player;
+import cn.nukkit.entity.custom.CustomEntity;
+import cn.nukkit.entity.custom.EntityDefinition;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.level.Level;
@@ -11,21 +12,24 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
-import cn.nukkit.network.protocol.types.EntityLink;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.NonNull;
-
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_PASSENGER;
 
 /**
  * 基于自定义实体功能实现的RsNPC实体
  *
  * @author LT_Name
  */
-public class EntityRsNPCCustomEntity extends EntityRsNPC {
+public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity {
 
-    private String identifier;
+    private static final EntityDefinition DEFAULT_DEFINITION = EntityDefinition.builder()
+            .identifier("RsNPC")
+            .spawnEgg(false)
+            .implementation(EntityRsNPCCustomEntity.class)
+            .build();
+
+    private EntityDefinition definition;
 
     @Deprecated
     public EntityRsNPCCustomEntity(FullChunk chunk, CompoundTag nbt) {
@@ -36,17 +40,45 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC {
         super(chunk, nbt, config);
     }
 
+    public void setDefinition(EntityDefinition definition) {
+        this.definition = definition;
+    }
+
     @Override
     public int getNetworkId() {
-        return CustomEntityUtils.getRuntimeId(this.identifier);
+        return this.getEntityDefinition().getRuntimeId();
     }
 
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        this.definition = EntityDefinition.builder()
+                .identifier(identifier)
+                .spawnEgg(false)
+                .implementation(EntityRsNPCCustomEntity.class)
+                .build();
     }
 
-    public String getIdentifier() {
-        return this.identifier;
+    /**
+     * 获取实体定义
+     * （PNX和PM1E分支独有方法）
+     *
+     * @return 实体定义
+     */
+    public EntityDefinition getDefinition() {
+        return this.getEntityDefinition();
+    }
+
+    /**
+     * 获取实体定义
+     * （PM1E分支独有方法）
+     *
+     * @return 实体定义
+     */
+    @Override
+    public EntityDefinition getEntityDefinition() {
+        if (this.definition == null) {
+            return DEFAULT_DEFINITION;
+        }
+        return this.definition;
     }
 
     public void setSkinId(int skinId) {
@@ -95,32 +127,6 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC {
 
             player.dataPacket(pk);
         }
-    }
-
-    @Override
-    public DataPacket createAddEntityPacket() {
-        AddEntityPacket addEntity = new AddEntityPacket();
-        addEntity.type = this.getNetworkId();
-        addEntity.entityUniqueId = this.getId();
-        addEntity.id = this.getIdentifier();
-        addEntity.entityRuntimeId = this.getId();
-        addEntity.yaw = (float) this.yaw;
-        addEntity.headYaw = (float) this.yaw;
-        addEntity.pitch = (float) this.pitch;
-        addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y + this.getBaseOffset();
-        addEntity.z = (float) this.z;
-        addEntity.speedX = (float) this.motionX;
-        addEntity.speedY = (float) this.motionY;
-        addEntity.speedZ = (float) this.motionZ;
-        addEntity.metadata = this.dataProperties;
-
-        addEntity.links = new EntityLink[this.passengers.size()];
-        for (int i = 0; i < addEntity.links.length; i++) {
-            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : TYPE_PASSENGER, false, false);
-        }
-
-        return addEntity;
     }
 
     public DataPacket createAddEntityPacket(Player player) {

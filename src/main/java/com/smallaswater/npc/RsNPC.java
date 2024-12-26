@@ -118,7 +118,7 @@ public class RsNPC extends PluginBase {
 
         try {
             if (Server.getInstance().getPluginManager().getPlugin("AutoUpData") != null) {
-                if (AutoData.defaultUpDataByMaven(this, this.getFile(), "com.smallaswater", "RsNPC", null)) {
+                if (AutoData.defaultUpDataByMaven(this, this.getFile(), "com.smallaswater", "RsNPC", "NKX")) {
                     return;
                 }
             }
@@ -130,7 +130,7 @@ public class RsNPC extends PluginBase {
 
         //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
-        if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX && nukkitType != NukkitTypeUtils.NukkitType.POWER_NUKKIT) {
+        if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX) {
             this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
             this.getServer().getPluginManager().disablePlugin(this);
             return;

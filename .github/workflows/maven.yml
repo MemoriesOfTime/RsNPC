@@ -5,22 +5,23 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master, PM1E ]
+    branches: [ master, nkx ]
   pull_request:
-    branches: [ master, PM1E ]
+    branches: [ master, nkx ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v4
       with:
-        java-version: 1.8
+        java-version: 17
+        distribution: 'temurin'
     - name: Cache Maven packages
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -28,7 +29,7 @@ jobs:
     - name: Build projects
       run: mvn -B -U clean package --file pom.xml
     - run: mkdir staging && cp target/*.jar staging
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: RsNPC-SNAPSHOT
         path: staging

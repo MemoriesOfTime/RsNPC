@@ -44,7 +44,7 @@ public class RsNpcConfig {
     private boolean nameTagAlwaysVisible;
 
     private final String levelName;
-    private final Location location;
+    private Location location;
 
     private final ItemData itemData;
 
@@ -414,6 +414,11 @@ public class RsNpcConfig {
 
     public Location getLocation() {
         return this.location;
+    }
+
+    public void setLocation(Location newLocation) {
+        this.location = newLocation;
+        this.checkEntity();
     }
 
     public Item getHand() {

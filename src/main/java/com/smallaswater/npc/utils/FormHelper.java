@@ -167,6 +167,12 @@ public class FormHelper {
                 "\n  路径: " + route +
                 "\n\n");
 
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.moveToHere"))
+              .onClicked(cp -> {
+                  rsNpcConfig.setLocation(cp.getLocation());
+                  rsNpcConfig.save();
+                  cp.sendMessage(language.translateString("gui.adminNPC.responded.moveToHere.success"));
+              }));
         simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyBasicConfig"))
                 .onClicked(cp -> sendAdminNpcConfig(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyEmote"))
@@ -588,8 +594,6 @@ public class FormHelper {
                 return "儿童节快乐，永远童真的你！愿你永远保持一颗童心。";
             case "08-01":
                 return "守卫边疆，无怨无悔;抢险抗灾，身先士卒;科技建军，国防稳固;为国为民，军功无量。八一建军节，向人民子弟兵问好，愿他们兵强马壮，再立新功!";
-            case "08-15":
-                return "许一个美好的心愿，祝你快乐连连，送一份美妙的感觉，祝你万事圆圆，传一份短短的祝福，祝你微笑甜甜。中秋节快乐！";
             case "09-03":
                 return "中国人民抗日战争胜利纪念日！珍惜现在的和平生活，同时不要忘了那些为现在和平生活付出努力甚至生命的人，铭记历史，勿忘国耻，吾辈自强，奋勇前进！";
             case "10-01":

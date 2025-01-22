@@ -43,7 +43,7 @@ public class RsNpcConfig {
     @Getter
     private boolean nameTagAlwaysVisible;
 
-    private final String levelName;
+    private String levelName;
     private Location location;
 
     private final ItemData itemData;
@@ -418,6 +418,7 @@ public class RsNpcConfig {
 
     public void setLocation(Location newLocation) {
         this.location = newLocation;
+        this.levelName = newLocation.getLevel().getName();
         this.checkEntity();
     }
 

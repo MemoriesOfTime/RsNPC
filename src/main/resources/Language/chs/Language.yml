@@ -139,8 +139,8 @@ gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "消息: %1% 添加�
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "返回"
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "关闭"
 
-gui.AdminNPCConfigMessageDelete.title: "§b>>§rRsNPC - 删除现有消息§b<<"
-gui.AdminNPCConfigMessageDelete.content: "当前设置NPC: %1%\n请选择要删除的消息"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.content: "消息: %1% 删除成功！"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true: "返回"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false: "关闭"
+gui.adminNPCConfigMessageDelete.title: "§b>>§rRsNPC - 删除现有消息§b<<"
+gui.adminNPCConfigMessageDelete.content: "当前设置NPC: %1%\n请选择要删除的消息"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.content: "消息: %1% 删除成功！"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true: "返回"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false: "关闭"

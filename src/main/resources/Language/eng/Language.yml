@@ -139,8 +139,8 @@ gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "Message: %1% added s
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "return"
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "close"
 
-gui.AdminNPCConfigMessageDelete.title: "§b>>§rRsNPC - delete existing message§b<<"
-gui.AdminNPCConfigMessageDelete.content: "Current setting NPC: %1%\nPlease select a message to delete"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.content: "Message: %1% deleted successfully!"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true: "return"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false: "close"
+gui.adminNPCConfigMessageDelete.title: "§b>>§rRsNPC - delete existing message§b<<"
+gui.adminNPCConfigMessageDelete.content: "Current setting NPC: %1%\nPlease select a message to delete"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.content: "Message: %1% deleted successfully!"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false: "close"

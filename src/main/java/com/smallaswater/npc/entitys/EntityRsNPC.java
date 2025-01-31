@@ -352,7 +352,7 @@ public class EntityRsNPC extends EntityHuman {
 
     //为了兼容PM1E，我们不使用setCanBeSavedWithChunk()方法
     @Override
-    public boolean canBeSavedWithChunk() {
+    public boolean canSaveToStorage() {
         return false;
     }
 }

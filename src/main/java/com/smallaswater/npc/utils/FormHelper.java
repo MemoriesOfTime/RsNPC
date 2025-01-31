@@ -135,38 +135,44 @@ public class FormHelper {
         }
 
         simple.setContent(
-                "名称: " + rsNpcConfig.getName() +
-                "\n显示名称: " + rsNpcConfig.getShowName() +
-                "\n显示名称一直可见: " + toAdminNpcBooleanShowText(rsNpcConfig.isNameTagAlwaysVisible()) +
-                "\n坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
-                "\n  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
-                "\n  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) +
-                "\n  yaw: " + NukkitMath.round(rsNpcConfig.getLocation().getYaw(), 3) +
-                "\n  世界: " + rsNpcConfig.getLocation().getLevel().getName() +
-                "\n物品:\n  手持: " + hand.getId() + ":" + hand.getDamage() +
-                "\n  头部: " + armor[0].getId() + ":" + armor[0].getDamage() +
-                "\n  胸部: " + armor[1].getId() + ":" + armor[1].getDamage() +
-                "\n  腿部: " + armor[2].getId() + ":" + armor[2].getDamage() +
-                "\n  脚部: " + armor[3].getId() + ":" + armor[3].getDamage() +
-                "\n皮肤: " + rsNpcConfig.getSkinName() +
-                "\n实体NetworkId: " + rsNpcConfig.getNetworkId() +
-                "\n实体大小: " + rsNpcConfig.getScale() +
-                "\n看向玩家: " + toAdminNpcBooleanShowText(rsNpcConfig.isLookAtThePlayer()) +
-                "\n表情动作:\n  启用: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnableEmote()) +
-                "\n  表情ID: " + emotes +
-                "\n  间隔(秒): " + rsNpcConfig.getShowEmoteInterval() +
-                "\n允许抛射物触发: " + toAdminNpcBooleanShowText(rsNpcConfig.isCanProjectilesTrigger()) +
-                "\n点击执行指令: " + cmds +
-                "\n点击发送消息: " + messages +
-                "\n对话框:" +
-                "\n  启用对话框: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnabledDialogPages()) +
-                "\n  对话框配置: " + rsNpcConfig.getDialogPagesName() +
-                "\n移动:" +
-                "\n  基础移动速度: " + rsNpcConfig.getBaseMoveSpeed() +
-                "\n  启用辅助寻路: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnablePathfinding()) +
-                "\n  路径: " + route +
+                "§r名称: " + rsNpcConfig.getName() +
+                "\n§r显示名称: " + rsNpcConfig.getShowName() +
+                "\n§r显示名称一直可见: " + toAdminNpcBooleanShowText(rsNpcConfig.isNameTagAlwaysVisible()) +
+                "\n§r坐标:\n  x: " + NukkitMath.round(rsNpcConfig.getLocation().getX(), 2) +
+                "\n§r  y: " + NukkitMath.round(rsNpcConfig.getLocation().getY(), 2) +
+                "\n§r  z: " + NukkitMath.round(rsNpcConfig.getLocation().getZ(), 2) +
+                "\n§r  yaw: " + NukkitMath.round(rsNpcConfig.getLocation().getYaw(), 3) +
+                "\n§r  世界: " + rsNpcConfig.getLocation().getLevel().getName() +
+                "\n§r物品:\n  手持: " + hand.getId() + ":" + hand.getDamage() +
+                "\n§r  头部: " + armor[0].getId() + ":" + armor[0].getDamage() +
+                "\n§r  胸部: " + armor[1].getId() + ":" + armor[1].getDamage() +
+                "\n§r  腿部: " + armor[2].getId() + ":" + armor[2].getDamage() +
+                "\n§r  脚部: " + armor[3].getId() + ":" + armor[3].getDamage() +
+                "\n§r皮肤: " + rsNpcConfig.getSkinName() +
+                "\n§r实体NetworkId: " + rsNpcConfig.getNetworkId() +
+                "\n§r实体大小: " + rsNpcConfig.getScale() +
+                "\n§r看向玩家: " + toAdminNpcBooleanShowText(rsNpcConfig.isLookAtThePlayer()) +
+                "\n§r表情动作:\n  启用: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnableEmote()) +
+                "\n§r  表情ID: " + emotes +
+                "\n§r  间隔(秒): " + rsNpcConfig.getShowEmoteInterval() +
+                "\n§r允许抛射物触发: " + toAdminNpcBooleanShowText(rsNpcConfig.isCanProjectilesTrigger()) +
+                "\n§r点击执行指令: " + cmds +
+                "\n§r点击发送消息: " + messages +
+                "\n§r对话框:" +
+                "\n§r  启用对话框: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnabledDialogPages()) +
+                "\n§r  对话框配置: " + rsNpcConfig.getDialogPagesName() +
+                "\n§r移动:" +
+                "\n§r  基础移动速度: " + rsNpcConfig.getBaseMoveSpeed() +
+                "\n§r  启用辅助寻路: " + toAdminNpcBooleanShowText(rsNpcConfig.isEnablePathfinding()) +
+                "\n§r  路径: " + route +
                 "\n\n");
 
+        simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.moveToHere"))
+              .onClicked(cp -> {
+                  rsNpcConfig.setLocation(cp.getLocation());
+                  rsNpcConfig.save();
+                  cp.sendMessage(language.translateString("gui.adminNPC.responded.moveToHere.success"));
+              }));
         simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyBasicConfig"))
                 .onClicked(cp -> sendAdminNpcConfig(cp, rsNpcConfig)));
         simple.addButton(new ResponseElementButton(language.translateString("gui.adminNPC.button.modifyEmote"))
@@ -517,7 +523,7 @@ public class FormHelper {
     public static void sendAdminNpcConfigMessageDelete(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig) {
         Language language = RsNPC.getInstance().getLanguage();
 
-        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.AdminNPCConfigMessageDelete.title"));
+        AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.adminNPCConfigMessageDelete.title"));
         simple.setContent(language.translateString("gui.adminNPCConfigMessageDelete.content", rsNpcConfig.getName()));
 
         for (String message : rsNpcConfig.getMessages()) {
@@ -527,10 +533,10 @@ public class FormHelper {
                         rsNpcConfig.save();
 
                         AdvancedFormWindowModal modal = new AdvancedFormWindowModal(
-                                language.translateString("gui.AdminNPCConfigMessageDelete.title"),
-                                language.translateString("gui.AdminNPCConfigMessageDelete.respondedWindowModal.content", message),
-                                language.translateString("gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true"),
-                                language.translateString("gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false"));
+                                language.translateString("gui.adminNPCConfigMessageDelete.title"),
+                                language.translateString("gui.adminNPCConfigMessageDelete.respondedWindowModal.content", message),
+                                language.translateString("gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true"),
+                                language.translateString("gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false"));
                         modal.onClickedTrue(cp2 -> sendAdminNpcConfigMessageDelete(cp2, rsNpcConfig));
                         cp.showFormWindow(modal);
                     })
@@ -588,8 +594,6 @@ public class FormHelper {
                 return "儿童节快乐，永远童真的你！愿你永远保持一颗童心。";
             case "08-01":
                 return "守卫边疆，无怨无悔;抢险抗灾，身先士卒;科技建军，国防稳固;为国为民，军功无量。八一建军节，向人民子弟兵问好，愿他们兵强马壮，再立新功!";
-            case "08-15":
-                return "许一个美好的心愿，祝你快乐连连，送一份美妙的感觉，祝你万事圆圆，传一份短短的祝福，祝你微笑甜甜。中秋节快乐！";
             case "09-03":
                 return "中国人民抗日战争胜利纪念日！珍惜现在的和平生活，同时不要忘了那些为现在和平生活付出努力甚至生命的人，铭记历史，勿忘国耻，吾辈自强，奋勇前进！";
             case "10-01":

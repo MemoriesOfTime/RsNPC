@@ -43,7 +43,7 @@ tips.command.help: |-
   §a§l/rsnpc create <NPC Name> §7Create an NPC at the current location
   §a§l/rsnpc delete <NPC Name> §7Remove NPC
   §a§l/rsnpc addroute <NPC Name> §7Add current location to NPC paths
-  §a§l/rsnpc reload §7reload NPC
+  §a§l/rsnpc reload §7Reload Plugin Configuration
   §a§l >> §eHelp for RsNPC §a<<
 
 gui.main.title: "§b>>§rRsNPC - MainMenu§b<<"
@@ -61,11 +61,14 @@ gui.adminNPC.title: "§b>>§rRsNPC - ManageNPC§b<<"
 gui.adminNPC.text.empty: "Empty"
 gui.adminNPC.text.true: "true"
 gui.adminNPC.text.false: "false"
+gui.adminNPC.button.moveToHere: "§e§lMove to here"
 gui.adminNPC.button.modifyBasicConfig: "§e§lModify the basic configuration"
 gui.adminNPC.button.modifyEmote: "§e§lModify emotes"
 gui.adminNPC.button.modifyCommand: "§e§lModify the click command"
 gui.adminNPC.button.modifyMessage: "§e§lModify click message"
 gui.adminNPC.button.deleteNPC: "§c§ldelete npc"
+
+gui.adminNPC.responded.moveToHere.success: "§a§lNPC has been moved to current location!"
 
 gui.adminNPCConfig.title: "§b>>§rRsNPC - SetUpNPC§b<<"
 gui.adminNPCConfig.input.displayName: "npc display name"
@@ -136,8 +139,8 @@ gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "Message: %1% added s
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "return"
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "close"
 
-gui.AdminNPCConfigMessageDelete.title: "§b>>§rRsNPC - delete existing message§b<<"
-gui.AdminNPCConfigMessageDelete.content: "Current setting NPC: %1%\nPlease select a message to delete"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.content: "Message: %1% deleted successfully!"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true: "return"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false: "close"
+gui.adminNPCConfigMessageDelete.title: "§b>>§rRsNPC - delete existing message§b<<"
+gui.adminNPCConfigMessageDelete.content: "Current setting NPC: %1%\nPlease select a message to delete"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.content: "Message: %1% deleted successfully!"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true: "return"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false: "close"

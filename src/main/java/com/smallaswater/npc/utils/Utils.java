@@ -1,9 +1,12 @@
 package com.smallaswater.npc.utils;
 
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Location;
+import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.plugin.Plugin;
 import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
@@ -17,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class Utils {
+
     private Utils() {
         throw new RuntimeException("error");
     }
@@ -28,6 +32,11 @@ public class Utils {
      * @return 保存用字符串ID
      */
     public static String item2String(Item item) {
+        if (NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT) {
+            if (item instanceof StringItem) {
+                return item.getNamespaceId();
+            }
+        }
         return item.getId() + ":" + item.getDamage();
     }
 
@@ -125,6 +134,17 @@ public class Utils {
 
     public static File getPluginFile(Plugin plugin) {
         return GameCoreDownload.getPluginFile(plugin);
+    }
+
+    public static void playSound(Player player, String sound) {
+        PlaySoundPacket packet = new PlaySoundPacket();
+        packet.name = sound;
+        packet.volume = 1;
+        packet.pitch = 1;
+        packet.x = player.getFloorX();
+        packet.y = player.getFloorY();
+        packet.z = player.getFloorZ();
+        player.dataPacket(packet);
     }
 
 }

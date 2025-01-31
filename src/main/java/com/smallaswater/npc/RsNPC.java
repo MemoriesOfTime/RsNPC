@@ -132,7 +132,7 @@ public class RsNPC extends PluginBase {
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
         if (nukkitType != NukkitTypeUtils.NukkitType.NUKKITX) {
             this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
-            this.getServer().getPluginManager().disablePlugin(this);
+            //this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 

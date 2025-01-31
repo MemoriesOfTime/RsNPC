@@ -43,7 +43,7 @@ tips.command.help: |-
   §a§l/rsnpc create <NPC名称> §7在当前位置创建NPC
   §a§l/rsnpc delete <NPC名称> §7移除NPC
   §a§l/rsnpc addroute <NPC名称> §7将当前位置添加到NPC路径
-  §a§l/rsnpc reload §7重载NPC
+  §a§l/rsnpc reload §7重载插件配置
   §a§l >> §eHelp for RsNPC §a<<
 
 gui.main.title: "§b>>§rRsNPC - 主菜单§b<<"

@@ -43,7 +43,7 @@ tips.command.help: |-
   §a§l/rsnpc create <NPC Name> §7Create an NPC at the current location
   §a§l/rsnpc delete <NPC Name> §7Remove NPC
   §a§l/rsnpc addroute <NPC Name> §7Add current location to NPC paths
-  §a§l/rsnpc reload §7reload NPC
+  §a§l/rsnpc reload §7Reload Plugin Configuration
   §a§l >> §eHelp for RsNPC §a<<
 
 gui.main.title: "§b>>§rRsNPC - MainMenu§b<<"

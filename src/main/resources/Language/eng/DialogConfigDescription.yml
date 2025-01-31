@@ -13,7 +13,7 @@ pages: |-
     content: "This is a demo dialog" #page content
     sound: #The sound effect played when the dialog box is opened
       enable: false
-      sound: "random.levelup"
+      identifier: "random.levelup"
     buttons: #button
       - text: "close" #button display name
         action: "close" #leave this blank to close the dialog by default
@@ -21,6 +21,9 @@ pages: |-
           - "me hello" #Player permissions to execute commands
           - "say hello @p&op" #op permission to execute commands
           - "tell @p this is a test command&con" #consolePrivilegesToExecuteCommands
+        sound: #The sound effect played when clicking the button
+          enable: false
+          identifier: "random.levelup"
       - text: "next page" #button display name
         go: "2" #Go to other pages and fill in the key of other pages
     close: #The page to jump to when the dialog box is closed. If not filled in, the page will not jump.

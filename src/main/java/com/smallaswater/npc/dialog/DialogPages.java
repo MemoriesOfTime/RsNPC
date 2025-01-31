@@ -4,7 +4,6 @@ import cn.lanink.gamecore.form.windows.AdvancedFormWindowDialog;
 import cn.lanink.gamecore.utils.packet.ProtocolVersion;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.Config;
 import com.smallaswater.npc.RsNPC;
@@ -91,7 +90,7 @@ public class DialogPages {
             }
             final int finalBeforeGameMode = beforeGameMode;
 
-            //1.19.40+ 有两个关闭按钮，上面的关闭按钮无法监听，这里使用Task延迟处理
+            //1.19.40 有两个关闭按钮，上面的关闭按钮无法监听，这里使用Task延迟处理
             Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
                 if (finalBeforeGameMode != -1) {
                     player.setGamemode(finalBeforeGameMode);
@@ -106,14 +105,7 @@ public class DialogPages {
             }, 5);
 
             if (this.sound.isEnable() && !"".equals(this.sound.getIdentifier())) {
-                PlaySoundPacket packet = new PlaySoundPacket();
-                packet.name = this.sound.getIdentifier();
-                packet.volume = 1;
-                packet.pitch = 1;
-                packet.x = player.getFloorX();
-                packet.y = player.getFloorY();
-                packet.z = player.getFloorZ();
-                player.dataPacket(packet);
+                Utils.playSound(player, this.sound.getIdentifier());
             }
 
             AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(
@@ -129,15 +121,19 @@ public class DialogPages {
                     for (Button.ButtonAction buttonAction : button.getButtonActions()) {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             windowDialog.close(p, response);
-                        }else if (buttonAction.getType() == Button.ButtonActionType.GOTO) {
+                        } else if (buttonAction.getType() == Button.ButtonActionType.GOTO) {
                             dialogPages.getDialogPage(buttonAction.getData()).send(entityRsNpc, player);
-                        }else if (buttonAction.getType() == Button.ButtonActionType.EXECUTE_COMMAND) {
+                        } else if (buttonAction.getType() == Button.ButtonActionType.EXECUTE_COMMAND) {
                             Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
                                 Utils.executeCommand(p, entityRsNpc.getConfig(), buttonAction.getListData());
                             }, 10);
                         }
-                        //TODO 其他点击操作
 
+                        if (button.getSound().isEnable() && !"".equals(button.getSound().getIdentifier())) {
+                            Utils.playSound(player, button.getSound().getIdentifier());
+                        }
+
+                        //TODO 其他点击操作
                     }
                 });
             });
@@ -157,6 +153,11 @@ public class DialogPages {
             private final boolean enable;
             private final String identifier;
 
+            public Sound() {
+                this.enable = false;
+                this.identifier = "";
+            }
+
             public Sound(@NotNull Map<String, Object> map) {
                 this.enable = (boolean) map.getOrDefault("enable", false);
                 this.identifier = (String) map.getOrDefault("identifier", "");
@@ -169,6 +170,8 @@ public class DialogPages {
             private final String text;
 
             private final List<ButtonAction> buttonActions = new ArrayList<>();
+
+            private final Sound sound;
 
             public Button(@NotNull Map<String, Object> map) {
                 this.text = (String) map.get("text");
@@ -192,6 +195,12 @@ public class DialogPages {
 
                 if (this.buttonActions.isEmpty()) {
                     this.buttonActions.add(new ButtonAction(ButtonActionType.ACTION_CLOSE));
+                }
+
+                if (map.containsKey("sound")) {
+                    this.sound = new Sound((Map<String, Object>) map.get("sound"));
+                } else {
+                    this.sound = new Sound();
                 }
             }
 

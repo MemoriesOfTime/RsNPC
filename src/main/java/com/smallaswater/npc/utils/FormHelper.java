@@ -18,6 +18,7 @@ import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -75,7 +76,10 @@ public class FormHelper {
         AdvancedFormWindowSimple simple = new AdvancedFormWindowSimple(language.translateString("gui.adminNPCSelect.title"));
         simple.setContent(language.translateString("gui.adminNPCSelect.content"));
 
-        for (Map.Entry<String, RsNpcConfig> entry : RsNPC.getInstance().getNpcs().entrySet()) {
+        List<Map.Entry<String, RsNpcConfig>> entryList = new ArrayList<>(RsNPC.getInstance().getNpcs().entrySet());
+        Collator collator = Collator.getInstance(Locale.CHINA);
+        entryList.sort(Comparator.comparing(Map.Entry::getKey, collator));
+        for (Map.Entry<String, RsNpcConfig> entry : entryList) {
             simple.addButton(new ResponseElementButton(entry.getKey())
                     .onClicked(cp -> sendAdminNpc(cp, entry.getValue())));
         }

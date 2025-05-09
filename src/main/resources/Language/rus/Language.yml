@@ -1,0 +1,146 @@
+plugin.depend.gamecore.needReload: "Зависимость MemoriesOfTime-GameCore загружена! Настоятельно рекомендуется перезагрузить сервер для корректной работы!"
+plugin.depend.autoupdata.error: "Автообновление плагина не удалось! Проверьте плагин AutoUpData!"
+
+plugin.load.startLoad: "RsNPC начал загрузку"
+plugin.load.pluginBranchError: |-
+  Внимание! Используемая версия плагина не поддерживает эту ветку Nukkit!
+  Ядро сервера: %1% | Версия плагина: %2%
+plugin.load.startLoadDialog: "Начало загрузки данных диалогов"
+plugin.load.startLoadSkin: "Начало загрузки скинов"
+plugin.load.NPC.startLoad: "Начало загрузки NPC"
+plugin.load.NPC.loadConfigError: "§cNPC: %1% - серьёзная ошибка в формате конфигурации! Проверьте файл настроек!"
+plugin.load.NPC.loadError: "Ошибка загрузки NPC: %1%!"
+plugin.load.NPC.loadComplete: "NPC: %1% успешно загружен!"
+plugin.load.complete: "RsNPC загрузка завершена"
+plugin.load.skin.dataError: "Ошибка чтения скина %1%, проверьте формат или размер изображения!"
+plugin.load.skin.jsonDataIncompatible: "Формат скина %1% пока не поддерживается в RsNPC! Ожидайте обновления!"
+plugin.load.skin.jsonDataError: "Не удалось загрузить модель скина %1%, проверьте файл модели!"
+plugin.load.skin.loadSucceed: "Скин %1% успешно загружен"
+plugin.load.skin.loadFailure: "Скин %1% не прошёл проверку, проверьте целостность файлов!"
+plugin.load.skin.nameError: "Неверный формат имени скина %1%, назовите файл скина как skin.png, а модели - skin.json"
+
+plugin.load.dialog.dataError: "Ошибка чтения диалога %1%, проверьте формат файла!"
+plugin.load.dialog.loadComplete: "Успешно загружено: %1% конфигураций диалогов"
+
+plugin.disable.complete: "RsNPC отключён"
+
+tips.command.noPermissions: "У вас нет прав для использования этой команды!"
+tips.command.cannotBeUsedInConsole: "Эту команду нельзя использовать из консоли!"
+
+tips.npcNotExist: "§c§lNPC %1% не существует!"
+tips.npcRouteAddSuccess: "§a§lТочка успешно добавлена в маршрут!"
+tips.npcAlreadyExist: "§c§lNPC с именем %1% уже существует!"
+tips.npcCreateSuccess: "§a§lNPC %1% успешно создан!"
+tips.command.npcRemoveSuccess: "§a§lNPC %1% успешно удалён!"
+tips.command.npcRemoveFileFailed: "§c§lНе удалось удалить конфиг NPC %1%! Попробуйте сделать это вручную!"
+tips.nameRequired: "§c§lУкажите имя NPC!"
+tips.npcCreationFailed: "§c§lНе удалось создать NPC!"
+tips.reloadSuccess: "§a§lКонфигурация перезагружена!"
+
+tips.command.help: |-
+  §a§l >> §eПомощь по RsNPC §a<<
+  §a§l/rsnpc §7Открыть GUI интерфейс
+  §a§l/rsnpc create <Имя NPC> §7Создать NPC на текущей позиции
+  §a§l/rsnpc delete <Имя NPC> §7Удалить NPC
+  §a§l/rsnpc addroute <Имя NPC> §7Добавить текущую позицию в маршрут NPC
+  §a§l/rsnpc reload §7Перезагрузить конфигурацию плагина
+  §a§l >> §eПомощь по RsNPC §a<<
+
+gui.main.title: "§b>>§rRsNPC - Главное меню§b<<"
+gui.main.button.createNPCText: "§e§lСоздать NPC"
+gui.main.button.adminNPCText: "§e§lУправление NPC"
+gui.main.button.reloadText: "§e§lПерезагрузить"
+
+gui.createNPC.title: "§b>>§rRsNPC - Создание NPC§b<<"
+gui.createNPC.input.npcNameText: "Имя NPC"
+
+gui.adminNPCSelect.title: "§b>>§rRsNPC - Управление NPC§b<<"
+gui.adminNPCSelect.content: "§e§lВыберите NPC для настройки"
+
+gui.adminNPC.title: "§b>>§rRsNPC - Управление NPC§b<<"
+gui.adminNPC.text.empty: "Пусто"
+gui.adminNPC.text.true: "Да"
+gui.adminNPC.text.false: "Нет"
+gui.adminNPC.button.moveToHere: "§e§lПереместить сюда"
+gui.adminNPC.button.modifyBasicConfig: "§e§lОсновные настройки"
+gui.adminNPC.button.modifyEmote: "§e§lНастроить эмоции"
+gui.adminNPC.button.modifyCommand: "§e§lКоманды при клике"
+gui.adminNPC.button.modifyMessage: "§e§lСообщения при клике"
+gui.adminNPC.button.deleteNPC: "§c§lУдалить NPC"
+
+gui.adminNPC.responded.moveToHere.success: "§a§lNPC успешно перемещён!"
+
+gui.adminNPCConfig.title: "§b>>§rRsNPC - Настройка NPC§b<<"
+gui.adminNPCConfig.input.displayName: "Отображаемое имя"
+gui.adminNPCConfig.toggle.displayNameAlwaysVisible: "Всегда показывать имя"
+gui.adminNPCConfig.input.itemHand: "Предмет в руке"
+gui.adminNPCConfig.input.itemHelmet: "Шлем"
+gui.adminNPCConfig.input.itemChestplate: "Нагрудник"
+gui.adminNPCConfig.input.itemLeggings: "Поножи"
+gui.adminNPCConfig.input.itemBoots: "Ботинки"
+gui.adminNPCConfig.dropdown.skin: "Скин NPC"
+gui.adminNPCConfig.input.entityNetworkId: "NetworkId сущности"
+gui.adminNPCConfig.input.entityScale: "Размер сущности"
+gui.adminNPCConfig.toggle.lookAtThePlayer: "Следить за игроком"
+gui.adminNPCConfig.toggle.CanProjectilesTrigger: "Реагировать на снаряды"
+gui.adminNPCConfig.toggle.EnabledDialogPages: "Включить диалоги"
+gui.adminNPCConfig.dropdown.DialogConfig: "Конфигурация диалогов"
+gui.adminNPCConfig.responded.showNameNull: "Имя не может быть пустым"
+gui.adminNPCConfig.responded.networkIdError: "NetworkId должен быть числом"
+gui.adminNPCConfig.responded.scaleError: "Размер должен быть числом"
+gui.adminNPCConfig.responded.error: "Ошибка настройки! Проверьте параметры!"
+gui.adminNPCConfig.responded.errorConsoleMessage: "Ошибка настройки NPC через GUI"
+gui.adminNPCConfig.respondedWindowModal.content: "NPC: %1% настройки сохранены!"
+gui.adminNPCConfig.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfig.respondedWindowModal.button.false: "Закрыть"
+
+gui.adminNPCConfigEmote.title: "§b>>§rRsNPC - Настройка эмоций§b<<"
+gui.adminNPCConfigEmote.label.tip: "Примечание: Функция не будет работать после добавления маршрута NPC!"
+gui.adminNPCConfigEmote.toggle.enableEmote: "Включить эмоции"
+gui.adminNPCConfigEmote.input.emoteID: "ID эмоций (разделяйте ;)"
+gui.adminNPCConfigEmote.input.emoteInterval: "Интервал (секунды)"
+gui.adminNPCConfigEmote.responded.emoteIntervalError: "Интервал должен быть положительным числом"
+gui.adminNPCConfigEmote.respondedWindowModal.content: "NPC: %1% настройки эмоций сохранены!"
+gui.adminNPCConfigEmote.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfigEmote.respondedWindowModal.button.false: "Закрыть"
+
+gui.adminNPCConfigCommand.title: "§b>>§rRsNPC - Команды NPC§b<<"
+gui.adminNPCConfigCommand.content: "Текущий NPC: %1%"
+gui.adminNPCConfigCommand.button.addNewCommand: "Добавить команду"
+gui.adminNPCConfigCommand.button.deleteCommand: "Удалить команду"
+
+gui.adminNPCConfigCommandAdd.title: "§b>>§rRsNPC - Добавление команды§b<<"
+gui.adminNPCConfigCommandAdd.label.tip: "Текущий NPC: %1%"
+gui.adminNPCConfigCommandAdd.input.command: "Команда (используйте @p для игрока)"
+gui.adminNPCConfigCommandAdd.dropdown.permission: "Права выполнения"
+gui.adminNPCConfigCommandAdd.dropdown.permission.player: "Игрок"
+gui.adminNPCConfigCommandAdd.dropdown.permission.op: "OP"
+gui.adminNPCConfigCommandAdd.dropdown.permission.console: "Консоль"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.content: "Команда: %1% добавлена!"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfigCommandAdd.respondedWindowModal.button.false: "Закрыть"
+
+gui.adminNPCConfigCommandDelete.title: "§b>>§rRsNPC - Удаление команды§b<<"
+gui.adminNPCConfigCommandDelete.content: "Текущий NPC: %1%\nВыберите команду для удаления"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.content: "Команда: %1% удалена!"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfigCommandDelete.respondedWindowModal.button.false: "Закрыть"
+
+gui.adminNPCConfigMessage.title: "§b>>§rRsNPC - Сообщения NPC§b<<"
+gui.adminNPCConfigMessage.content: "Текущий NPC: %1%"
+gui.adminNPCConfigMessage.button.addNewMessage: "Добавить сообщение"
+gui.adminNPCConfigMessage.button.deleteMessage: "Удалить сообщение"
+
+gui.adminNPCConfigMessageAdd.title: "§b>>§rRsNPC - Добавление сообщения§b<<"
+gui.adminNPCConfigMessageAdd.content: "Текущий NPC: %1%"
+gui.adminNPCConfigMessageAdd.input.message: "Сообщение (используйте @p для игрока)"
+gui.adminNPCConfigMessageAdd.responded.messageNull: "Сообщение не может быть пустым!"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "Сообщение: %1% добавлено!"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "Закрыть"
+
+gui.adminNPCConfigMessageDelete.title: "§b>>§rRsNPC - Удаление сообщения§b<<"
+gui.adminNPCConfigMessageDelete.content: "Текущий NPC: %1%\nВыберите сообщение для удаления"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.content: "Сообщение: %1% удалено!"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true: "Назад"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false: "Закрыть"

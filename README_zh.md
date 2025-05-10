@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-<a href="README.md">English</a> | 简体中文
+<a href="README.md">English</a> | 简体中文 | <a href="README_ru.md">Русский</a>
 </p>
 
 ### 📖 简介

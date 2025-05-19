@@ -321,8 +321,6 @@ public class RsNPC extends PluginBase {
                                     skin.setGeometryData(Utils.readFile(skinJsonFile));
                                 }
                                 break;
-                            default:
-                                this.getLogger().warning("[" + skinJsonFile.getName() + "] 的版本格式为：" + formatVersion + "，正在尝试加载！");
                             case "1.10.0":
                             case "1.8.0":
                                 for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
@@ -339,6 +337,8 @@ public class RsNPC extends PluginBase {
                                 skin.setGeometryName(geometryName);
                                 skin.setGeometryData(Utils.readFile(skinJsonFile));
                                 break;
+                            default:
+                                this.getLogger().warning("[" + skinJsonFile.getName() + "] 的版本格式为：" + formatVersion + "，正在尝试加载！");
                         }
                     }
                 }catch (Exception e) {

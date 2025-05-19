@@ -9,7 +9,9 @@ import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.plugin.Plugin;
 import com.smallaswater.npc.RsNPC;
+import com.smallaswater.npc.command.RsNPCCommandSender;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.entitys.EntityRsNPC;
 import com.smallaswater.npc.tasks.PlayerPermissionCheckTask;
 import com.smallaswater.npc.variable.VariableManage;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +55,10 @@ public class Utils {
     }
 
     public static void executeCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig, List<String> cmds) {
+        executeCommand(player, rsNpcConfig, cmds, null);
+    }
+
+    public static void executeCommand(@NotNull Player player, @NotNull RsNpcConfig rsNpcConfig, List<String> cmds, EntityRsNPC entityRsNPC) {
         List<String> list;
         if (cmds == null) {
             list = rsNpcConfig.getCmds();
@@ -77,7 +83,7 @@ public class Utils {
                                         " 错误:", e);
                     }
                     continue;
-                }else if ("op".equals(c[1])) {
+                } else if ("op".equals(c[1])) {
                     boolean needCancelOP = false;
                     if (!player.isOp()) {
                         needCancelOP = true;
@@ -97,6 +103,16 @@ public class Utils {
                         }
                     }
                     continue;
+                } else if ("self".equals(c[1])) {
+                    try {
+                        Server.getInstance().dispatchCommand(new RsNPCCommandSender(entityRsNPC, player),
+                                VariableManage.stringReplace(player, command, rsNpcConfig));
+                    } catch (Exception e) {
+                        RsNPC.getInstance().getLogger().error(
+                                "self 权限执行命令时出现错误！NPC:" + rsNpcConfig.getName() +
+                                        " 玩家:" + player.getName() +
+                                        " 错误:", e);
+                    }
                 }
             }
             try {

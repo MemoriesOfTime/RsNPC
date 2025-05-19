@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.lang.CommandOutputContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -43,6 +44,10 @@ public class RsNPCCommandSender implements CommandSender {
 
     @Override
     public void sendMessage(TextContainer message) {
+    }
+
+    @Override
+    public void sendCommandOutput(CommandOutputContainer commandOutputContainer) {
     }
 
     @Override

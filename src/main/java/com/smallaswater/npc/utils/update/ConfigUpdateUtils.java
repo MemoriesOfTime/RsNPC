@@ -71,7 +71,20 @@ public class ConfigUpdateUtils {
                 }
                 Config config = new Config(file, Config.YAML);
 
+                // key更新 configVersion -> RsNpcConfig.NPC_CONFIG_VERSION_KEY
+                boolean needSave = false;
+                if (config.exists("configVersion")) {
+                    if (!config.exists(RsNpcConfig.NPC_CONFIG_VERSION_KEY)) {
+                        config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, config.getString("configVersion"));
+                    }
+                    config.remove("configVersion");
+                    needSave = true;
+                }
+
                 if (VersionUtils.compareVersion(config.getString(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.0.0"), "2.2.3") >= 0) {
+                    if (needSave) {
+                        config.save();
+                    }
                     continue;
                 }
 
@@ -84,6 +97,8 @@ public class ConfigUpdateUtils {
                 config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.2.3");
 
                 config.save();
+
+                RsNPC.getInstance().getLogger().info("[ConfigUpdateUtils](updateRsNPC2_0_0_To_RsNPC2_2_3) 配置文件更新成功！");
             }
         }
     }

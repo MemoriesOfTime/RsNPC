@@ -1,9 +1,10 @@
 package com.smallaswater.npc.data;
 
 import cn.lanink.gamecore.utils.ConfigUtils;
-import cn.lanink.gamecore.utils.CustomEntityUtils;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.custom.EntityDefinition;
+import cn.nukkit.entity.custom.EntityManager;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -42,8 +43,8 @@ public class RsNpcConfig {
     @Getter
     private boolean nameTagAlwaysVisible;
 
-    private final String levelName;
-    private final Location location;
+    private String levelName;
+    private Location location;
 
     private final ItemData itemData;
 
@@ -97,7 +98,7 @@ public class RsNpcConfig {
 
     // 自定义实体
     private boolean enableCustomEntity;
-    private String customEntityIdentifier;
+    private EntityDefinition customEntityDefinition;
     private int customEntitySkinId;
 
     //自定义碰撞大小
@@ -138,12 +139,17 @@ public class RsNpcConfig {
             if (level == null) {
                 throw new RsNpcLoadException("世界：" + this.levelName + " 不存在！无法加载当前世界的NPC");
             }
+            double yaw = Utils.toDouble(map.getOrDefault("yaw", 0D));
+            if (!map.containsKey("headYaw")) {
+                map.put("headYaw", yaw);
+            }
             this.location = new Location(
                     Utils.toDouble(map.get("x")),
                     Utils.toDouble(map.get("y")),
                     Utils.toDouble(map.get("z")),
-                    Utils.toDouble(map.getOrDefault("yaw", 0D)),
+                    yaw,
                     0,
+                    Utils.toDouble(map.getOrDefault("headYaw", 0D)),
                     level
             );
         } catch (Exception e) {
@@ -264,10 +270,17 @@ public class RsNpcConfig {
 
         try {
             this.enableCustomEntity = this.config.getBoolean("CustomEntity.enable", false);
-            this.customEntityIdentifier = this.config.getString("CustomEntity.identifier", "RsNPC:Demo");
+            String identifier = this.config.getString("CustomEntity.identifier", "RsNPC:Demo");
             this.customEntitySkinId = this.config.getInt("CustomEntity.skinId", 0);
-            if (this.enableCustomEntity && CustomEntityUtils.getRuntimeId(this.customEntityIdentifier) == -1) {
-                CustomEntityUtils.registerCustomEntity(this.customEntityIdentifier);
+            if (this.enableCustomEntity) {
+                this.customEntityDefinition = EntityManager.get().getDefinition(identifier);
+                if (this.customEntityDefinition == null) { //不存在时注册新的
+                    this.customEntityDefinition = EntityDefinition.builder()
+                            .identifier(identifier)
+                            .spawnEgg(false)
+                            .implementation(EntityRsNPCCustomEntity.class).build();
+                    EntityManager.get().registerDefinition(this.customEntityDefinition);
+                }
             }
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 自定义实体配置加载失败！请检查配置文件！", e);
@@ -298,6 +311,7 @@ public class RsNpcConfig {
         map.put("y", this.location.getY());
         map.put("z", this.location.getZ());
         map.put("yaw", this.location.getYaw());
+        map.put("headYaw", this.location.getHeadYaw());
         this.config.set("坐标", map);
 
         if (this.itemData != null) {
@@ -338,7 +352,7 @@ public class RsNpcConfig {
         this.config.set("对话框.页面", this.dialogPagesName);
 
         this.config.set("CustomEntity.enable", this.enableCustomEntity);
-        this.config.set("CustomEntity.identifier", this.customEntityIdentifier);
+        this.config.set("CustomEntity.identifier", this.customEntityDefinition == null ? "RsNPC:Demo" : this.customEntityDefinition.getIdentifier());
         this.config.set("CustomEntity.skinId", this.customEntitySkinId);
 
         this.config.set("CustomCollisionSize.enable", this.enableCustomCollisionSize);
@@ -364,11 +378,11 @@ public class RsNpcConfig {
                         .putCompound("Skin", (new CompoundTag())
                                 .putByteArray("Data", this.skin.getSkinData().data)
                                 .putString("ModelId", this.skin.getSkinId()));
-                if (this.enableCustomEntity && this.customEntityIdentifier != null) {
+                if (this.enableCustomEntity && this.customEntityDefinition != null) {
                     nbt.putInt("skinId", this.customEntitySkinId);
                     this.entityRsNpc = new EntityRsNPCCustomEntity(this.location.getChunk(), nbt, this);
                     EntityRsNPCCustomEntity entityRsNPC = (EntityRsNPCCustomEntity) this.entityRsNpc;
-                    entityRsNPC.setIdentifier(this.customEntityIdentifier);
+                    entityRsNPC.setDefinition(this.customEntityDefinition);
                 }else {
                     this.entityRsNpc = new EntityRsNPC(this.location.getChunk(), nbt, this);
                     this.entityRsNpc.setSkin(this.getSkin());
@@ -380,7 +394,7 @@ public class RsNpcConfig {
                 this.entityRsNpc.setPosition(this.location);
             }
             if (!this.lookAtThePlayer) {
-                this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch);
+                this.entityRsNpc.setRotation(this.location.yaw, this.location.pitch, this.location.headYaw);
             }
             this.entityRsNpc.setNameTag(this.showName /*VariableManage.stringReplace(null, this.showName, this)*/);
         }
@@ -400,6 +414,12 @@ public class RsNpcConfig {
 
     public Location getLocation() {
         return this.location;
+    }
+
+    public void setLocation(Location newLocation) {
+        this.location = newLocation;
+        this.levelName = newLocation.getLevel().getName();
+        this.checkEntity();
     }
 
     public Item getHand() {

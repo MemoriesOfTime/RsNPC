@@ -43,7 +43,7 @@ tips.command.help: |-
   §a§l/rsnpc create <NPC名称> §7在当前位置创建NPC
   §a§l/rsnpc delete <NPC名称> §7移除NPC
   §a§l/rsnpc addroute <NPC名称> §7将当前位置添加到NPC路径
-  §a§l/rsnpc reload §7重载NPC
+  §a§l/rsnpc reload §7重载插件配置
   §a§l >> §eHelp for RsNPC §a<<
 
 gui.main.title: "§b>>§rRsNPC - 主菜单§b<<"
@@ -61,11 +61,14 @@ gui.adminNPC.title: "§b>>§rRsNPC - 管理NPC§b<<"
 gui.adminNPC.text.empty: "无"
 gui.adminNPC.text.true: "是"
 gui.adminNPC.text.false: "否"
+gui.adminNPC.button.moveToHere: "§e§l移动NPC到当前位置"
 gui.adminNPC.button.modifyBasicConfig: "§e§l修改基础配置"
 gui.adminNPC.button.modifyEmote: "§e§l修改表情动作"
 gui.adminNPC.button.modifyCommand: "§e§l修改点击命令"
 gui.adminNPC.button.modifyMessage: "§e§l修改点击消息"
 gui.adminNPC.button.deleteNPC: "§c§l删除NPC"
+
+gui.adminNPC.responded.moveToHere.success: "§a§l已将NPC移动到当前位置！"
 
 gui.adminNPCConfig.title: "§b>>§rRsNPC - 设置NPC§b<<"
 gui.adminNPCConfig.input.displayName: "NPC显示名称"
@@ -136,8 +139,8 @@ gui.adminNPCConfigMessageAdd.respondedWindowModal.content: "消息: %1% 添加�
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.true: "返回"
 gui.adminNPCConfigMessageAdd.respondedWindowModal.button.false: "关闭"
 
-gui.AdminNPCConfigMessageDelete.title: "§b>>§rRsNPC - 删除现有消息§b<<"
-gui.AdminNPCConfigMessageDelete.content: "当前设置NPC: %1%\n请选择要删除的消息"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.content: "消息: %1% 删除成功！"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.true: "返回"
-gui.AdminNPCConfigMessageDelete.respondedWindowModal.button.false: "关闭"
+gui.adminNPCConfigMessageDelete.title: "§b>>§rRsNPC - 删除现有消息§b<<"
+gui.adminNPCConfigMessageDelete.content: "当前设置NPC: %1%\n请选择要删除的消息"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.content: "消息: %1% 删除成功！"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.true: "返回"
+gui.adminNPCConfigMessageDelete.respondedWindowModal.button.false: "关闭"

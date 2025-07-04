@@ -2,6 +2,7 @@ package com.smallaswater.npc;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
@@ -46,7 +47,7 @@ public class OnListener implements Listener {
             EntityRsNPC entityRsNPC = (EntityRsNPC) entity;
             RsNpcConfig config = entityRsNPC.getConfig();
             entityRsNPC.setPauseMoveTick(60);
-            Utils.executeCommand(player, config);
+            Utils.executeCommand(player, config, null, entityRsNPC);
             for (String message : config.getMessages()) {
                 player.sendMessage(VariableManage.stringReplace(player, message, config));
             }
@@ -60,20 +61,25 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNPC) {
+        if (entity instanceof EntityRsNPC entityRsNPC) {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
-                if (damage instanceof Player) {
-                    Player player = (Player) damage;
-                    EntityRsNPC entityRsNpc = (EntityRsNPC) entity;
-                    RsNpcConfig rsNpcConfig = entityRsNpc.getConfig();
+                if (damage instanceof Player player) {
+                    RsNpcConfig rsNpcConfig = entityRsNPC.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&
-                            event instanceof EntityDamageByChildEntityEvent) {
+                            event instanceof EntityDamageByChildEntityEvent e) {
+                        if (e.getChild() instanceof EntityFishingHook fishingHook) {
+                            if (fishingHook.shootingEntity instanceof Player shooter) {
+                                shooter.stopFishing(false);
+                            } else {
+                                fishingHook.close();
+                            }
+                        }
                         return;
                     }
-                    entityRsNpc.setPauseMoveTick(60);
-                    Utils.executeCommand(player, rsNpcConfig);
+                    entityRsNPC.setPauseMoveTick(60);
+                    Utils.executeCommand(player, rsNpcConfig, null, entityRsNPC);
                     for (String message : rsNpcConfig.getMessages()) {
                         player.sendMessage(VariableManage.stringReplace(player, message, rsNpcConfig));
                     }
@@ -81,7 +87,7 @@ public class OnListener implements Listener {
                     if (rsNpcConfig.isEnabledDialogPages()) {
                         DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(rsNpcConfig.getDialogPagesName());
                         if (dialogConfig != null) {
-                            dialogConfig.getDefaultDialogPage().send(entityRsNpc, player);
+                            dialogConfig.getDefaultDialogPage().send(entityRsNPC, player);
                         }else {
                             String message = "§cNPC " + rsNpcConfig.getName() + " 配置错误！不存在名为 " + rsNpcConfig.getDialogPagesName() + " 的对话框页面！";
                             this.rsNPC.getLogger().warning(message);

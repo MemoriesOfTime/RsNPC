@@ -44,7 +44,7 @@ public class RsNPC extends PluginBase {
             new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
 
-    public static final String VERSION = "?";
+    public static final String VERSION = "2.5.1";
 
     private static RsNPC rsNPC;
 
@@ -56,7 +56,7 @@ public class RsNPC extends PluginBase {
     @Getter
     private final HashMap<String, Skin> skins = new HashMap<>();
     @Getter
-    private final HashMap<String, RsNpcConfig> npcs = new HashMap<>();
+    private final HashMap<String, RsNpcConfig> npcs = new LinkedHashMap<>();
 
     @Getter
     private DialogManager dialogManager;

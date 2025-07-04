@@ -271,6 +271,7 @@ public class EntityRsNPC extends EntityHuman {
         if (this.getNetworkId() == -1) {
             super.spawnTo(player);
             this.sendData(player);
+            return;
         }
 
         if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
@@ -293,6 +294,7 @@ public class EntityRsNPC extends EntityHuman {
     public void despawnFrom(Player player) {
         if (this.getNetworkId() == -1) {
             super.despawnFrom(player);
+            return;
         }
 
         if (this.hasSpawned.containsKey(player.getLoaderId())) {

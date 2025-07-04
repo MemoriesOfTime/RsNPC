@@ -44,7 +44,7 @@ public class RsNPC extends PluginBase {
             new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
 
-    public static final String VERSION = "2.5.1";
+    public static final String VERSION = "2.5.1-NKX";
 
     private static RsNPC rsNPC;
 

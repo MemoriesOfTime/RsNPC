@@ -61,17 +61,21 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNPC entityRsNPC) {
+        if (entity instanceof EntityRsNPC) {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
-                if (damage instanceof Player player) {
+                if (damage instanceof Player) {
+                    Player player = (Player) damage;
+                    EntityRsNPC entityRsNPC = (EntityRsNPC) entity;
                     RsNpcConfig rsNpcConfig = entityRsNPC.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&
-                            event instanceof EntityDamageByChildEntityEvent e) {
-                        if (e.getChild() instanceof EntityFishingHook fishingHook) {
-                            if (fishingHook.shootingEntity instanceof Player shooter) {
-                                shooter.stopFishing(false);
+                            event instanceof EntityDamageByChildEntityEvent) {
+                        EntityDamageByChildEntityEvent e = (EntityDamageByChildEntityEvent) event;
+                        if (e.getChild() instanceof EntityFishingHook) {
+                            EntityFishingHook fishingHook = (EntityFishingHook) e.getChild();
+                            if (fishingHook.shootingEntity instanceof Player) {
+                                ((Player) fishingHook.shootingEntity).stopFishing(false);
                             } else {
                                 fishingHook.close();
                             }

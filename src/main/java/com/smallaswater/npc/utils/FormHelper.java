@@ -77,8 +77,10 @@ public class FormHelper {
         simple.setContent(language.translateString("gui.adminNPCSelect.content"));
 
         List<Map.Entry<String, RsNpcConfig>> entryList = new ArrayList<>(RsNPC.getInstance().getNpcs().entrySet());
-        Collator collator = Collator.getInstance(Locale.CHINA);
-        entryList.sort(Comparator.comparing(Map.Entry::getKey, collator));
+        if (Server.getInstance().getLanguage().getLang().equalsIgnoreCase("chs")) {
+            Collator collator = Collator.getInstance(Locale.CHINA);
+            entryList.sort(Comparator.comparing(Map.Entry::getKey, collator));
+        }
         for (Map.Entry<String, RsNpcConfig> entry : entryList) {
             simple.addButton(new ResponseElementButton(entry.getKey())
                     .onClicked(cp -> sendAdminNpc(cp, entry.getValue())));

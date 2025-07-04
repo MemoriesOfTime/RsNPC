@@ -2,6 +2,7 @@ package com.smallaswater.npc;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
@@ -60,16 +61,21 @@ public class OnListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
-        if (entity instanceof EntityRsNPC) {
+        if (entity instanceof EntityRsNPC entityRsNPC) {
             event.setCancelled(true);
             if (event instanceof EntityDamageByEntityEvent) {
                 Entity damage = ((EntityDamageByEntityEvent) event).getDamager();
-                if (damage instanceof Player) {
-                    Player player = (Player) damage;
-                    EntityRsNPC entityRsNPC = (EntityRsNPC) entity;
+                if (damage instanceof Player player) {
                     RsNpcConfig rsNpcConfig = entityRsNPC.getConfig();
                     if (!rsNpcConfig.isCanProjectilesTrigger() &&
-                            event instanceof EntityDamageByChildEntityEvent) {
+                            event instanceof EntityDamageByChildEntityEvent e) {
+                        if (e.getChild() instanceof EntityFishingHook fishingHook) {
+                            if (fishingHook.shootingEntity instanceof Player shooter) {
+                                shooter.stopFishing(false);
+                            } else {
+                                fishingHook.close();
+                            }
+                        }
                         return;
                     }
                     entityRsNPC.setPauseMoveTick(60);

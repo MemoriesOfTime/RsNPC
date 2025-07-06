@@ -291,21 +291,6 @@ public class EntityRsNPC extends EntityHuman {
     }
 
     @Override
-    public void despawnFrom(Player player) {
-        if (this.getNetworkId() == -1) {
-            super.despawnFrom(player);
-            return;
-        }
-
-        if (this.hasSpawned.containsKey(player.getLoaderId())) {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
-            this.hasSpawned.remove(player.getLoaderId());
-        }
-    }
-
-    @Override
     public void setSkin(Skin skin) {
         Skin oldSkin = this.getSkin();
         super.setSkin(skin);

@@ -237,7 +237,6 @@ public class RsNPC extends PluginBase {
                 ImageInputStream imageInputStream = ImageIO.createImageInputStream(this.getResource("Skins/" + skinName + ".png"));
                 Skin skin = new Skin();
                 skin.setSkinData(ImageIO.read(imageInputStream));
-                skin.setGeometryData(Skin.STEVE_GEOMETRY);
                 SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
 
                 if (skinName.contains("_slim")) {
@@ -285,7 +284,6 @@ public class RsNPC extends PluginBase {
 
                 try {
                     skin.setSkinData(ImageIO.read(skinDataFile));
-                    skin.setGeometryData(Skin.STEVE_GEOMETRY);
                     SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
 
                     if (isSlim) {

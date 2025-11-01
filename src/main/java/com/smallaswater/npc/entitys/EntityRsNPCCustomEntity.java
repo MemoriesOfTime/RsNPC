@@ -144,8 +144,8 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     }
 
     @Override
-    public void setSkin(Skin skin) {
-        this.skin = skin;
+    protected void sendSkin(Skin oldSkin) {
+
     }
 
 }

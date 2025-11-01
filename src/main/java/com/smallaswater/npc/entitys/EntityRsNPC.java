@@ -271,6 +271,15 @@ public class EntityRsNPC extends EntityHuman {
         if (this.getNetworkId() == -1) {
             super.spawnTo(player);
             this.sendData(player);
+
+            if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolInfo.v1_21_100) {
+                if (player.getGameVersion().isNetEase()) {
+                    this.getServer().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
+                        this.sendSkin(null);
+                    }, 20, true);
+                }
+            }
+
             return;
         }
 

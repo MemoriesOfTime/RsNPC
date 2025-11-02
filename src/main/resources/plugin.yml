@@ -1,6 +1,6 @@
 name: RsNPC
 main: com.smallaswater.npc.RsNPC
-version: "2.5.1-NKX"
+version: "2.5.2-NKX"
 api:
   - "1.0.9"
   - "1.0.11"

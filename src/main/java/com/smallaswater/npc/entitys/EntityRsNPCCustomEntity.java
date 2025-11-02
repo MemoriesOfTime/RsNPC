@@ -12,6 +12,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import com.smallaswater.npc.RsNPC;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.variable.VariableManage;
 import lombok.NonNull;
@@ -49,6 +50,7 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
         return this.getEntityDefinition().getRuntimeId();
     }
 
+    @Deprecated
     public void setIdentifier(String identifier) {
         this.definition = EntityDefinition.builder()
                 .identifier(identifier)
@@ -76,6 +78,9 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     @Override
     public EntityDefinition getEntityDefinition() {
         if (this.definition == null) {
+            if (this.getConfig() != null) {
+                RsNPC.getInstance().getLogger().warning("NPC：" + this.getConfig().getName() + " 实体定义未设置！");
+            }
             return DEFAULT_DEFINITION;
         }
         return this.definition;
@@ -139,8 +144,8 @@ public class EntityRsNPCCustomEntity extends EntityRsNPC implements CustomEntity
     }
 
     @Override
-    public void setSkin(Skin skin) {
-        this.skin = skin;
+    protected void sendSkin(Skin oldSkin) {
+
     }
 
 }

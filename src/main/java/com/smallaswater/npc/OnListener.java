@@ -107,7 +107,7 @@ public class OnListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDataPacketSend(DataPacketSendEvent event) {
-        if (Api.isHideCustomSkin(event.getPlayer())) {
+        if (event.getPlayer().isOnline() && Api.isHideCustomSkin(event.getPlayer())) {
             if (event.getPacket() instanceof PlayerListPacket) {
                 PlayerListPacket packet = (PlayerListPacket) event.getPacket();
                 for (PlayerListPacket.Entry entry : packet.entries) {

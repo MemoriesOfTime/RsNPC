@@ -271,6 +271,15 @@ public class EntityRsNPC extends EntityHuman {
         if (this.getNetworkId() == -1) {
             super.spawnTo(player);
             this.sendData(player);
+
+            if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolInfo.v1_21_100) {
+                if (player.getGameVersion().isNetEase()) {
+                    this.getServer().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
+                        this.sendSkin(null);
+                    }, 20, true);
+                }
+            }
+
             return;
         }
 
@@ -287,21 +296,6 @@ public class EntityRsNPC extends EntityHuman {
             pkk.type = 1;
             pkk.immediate = 1;
             player.dataPacket(pkk);
-        }
-    }
-
-    @Override
-    public void despawnFrom(Player player) {
-        if (this.getNetworkId() == -1) {
-            super.despawnFrom(player);
-            return;
-        }
-
-        if (this.hasSpawned.containsKey(player.getLoaderId())) {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.getId();
-            player.dataPacket(pk);
-            this.hasSpawned.remove(player.getLoaderId());
         }
     }
 

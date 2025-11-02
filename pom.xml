@@ -77,7 +77,7 @@
         <dependency>
             <groupId>cn.nukkit</groupId>
             <artifactId>Nukkit</artifactId>
-            <version>MOT-SNAPSHOT</version>
+            <version>MOT-20251101.135342-640</version>
             <scope>provided</scope>
         </dependency>
 

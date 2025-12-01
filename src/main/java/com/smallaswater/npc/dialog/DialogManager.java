@@ -32,27 +32,37 @@ public class DialogManager {
 
     public void loadAllDialog() {
         this.dialogConfigs.clear();
+        File dialogFolder = new File(this.rsNPC.getDataFolder() + "/Dialog");
+        loadDialogFromDirectory(dialogFolder);
+        this.rsNPC.getLogger().info(this.rsNPC.getLanguage().translateString("plugin.load.dialog.loadComplete", this.dialogConfigs.size()));
+    }
 
-        File[] files = new File(this.rsNPC.getDataFolder() + "/Dialog").listFiles();
+    private void loadDialogFromDirectory(File directory) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
         if (files == null || files.length == 0) {
             return;
         }
         Arrays.stream(files)
-                .filter(File::isFile)
-                .filter(file -> file.getName().endsWith(".yml"))
                 .forEach(file -> {
-                    try {
-                        this.loadDialog(file.getName().split("\\.")[0]);
-                    } catch (Exception e) {
-                        this.rsNPC.getLogger().error(this.rsNPC.getLanguage().translateString("plugin.load.dialog.dataError", file.getName()), e);
+                    if (file.isDirectory()) {
+                        loadDialogFromDirectory(file);
+                    } else if (file.isFile() && file.getName().endsWith(".yml")) {
+                        try {
+                            String name = file.getName().split("\\.")[0];
+                            this.loadDialog(name, file);
+                        } catch (Exception e) {
+                            this.rsNPC.getLogger().error(this.rsNPC.getLanguage().translateString("plugin.load.dialog.dataError", file.getName()), e);
+                        }
                     }
                 });
-        this.rsNPC.getLogger().info(this.rsNPC.getLanguage().translateString("plugin.load.dialog.loadComplete", this.dialogConfigs.size()));
     }
 
-    public void loadDialog(@NotNull String name) {
-        Config config = new Config(this.rsNPC.getDataFolder() + "/Dialog/" + name + ".yml", Config.YAML);
-        ConfigUtils.addDescription(config, this.description); //添加描述
+    public void loadDialog(@NotNull String name, File file) {
+        Config config = new Config(file, Config.YAML);
+        ConfigUtils.addDescription(config, this.description);
         this.dialogConfigs.put(name, new DialogPages(name, config));
     }
 

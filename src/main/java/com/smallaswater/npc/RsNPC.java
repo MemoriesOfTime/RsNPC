@@ -44,7 +44,7 @@ public class RsNPC extends PluginBase {
             new ThreadPoolExecutor.DiscardPolicy());
     public static final Random RANDOM = new Random();
 
-    public static final String VERSION = "2.5.2";
+    public static final String VERSION = "2.5.3-SNAPSHOT";
 
     private static RsNPC rsNPC;
 
@@ -194,36 +194,45 @@ public class RsNPC extends PluginBase {
     }
 
     private void loadNpcs() {
-        File[] files = (new File(getDataFolder() + "/Npcs")).listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!file.isFile() && file.getName().endsWith(".yml")) {
-                    continue;
-                }
-                String npcName = file.getName().split("\\.")[0];
-                Config config;
-                try {
-                    config = new Config(file, Config.YAML);
-                }catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadConfigError", npcName), e);
-                    continue;
-                }
-                RsNpcConfig rsNpcConfig;
-                try {
-                    rsNpcConfig = new RsNpcConfig(npcName, config);
-                } catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadError", npcName), e);
-                    continue;
-                }
-                this.npcs.put(npcName, rsNpcConfig);
-                this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
-            }
-        }
+        File npcsFolder = new File(getDataFolder() + "/Npcs");
+        loadNpcsFromDirectory(npcsFolder);
         this.getServer().getScheduler().scheduleDelayedTask(this, () -> {
             for (RsNpcConfig config : this.npcs.values()) {
                 config.checkEntity();
             }
         }, 1);
+    }
+
+    private void loadNpcsFromDirectory(File directory) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    loadNpcsFromDirectory(file);
+                } else if (file.isFile() && file.getName().endsWith(".yml")) {
+                    String npcName = file.getName().split("\\.")[0];
+                    Config config;
+                    try {
+                        config = new Config(file, Config.YAML);
+                    }catch (Exception e) {
+                        this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadConfigError", npcName), e);
+                        continue;
+                    }
+                    RsNpcConfig rsNpcConfig;
+                    try {
+                        rsNpcConfig = new RsNpcConfig(npcName, config);
+                    } catch (Exception e) {
+                        this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadError", npcName), e);
+                        continue;
+                    }
+                    this.npcs.put(npcName, rsNpcConfig);
+                    this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
+                }
+            }
+        }
     }
 
     /**

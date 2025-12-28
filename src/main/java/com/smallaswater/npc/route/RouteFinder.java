@@ -86,13 +86,14 @@ public class RouteFinder {
             }
     
             LinkedList<Node> nextNodes = new LinkedList<>();
-            
-            for (int y = 1; y > -1; y--) {
+
+            // 顺序：先尝试平面移动(0)，然后下落(-1)，最后跳跃(1)
+            for (int y : new int[]{0, -1, 1}) {
                 boolean N = this.check(nowNode, nextNodes, 0, y, -1);
                 boolean E = this.check(nowNode, nextNodes, 1, y, 0);
                 boolean S = this.check(nowNode, nextNodes, 0, y, 1);
                 boolean W = this.check(nowNode, nextNodes, -1, y, 0);
-                
+
                 if (N && E) {
                     this.check(nowNode, nextNodes, 1, y, -1);
                 }
@@ -132,7 +133,18 @@ public class RouteFinder {
         }
         this.closeNodes.add(vector3);
 
-        Node nextNode = new Node(vector3, nowNode, vector3.distance(this.start), vector3.distance(this.end));
+        double moveCost = 1.0;
+        if (x != 0 && z != 0) {
+            moveCost = 1.414; // sqrt(2)
+        }
+        if (y != 0) {
+            moveCost += 0.5;
+        }
+
+        double G = nowNode.getG() + moveCost;
+        double H = vector3.distance(this.end);
+
+        Node nextNode = new Node(vector3, nowNode, G, H);
         if (this.canMoveTo(nowNode, nextNode)) {
             nextNodes.add(nextNode);
             return true;
@@ -148,23 +160,53 @@ public class RouteFinder {
      * @return 是否可以移动到目标节点
      */
     private boolean canMoveTo(Node nowNode, Node target) {
+        // 基本检查：目标位置和头顶必须可通过
         if (!this.getBlockFast(target).canPassThrough() ||
-                !this.getBlockFast(target.getVector3().add(0, 1, 0)).canPassThrough() ||
-                !this.canWalkOn(this.getBlockFast(target.getVector3().add(0, -1, 0)))) {
+                !this.getBlockFast(target.getVector3().add(0, 1, 0)).canPassThrough()) {
             return false;
         }
-        
-        //跳跃检查
-        if (target.getVector3().getY() > nowNode.getVector3().getY() &&
-                !this.getBlockFast(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
+
+        // 脚下必须可以站立
+        if (!this.canWalkOn(this.getBlockFast(target.getVector3().add(0, -1, 0)))) {
             return false;
         }
-        
-        if (target.getVector3().getY() < nowNode.getVector3().getY() &&
-                !this.getBlockFast(target.getVector3().add(0, 2, 0)).canPassThrough()) {
-            return false;
+
+        int yDiff = (int) (target.getVector3().getY() - nowNode.getVector3().getY());
+
+        // 向上跳跃检查
+        if (yDiff > 0) {
+            // 当前位置头顶需要有足够空间
+            if (!this.getBlockFast(nowNode.getVector3().add(0, 2, 0)).canPassThrough()) {
+                return false;
+            }
+
+            // 检查跳跃路径中间是否有阻挡
+            for (int i = 1; i < yDiff; i++) {
+                Vector3 midPos = nowNode.getVector3().add(0, i, 0);
+                if (!this.getBlockFast(midPos).canPassThrough() ||
+                    !this.getBlockFast(midPos.add(0, 1, 0)).canPassThrough()) {
+                    return false;
+                }
+            }
         }
-        
+
+        // 向下移动检查
+        if (yDiff < 0) {
+            // 目标位置头顶需要有空间
+            if (!this.getBlockFast(target.getVector3().add(0, 2, 0)).canPassThrough()) {
+                return false;
+            }
+
+            // 检查下落路径是否畅通
+            for (int i = -1; i > yDiff; i--) {
+                Vector3 midPos = nowNode.getVector3().add(0, i, 0);
+                if (!this.getBlockFast(midPos).canPassThrough() ||
+                    !this.getBlockFast(midPos.add(0, 1, 0)).canPassThrough()) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 

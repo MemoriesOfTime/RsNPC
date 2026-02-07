@@ -66,6 +66,9 @@ public class Utils {
             list = cmds;
         }
         for (String cmd : list) {
+            if (cmd == null || cmd.isBlank()) {
+                continue;
+            }
             String[] c = cmd.split("&");
             String command = c[0];
             if (command.startsWith("/")) {

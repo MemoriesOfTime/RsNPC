@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author LT_Name
@@ -60,7 +61,7 @@ public class DialogPages {
         @Getter
         private final String key;
         private final String title;
-        private final String content;
+        private final ArrayList<String> contents = new ArrayList<>();
         private final Sound sound;
         private final ArrayList<Button> buttons = new ArrayList<>();
 
@@ -70,7 +71,20 @@ public class DialogPages {
             this.dialogPages = dialogPages;
             this.key = (String) map.get("key");
             this.title = (String) map.get("title");
-            this.content = (String) map.get("content");
+            //content 支持单条字符串或字符串列表（列表时每次展示随机一条）
+            Object contentObj = map.get("content");
+            if (contentObj instanceof List) {
+                for (Object o : (List<?>) contentObj) {
+                    if (o != null) {
+                        this.contents.add(String.valueOf(o));
+                    }
+                }
+            } else if (contentObj != null) {
+                this.contents.add(String.valueOf(contentObj));
+            }
+            if (this.contents.isEmpty()) {
+                this.contents.add("");
+            }
             this.sound = new Sound((Map<String, Object>) map.getOrDefault("sound", new HashMap<>()));
             ((List<Map<String, Object>>) map.get("buttons")).forEach(button -> this.buttons.add(new Button(button)));
             if (map.containsKey("close")) {
@@ -79,6 +93,14 @@ public class DialogPages {
                     this.closeGo = (String) closeMap.get("go");
                 }
             }
+        }
+
+        /**
+         * 等概率随机返回一条正文原始文本（未经变量替换）。
+         * contents 至少有一个元素（构造时已兜底），不会越界。
+         */
+        public String getContent() {
+            return this.contents.get(ThreadLocalRandom.current().nextInt(this.contents.size()));
         }
 
         public void send(@NotNull EntityRsNPC entityRsNpc, @NotNull Player player) {
@@ -110,7 +132,7 @@ public class DialogPages {
 
             AdvancedFormWindowDialog windowDialog = new AdvancedFormWindowDialog(
                     VariableManage.stringReplace(player, this.title, entityRsNpc.getConfig()),
-                    VariableManage.stringReplace(player, this.content, entityRsNpc.getConfig()),
+                    VariableManage.stringReplace(player, this.getContent(), entityRsNpc.getConfig()),
                     entityRsNpc
             );
 

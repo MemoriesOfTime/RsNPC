@@ -10,7 +10,7 @@ pages: |-
   page format：
   - key: "1" #page key
     title: "Presentation dialog" #page title
-    content: "This is a demo dialog" #page content
+    content: "This is a demo dialog" #page content; a single string, or a list to randomly show one entry each time it opens
     sound: #The sound effect played when the dialog box is opened
       enable: false
       identifier: "random.levelup"

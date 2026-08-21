@@ -33,8 +33,7 @@ public class GameCoreDownload {
     // 每个任务下载 128 kb数据
     private static final int THRESHOLD = 128 * 1024;
 
-    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.11-PM1E";
-    private static String ACTUAL_MINIMUM_GAME_CORE_VERSION;
+    public static final String MINIMUM_GAME_CORE_VERSION = "1.6.14";
 
     private static final String MAVEN_URL_CENTRAL = "https://repo1.maven.org/maven2/";
     private static final String MAVEN_URL_HUAWEI = "https://repo.huaweicloud.com/repository/maven/";
@@ -43,15 +42,6 @@ public class GameCoreDownload {
     private static final List<String> GAME_CORE_URL_LIST;
 
     static {
-        //为了防止编译依赖和实际环境区别，这里重新检查GameCore完整版本号
-        ACTUAL_MINIMUM_GAME_CORE_VERSION = MINIMUM_GAME_CORE_VERSION.split("-")[0];
-        String codename = Server.getInstance().getCodename();
-        if ("PowerNukkitX".equalsIgnoreCase(codename)/* || "PowerNukkit".equalsIgnoreCase(codename)*/) {
-            ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PNX";
-        } else if ("MOT".equalsIgnoreCase(codename) || "PM1E".equalsIgnoreCase(codename)) {
-            ACTUAL_MINIMUM_GAME_CORE_VERSION += "-PM1E";
-        }
-
         GAME_CORE_URL_LIST = Collections.unmodifiableList(Arrays.asList(
                 getGameCoreUrl(MAVEN_URL_CENTRAL),
                 getGameCoreUrl(MAVEN_URL_HUAWEI),
@@ -61,7 +51,7 @@ public class GameCoreDownload {
 
     private static String getGameCoreUrl(String mavenUrl) {
         //插件完整下载地址
-        return mavenUrl + "cn/lanink/MemoriesOfTime-GameCore/" + ACTUAL_MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + ACTUAL_MINIMUM_GAME_CORE_VERSION + ".jar";
+        return mavenUrl + "cn/lanink/MemoriesOfTime-GameCore/" + MINIMUM_GAME_CORE_VERSION + "/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar";
     }
 
     private GameCoreDownload() {
@@ -92,7 +82,7 @@ public class GameCoreDownload {
         Plugin plugin = Server.getInstance().getPluginManager().getPlugin("MemoriesOfTime-GameCore");
 
         if (plugin != null) {
-            if (!VersionUtils.checkMinimumVersion(plugin, ACTUAL_MINIMUM_GAME_CORE_VERSION)) {
+            if (!VersionUtils.checkMinimumVersion(plugin, MINIMUM_GAME_CORE_VERSION)) {
                 RsNPC.getInstance().getLogger().warning("MemoriesOfTime-GameCore依赖版本太低！正在尝试更新版本...");
                 File file = getPluginFile(plugin);
                 if (file != null) {
@@ -115,7 +105,7 @@ public class GameCoreDownload {
         if (plugin == null || plugin.isDisabled()) {
             RsNPC.getInstance().getLogger().info("尝试从 " + url + " 下载 MemoriesOfTime-GameCore 中...");
 
-            File file = new File(Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + ACTUAL_MINIMUM_GAME_CORE_VERSION + ".jar");
+            File file = new File(Server.getInstance().getFilePath() + "/plugins/MemoriesOfTime-GameCore-" + MINIMUM_GAME_CORE_VERSION + ".jar");
 
             try {
                 AtomicDouble last = new AtomicDouble(-16);

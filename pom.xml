@@ -41,8 +41,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <!--统一兼容 Nukkit-MOT 与 NukkitX：NukkitX 服务端普遍使用 Java 8，需产出 Java 8 字节码
+            （编译需使用 JDK 17+，因为 Nukkit-MOT 依赖为 Java 17 字节码）-->
+        <maven.compiler.release>8</maven.compiler.release>
         <lib.GameCore.version>1.6.14</lib.GameCore.version>
     </properties>
 
@@ -105,7 +106,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
+            <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -117,8 +118,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.10.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <release>${maven.compiler.release}</release>
                     <encoding>${maven.compiler.encoding}</encoding>
                 </configuration>
             </plugin>

@@ -1,6 +1,7 @@
 package com.smallaswater.npc.entitys;
 
 import cn.lanink.gamecore.utils.EntityUtils;
+import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.lanink.gamecore.utils.packet.ProtocolVersion;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
@@ -272,7 +273,9 @@ public class EntityRsNPC extends EntityHuman {
             super.spawnTo(player);
             this.sendData(player);
 
-            if (ProtocolInfo.CURRENT_PROTOCOL >= ProtocolInfo.v1_21_100) {
+            //网易版玩家皮肤重发逻辑仅适用于 Nukkit-MOT（getGameVersion、sendSkin 为 MOT 独有 API）
+            if (NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT
+                    && ProtocolInfo.CURRENT_PROTOCOL >= ProtocolInfo.v1_21_100) {
                 if (player.getGameVersion().isNetEase()) {
                     this.getServer().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
                         this.sendSkin(null);
@@ -347,8 +350,13 @@ public class EntityRsNPC extends EntityHuman {
     }
 
     //为了兼容PM1E，我们不使用setCanBeSavedWithChunk()方法
-    @Override
+    //canBeSavedWithChunk 为 Nukkit-MOT/PM1E 的方法名，canSaveToStorage 为 NukkitX 的方法名
+    //不加 @Override，以便同一份源码在两种核心下都能编译
     public boolean canBeSavedWithChunk() {
+        return false;
+    }
+
+    public boolean canSaveToStorage() {
         return false;
     }
 }

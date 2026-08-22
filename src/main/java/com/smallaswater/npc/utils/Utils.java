@@ -4,7 +4,6 @@ import cn.lanink.gamecore.utils.NukkitTypeUtils;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.StringItem;
 import cn.nukkit.level.Location;
 import cn.nukkit.network.protocol.PlaySoundPacket;
 import cn.nukkit.plugin.Plugin;
@@ -35,8 +34,12 @@ public class Utils {
      */
     public static String item2String(Item item) {
         if (NukkitTypeUtils.getNukkitType() == NukkitTypeUtils.NukkitType.MOT) {
-            if (item instanceof StringItem) {
-                return item.getNamespaceId();
+            //StringItem 仅存在于 Nukkit-MOT，反射调用以兼容 NukkitX
+            try {
+                if (Class.forName("cn.nukkit.item.StringItem").isInstance(item)) {
+                    return (String) item.getClass().getMethod("getNamespaceId").invoke(item);
+                }
+            } catch (Exception ignored) {
             }
         }
         return item.getId() + ":" + item.getDamage();
@@ -66,7 +69,7 @@ public class Utils {
             list = cmds;
         }
         for (String cmd : list) {
-            if (cmd == null || cmd.isBlank()) {
+            if (cmd == null || cmd.trim().isEmpty()) {
                 continue;
             }
             String[] c = cmd.split("&");

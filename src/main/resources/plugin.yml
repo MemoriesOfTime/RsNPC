@@ -4,6 +4,7 @@ version: "2.5.3-SNAPSHOT"
 api:
   - "Nukkit-MOT"
   - "Nukkit-PM1E"
+  - "1.1.0"
 authors: ["若水", "LT_Name"]
 load: POSTWORLD
 softdepend:

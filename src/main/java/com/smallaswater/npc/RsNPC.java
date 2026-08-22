@@ -137,7 +137,8 @@ public class RsNPC extends PluginBase {
 
         //检查插件分支是否和核心匹配
         NukkitTypeUtils.NukkitType nukkitType = NukkitTypeUtils.getNukkitType();
-        if (nukkitType != NukkitTypeUtils.NukkitType.PM1E && nukkitType != NukkitTypeUtils.NukkitType.MOT) {
+        if (nukkitType != NukkitTypeUtils.NukkitType.PM1E && nukkitType != NukkitTypeUtils.NukkitType.MOT
+                && nukkitType != NukkitTypeUtils.NukkitType.NUKKITX) {
             this.getLogger().error(this.getLanguage().translateString("plugin.load.pluginBranchError", nukkitType.getShowName(), this.getVersion()));
             //this.getServer().getPluginManager().disablePlugin(this);
             return;
@@ -415,7 +416,9 @@ public class RsNPC extends PluginBase {
         skin.setTrusted(true);
         boolean skinIsValid = false;
         try {
-            skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, this.getServer().doNotLimitSkinGeometry);
+            //doNotLimitSkinGeometry 字段仅存在于 Nukkit-MOT，反射访问以兼容 NukkitX
+            Object doNotLimitSkinGeometry = Server.class.getField("doNotLimitSkinGeometry").get(this.getServer());
+            skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, doNotLimitSkinGeometry);
         } catch (Exception exception) {
             try {
                 skinIsValid = (boolean) Skin.class.getMethod("isValid").invoke(skin);

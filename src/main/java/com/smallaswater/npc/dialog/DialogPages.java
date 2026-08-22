@@ -144,7 +144,12 @@ public class DialogPages {
                         if (buttonAction.getType() == Button.ButtonActionType.ACTION_CLOSE) {
                             windowDialog.close(p, response);
                         } else if (buttonAction.getType() == Button.ButtonActionType.GOTO) {
-                            dialogPages.getDialogPage(buttonAction.getData()).send(entityRsNpc, player);
+                            DialogPage gotoPage = dialogPages.getDialogPage(buttonAction.getData());
+                            if (gotoPage != null) {
+                                gotoPage.send(entityRsNpc, player);
+                            } else {
+                                RsNPC.getInstance().getLogger().warning("对话框页面 " + this.key + " 按钮跳转失败！不存在名为 " + buttonAction.getData() + " 的页面！");
+                            }
                         } else if (buttonAction.getType() == Button.ButtonActionType.EXECUTE_COMMAND) {
                             Server.getInstance().getScheduler().scheduleDelayedTask(RsNPC.getInstance(), () -> {
                                 Utils.executeCommand(p, entityRsNpc.getConfig(), buttonAction.getListData());
@@ -162,7 +167,12 @@ public class DialogPages {
 
             windowDialog.onClosed((p, response) -> {
                 if (this.closeGo != null) {
-                    this.dialogPages.getDialogPage(this.closeGo).send(entityRsNpc, player);
+                    DialogPage closeGoPage = this.dialogPages.getDialogPage(this.closeGo);
+                    if (closeGoPage != null) {
+                        closeGoPage.send(entityRsNpc, player);
+                    } else {
+                        RsNPC.getInstance().getLogger().warning("对话框页面 " + this.key + " 关闭跳转失败！不存在名为 " + this.closeGo + " 的页面！");
+                    }
                 }
             });
 
@@ -209,10 +219,20 @@ public class DialogPages {
                     this.buttonActions.add(buttonAction);
                 }
                 if (map.containsKey("cmd")) {
-                    ButtonAction buttonAction = new ButtonAction(ButtonActionType.EXECUTE_COMMAND);
-                    buttonAction.getListData().clear();
-                    buttonAction.getListData().addAll((List<String>) map.get("cmd"));
-                    this.buttonActions.add(buttonAction);
+                    Object cmdObj = map.get("cmd");
+                    if (cmdObj instanceof List) {
+                        ButtonAction buttonAction = new ButtonAction(ButtonActionType.EXECUTE_COMMAND);
+                        buttonAction.getListData().clear();
+                        // YAML 中数字会被解析为 Integer，统一转为字符串避免点击时 ClassCastException
+                        for (Object cmd : (List<?>) cmdObj) {
+                            if (cmd != null) {
+                                buttonAction.getListData().add(String.valueOf(cmd));
+                            }
+                        }
+                        this.buttonActions.add(buttonAction);
+                    } else {
+                        RsNPC.getInstance().getLogger().warning("对话框按钮 \"" + this.text + "\" 的 cmd 配置不是列表（可能为空值），已忽略！");
+                    }
                 }
 
                 if (this.buttonActions.isEmpty()) {

@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,11 @@ public class RsNpcConfig {
 
     private final Config config;
     private final String name;
+    /**
+     * 该 NPC 配置在磁盘上的源文件，用于按真实路径删除/重载，支持子目录分类。
+     */
+    @Getter
+    private final File configFile;
     @Setter
     private String showName;
 
@@ -113,9 +119,10 @@ public class RsNpcConfig {
 
     private EntityRsNPC entityRsNpc;
 
-    public RsNpcConfig(@NonNull String name, @NonNull Config config) throws RsNpcConfigLoadException, RsNpcLoadException {
+    public RsNpcConfig(@NonNull String name, @NonNull Config config, File configFile) throws RsNpcConfigLoadException, RsNpcLoadException {
         this.config = config;
         this.name = name;
+        this.configFile = configFile;
 
         try {
             this.showName = config.getString("name");
@@ -167,10 +174,14 @@ public class RsNpcConfig {
 
         try {
             this.skinName = config.getString("皮肤", "private_steve");
-            if (!RsNPC.getInstance().getSkins().containsKey(this.skinName)) {
-                RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName + " 不存在！已切换为默认皮肤！");
-            }
             this.skin = RsNPC.getInstance().getSkinByName(this.skinName);
+            // getSkinByName 已对"未精确命中/多候选"给出告警，这里只补充"回退到默认皮肤"的提示；
+            // 注意 private_steve 本身映射 DEFAULT_SKIN，需排除以免默认配置误报
+            if (this.skin == RsNPC.getDefaultSkin()
+                    && !RsNPC.getInstance().getSkins().containsKey(this.skinName)) {
+                RsNPC.getInstance().getLogger().warning("NPC: " + this.name + " 皮肤: " + this.skinName
+                        + " 未找到可用匹配！已使用默认皮肤！");
+            }
         }catch (Exception e) {
             throw new RsNpcConfigLoadException("NPC配置 皮肤加载失败！请检查配置文件！", e);
         }

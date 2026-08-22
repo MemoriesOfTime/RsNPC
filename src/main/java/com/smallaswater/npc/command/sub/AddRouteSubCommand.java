@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.math.Vector3;
 import com.smallaswater.npc.command.base.BaseSubCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
+import com.smallaswater.npc.utils.Utils;
 
 import java.util.List;
 
@@ -33,7 +34,11 @@ public class AddRouteSubCommand extends BaseSubCommand {
     public boolean execute(CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         if (args.length > 1) {
-            String name = args[1];
+            String name = Utils.normalizePathSeparator(args[1]);
+            if (!Utils.isSafeRelativePath(name)) {
+                sender.sendMessage("§cNPC 名称包含非法路径字符（禁止 .. 或绝对路径）！");
+                return true;
+            }
             if (!this.rsNPC.getNpcs().containsKey(name)) {
                 sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcNotExist", name));
                 return true;
@@ -44,7 +49,11 @@ public class AddRouteSubCommand extends BaseSubCommand {
             Vector3 floor = player.floor().add(0.5, 0.01, 0.5);
             list.add(floor.getX() + ":" + player.getY() + ":" + player.getZ());
             rsNpcConfig.getConfig().set("route", list);
-            rsNpcConfig.getConfig().save();
+            if (!rsNpcConfig.getConfig().save()) {
+                this.rsNPC.getLogger().error("NPC 路径配置保存失败: " + name);
+                sender.sendMessage("§c路径已添加但保存失败！重启后将会丢失，请查看控制台错误信息！");
+                return true;
+            }
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcRouteAddSuccess"));
         }else {
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));

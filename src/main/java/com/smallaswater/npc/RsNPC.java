@@ -83,6 +83,13 @@ public class RsNPC extends PluginBase {
         return rsNPC;
     }
 
+    /**
+     * 内置默认皮肤（Steve）。供外部判断某次皮肤查找是否回退到了默认皮肤。
+     */
+    public static Skin getDefaultSkin() {
+        return DEFAULT_SKIN;
+    }
+
     @Override
     public void onLoad() {
         rsNPC = this;
@@ -195,7 +202,7 @@ public class RsNPC extends PluginBase {
 
     private void loadNpcs() {
         File npcsFolder = new File(getDataFolder() + "/Npcs");
-        loadNpcsFromDirectory(npcsFolder);
+        loadNpcsFromDirectory(npcsFolder, npcsFolder);
         this.getServer().getScheduler().scheduleDelayedTask(this, () -> {
             for (RsNpcConfig config : this.npcs.values()) {
                 config.checkEntity();
@@ -203,7 +210,14 @@ public class RsNPC extends PluginBase {
         }, 1);
     }
 
-    private void loadNpcsFromDirectory(File directory) {
+    /**
+     * 递归加载 NPC 配置。key 使用相对 {@code root} 的路径（如 {@code 分类A/NPC1}），
+     * 支持任意深度的子目录分类。根目录下的文件 key 退化为纯文件名，兼容旧配置。
+     *
+     * @param directory 当前遍历目录
+     * @param root      NPC 配置根目录，用于计算相对路径
+     */
+    private void loadNpcsFromDirectory(File directory, File root) {
         if (!directory.exists() || !directory.isDirectory()) {
             return;
         }
@@ -211,9 +225,10 @@ public class RsNPC extends PluginBase {
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    loadNpcsFromDirectory(file);
+                    loadNpcsFromDirectory(file, root);
                 } else if (file.isFile() && file.getName().endsWith(".yml")) {
-                    String npcName = file.getName().split("\\.")[0];
+                    String relative = Utils.relativePath(root, file);
+                    String npcName = relative.substring(0, relative.length() - ".yml".length());
                     Config config;
                     try {
                         config = new Config(file, Config.YAML);
@@ -223,10 +238,13 @@ public class RsNPC extends PluginBase {
                     }
                     RsNpcConfig rsNpcConfig;
                     try {
-                        rsNpcConfig = new RsNpcConfig(npcName, config);
+                        rsNpcConfig = new RsNpcConfig(npcName, config, file);
                     } catch (Exception e) {
                         this.getLogger().error(this.getLanguage().translateString("plugin.load.NPC.loadError", npcName), e);
                         continue;
+                    }
+                    if (this.npcs.containsKey(npcName)) {
+                        this.getLogger().warning("NPC: " + npcName + " 配置重复，后加载的已覆盖前者！");
                     }
                     this.npcs.put(npcName, rsNpcConfig);
                     this.getLogger().info(this.getLanguage().translateString("plugin.load.NPC.loadComplete", rsNpcConfig.getName()));
@@ -264,124 +282,156 @@ public class RsNPC extends PluginBase {
     }
 
     private void loadSkins() {
-        File[] files = new File(this.getDataFolder() + "/Skins").listFiles();
+        File skinsFolder = new File(this.getDataFolder() + "/Skins");
+        loadSkinsFromDirectory(skinsFolder, skinsFolder);
+    }
+
+    /**
+     * 递归加载皮肤。支持外层分类目录 + 内层 4D 皮肤目录/平面 png。
+     * <p>目录形式判定：
+     * <ul>
+     *   <li>目录直接含 {@code skin.png}/{@code skin_slim.png}/{@code skin.json} → 视为 4D 皮肤，skinName=目录名</li>
+     *   <li>其它目录 → 分类目录，递归进入</li>
+     * </ul>
+     * 平面 {@code .png} 文件视为单文件皮肤，其 4D 几何为同目录同名 {@code .json}。
+     * key 使用相对 {@code root} 的路径：平面 png 去 {@code .png} 后缀及尾部 {@code _slim}，
+     * 4D 皮肤目录为目录相对路径原样（保留子目录信息）。
+     *
+     * @param directory 当前遍历目录
+     * @param root      皮肤根目录，用于计算相对路径
+     */
+    private void loadSkinsFromDirectory(File directory, File root) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
         if (files == null) {
             return;
         }
         for (File file : files) {
-            String skinName = file.getName();
-
-            File skinDataFile = null;
-            boolean isSlim = true;
-            if (file.isFile() && skinName.endsWith(".png")) {
-                skinName = skinName.replace(".png", "");
-                skinDataFile = file;
-                if (skinName.contains("_slim")) {
-                    skinName = skinName.replace("_slim", "");
-                } else {
-                    isSlim = false;
-                }
-            }else if (file.isDirectory()) {
-                skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin_slim.png");
-                if (!skinDataFile.exists()) {
-                    skinDataFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.png");
-                    isSlim = false;
-                }
-            }
-
-            if (skinDataFile != null && skinDataFile.exists()) {
-                Skin skin = new Skin();
-
-                skin.setSkinId(skinName);
-
-                try {
-                    skin.setSkinData(ImageIO.read(skinDataFile));
-                    //noinspection ResultOfMethodCallIgnored
-                    SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
-
-                    if (isSlim) {
-                        skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
-                    }
-                } catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.dataError", skinName), e);
-                    continue;
-                }
-
-                //如果是4D皮肤
-                try {
-                    File skinJsonFile = null;
-                    if (file.isFile()) {
-                        skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + ".json");
-                    } else if (file.isDirectory()) {
-                        skinJsonFile = new File(this.getDataFolder() + "/Skins/" + skinName + "/skin.json");
-                    }
-                    if (skinJsonFile != null && skinJsonFile.exists()) {
-                        Map<String, Object> skinJson = (new Config(this.getDataFolder() + "/Skins/" + skinName + "/skin.json", Config.JSON)).getAll();
-                        String geometryName = null;
-
-                        String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
-                        skin.setGeometryDataEngineVersion(formatVersion); //设置皮肤版本，主流格式有1.16.0,1.12.0(Blockbench新模型),1.10.0(Blockbench Legacy模型),1.8.0
-                        switch (formatVersion) {
-                            case "1.16.0":
-                            case "1.12.0":
-                                geometryName = getGeometryName(skinJsonFile);
-                                if (geometryName.equals("nullvalue")) {
-                                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataIncompatible", skinName));
-                                } else {
-                                    skin.generateSkinId(skinName);
-                                    skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
-                                    skin.setGeometryName(geometryName);
-                                    skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                }
-                                break;
-                            default:
-                                this.getLogger().warning("[" + skinJsonFile.getName() + "] 的版本格式为：" + formatVersion + "，正在尝试加载！");
-                            case "1.10.0":
-                            case "1.8.0":
-                                for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
-                                    if (geometryName == null) {
-                                        if (entry.getKey().startsWith("geometry")) {
-                                            geometryName = entry.getKey();
-                                        }
-                                    } else {
-                                        break;
-                                    }
-                                }
-                                skin.generateSkinId(skinName);
-                                skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
-                                skin.setGeometryName(geometryName);
-                                skin.setGeometryData(Utils.readFile(skinJsonFile));
-                                break;
-                        }
+            if (file.isDirectory()) {
+                File skinSlim = new File(file, "skin_slim.png");
+                File skinPng = new File(file, "skin.png");
+                File skinJson = new File(file, "skin.json");
+                if (skinSlim.exists() || skinPng.exists() || skinJson.exists()) {
+                    // key 为目录相对路径原样（不剥 _slim），否则 Skins/X/ 与 Skins/X_slim/ 会碰撞覆盖
+                    boolean isSlim = skinSlim.exists();
+                    File skinDataFile = isSlim ? skinSlim : skinPng;
+                    String relative = Utils.relativePath(root, file);
+                    if (skinDataFile.exists()) {
+                        loadSingleSkin(skinDataFile, new File(file, "skin.json"), isSlim, relative);
                     } else {
-                        skin.setGeometryData(STEVE_GEOMETRY);
+                        this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.nameError", relative));
                     }
-                }catch (Exception e) {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataError", skinName), e);
-                }
-
-                skin.setTrusted(true);
-
-                boolean skinIsValid = false;
-                try {
-                    skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, this.getServer().doNotLimitSkinGeometry);
-                } catch (Exception exception) {
-                    try {
-                        skinIsValid = (boolean) Skin.class.getMethod("isValid").invoke(skin);
-                    } catch (Exception e) {
-                        this.getLogger().error("Skin validation failed!", e);
-                    }
-                }
-
-                if (skinIsValid) {
-                    this.skins.put(skinName, skin);
-                    this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
                 } else {
-                    this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.loadFailure", skinName));
+                    loadSkinsFromDirectory(file, root);
+                }
+            } else if (file.isFile() && file.getName().endsWith(".png")) {
+                String fileName = file.getName();
+                boolean isSlim = fileName.contains("_slim");
+                String relative = Utils.relativePath(root, file);
+                String key = relative.substring(0, relative.length() - ".png".length());
+                if (key.endsWith("_slim")) {
+                    key = key.substring(0, key.length() - "_slim".length());
+                }
+                String baseName = fileName.substring(0, fileName.length() - ".png".length());
+                if (baseName.endsWith("_slim")) {
+                    baseName = baseName.substring(0, baseName.length() - "_slim".length());
+                }
+                File skinJsonFile = new File(file.getParentFile(), baseName + ".json");
+                loadSingleSkin(file, skinJsonFile.exists() ? skinJsonFile : null, isSlim, key);
+            }
+        }
+    }
+
+    /**
+     * @param skinDataFile 贴图 png 文件
+     * @param skinJsonFile 4D 几何 json 文件（可为 null）
+     * @param isSlim       是否 slim 模型
+     * @param skinName     皮肤 key
+     */
+    private void loadSingleSkin(File skinDataFile, File skinJsonFile,
+                                boolean isSlim, String skinName) {
+        Skin skin = new Skin();
+        skin.setSkinId(skinName);
+        try {
+            skin.setSkinData(ImageIO.read(skinDataFile));
+            //noinspection ResultOfMethodCallIgnored
+            SerializedImage.fromLegacy(skin.getSkinData().data); //检查非空和图片大小
+            if (isSlim) {
+                skin.setSkinResourcePatch(Skin.GEOMETRY_CUSTOM_SLIM);
+            }
+        } catch (Exception e) {
+            this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.dataError", skinName), e);
+            return;
+        }
+
+        // 4D 皮肤几何
+        try {
+            if (skinJsonFile != null && skinJsonFile.exists()) {
+                Map<String, Object> skinJson = (new Config(skinJsonFile, Config.JSON)).getAll();
+                String geometryName = null;
+                String formatVersion = (String) skinJson.getOrDefault("format_version", "1.10.0");
+                skin.setGeometryDataEngineVersion(formatVersion);
+                switch (formatVersion) {
+                    case "1.16.0":
+                    case "1.12.0":
+                        geometryName = getGeometryName(skinJsonFile);
+                        if (geometryName.equals("nullvalue")) {
+                            this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataIncompatible", skinName));
+                        } else {
+                            skin.generateSkinId(skinName);
+                            skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
+                            skin.setGeometryName(geometryName);
+                            skin.setGeometryData(Utils.readFile(skinJsonFile));
+                        }
+                        break;
+                    default:
+                        this.getLogger().warning("[" + skinJsonFile.getName() + "] 的版本格式为：" + formatVersion + "，正在尝试加载！");
+                    case "1.10.0":
+                    case "1.8.0":
+                        for (Map.Entry<String, Object> entry : skinJson.entrySet()) {
+                            if (geometryName == null) {
+                                if (entry.getKey().startsWith("geometry")) {
+                                    geometryName = entry.getKey();
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                        skin.generateSkinId(skinName);
+                        skin.setSkinResourcePatch("{\"geometry\":{\"default\":\"" + geometryName + "\"}}");
+                        skin.setGeometryName(geometryName);
+                        skin.setGeometryData(Utils.readFile(skinJsonFile));
+                        break;
                 }
             } else {
-                this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.nameError", skinName));
+                skin.setGeometryData(STEVE_GEOMETRY);
             }
+        } catch (Exception e) {
+            this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.jsonDataError", skinName), e);
+        }
+
+        skin.setTrusted(true);
+        boolean skinIsValid = false;
+        try {
+            skinIsValid = (boolean) Skin.class.getMethod("isValid", boolean.class).invoke(skin, this.getServer().doNotLimitSkinGeometry);
+        } catch (Exception exception) {
+            try {
+                skinIsValid = (boolean) Skin.class.getMethod("isValid").invoke(skin);
+            } catch (Exception e) {
+                this.getLogger().error("Skin validation failed!", e);
+            }
+        }
+
+        if (skinIsValid) {
+            if (this.skins.containsKey(skinName)) {
+                this.getLogger().warning("皮肤: " + skinName + " 配置重复，后加载的已覆盖前者！");
+            }
+            this.skins.put(skinName, skin);
+            this.getLogger().info(this.getLanguage().translateString("plugin.load.skin.loadSucceed", skinName));
+        } else {
+            this.getLogger().error(this.getLanguage().translateString("plugin.load.skin.loadFailure", skinName));
         }
     }
 
@@ -411,16 +461,42 @@ public class RsNPC extends PluginBase {
         if (this.dialogManager != null) {
             this.dialogManager.loadAllDialog();
         }
+        // 清空皮肤避免已删除文件的 key 残留内存；内置皮肤需随之重新注册
+        this.skins.clear();
+        this.loadPrivateSkins();
         this.loadSkins();
         this.loadNpcs();
     }
 
     public Skin getSkinByName(String name) {
-        Skin skin = this.getSkins().get(name);
-        if (skin == null) {
-            skin = DEFAULT_SKIN;
+        if (name == null) {
+            return DEFAULT_SKIN;
         }
-        return skin;
+        Skin skin = this.getSkins().get(name);
+        if (skin != null) {
+            return skin;
+        }
+        // 回退查询：按末尾段匹配（兼容旧配置里扁平纯名引用，如 "角色A" 命中 "分类A/角色A"）
+        String tail = Utils.lastSegment(name);
+        if (tail != null && !tail.isEmpty()) {
+            Skin fallback = null;
+            for (Map.Entry<String, Skin> entry : this.skins.entrySet()) {
+                String keyTail = Utils.lastSegment(entry.getKey());
+                if (tail.equals(keyTail)) {
+                    if (fallback != null) {
+                        this.getLogger().warning("皮肤 \"" + name + "\" 存在多个同名候选（如 " + fallback.getSkinId()
+                                + " 与 " + entry.getValue().getSkinId() + "），请使用完整路径引用！");
+                        return DEFAULT_SKIN;
+                    }
+                    fallback = entry.getValue();
+                }
+            }
+            if (fallback != null) {
+                this.getLogger().warning("NPC 引用皮肤 \"" + name + "\" 未精确命中，已按末尾名匹配到皮肤。建议改用完整路径。");
+                return fallback;
+            }
+        }
+        return DEFAULT_SKIN;
     }
 
     public Config getNpcConfigDescription() {

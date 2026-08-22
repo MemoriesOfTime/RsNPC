@@ -10,6 +10,7 @@ import com.smallaswater.npc.command.base.BaseSubCommand;
 import com.smallaswater.npc.data.RsNpcConfig;
 import com.smallaswater.npc.utils.Utils;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 
 /**
@@ -34,18 +35,40 @@ public class CreateSubCommand extends BaseSubCommand {
     @Override
     public boolean execute(CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
-            String name = args[1].trim();
+            // 允许含 "/" 的相对路径（如 分类A/NPC1），归一化分隔符
+            String name = Utils.normalizePathSeparator(args[1].trim());
             if ("".equals(name)) {
                 sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
+                return true;
+            }
+            if (!Utils.isSafeRelativePath(name)) {
+                sender.sendMessage("§cNPC 名称包含非法路径字符（禁止 .. 或绝对路径）！");
                 return true;
             }
             if (this.rsNPC.getNpcs().containsKey(name)) {
                 sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcAlreadyExist", name));
                 return true;
             }
-            this.rsNPC.saveResource("Npc.yml", "/Npcs/" + name + ".yml", false);
-            Config config = new Config(this.rsNPC.getDataFolder() + "/Npcs/" + name + ".yml", Config.YAML);
-            config.set("name", name);
+            File targetFile = new File(new File(this.rsNPC.getDataFolder(), "Npcs"), name + ".yml");
+            // 大小写不敏感文件系统（Windows/macOS）上，仅大小写不同的旧文件躲过 containsKey 检查，按磁盘存在性兜底
+            if (targetFile.exists()) {
+                sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.npcAlreadyExist", name));
+                return true;
+            }
+            if (!Utils.ensureParentDir(targetFile)) {
+                this.rsNPC.getLogger().error("NPC 分类目录创建失败: " + targetFile.getParentFile());
+                sender.sendMessage("创建NPC失败！分类目录创建失败，请查看控制台错误信息！");
+                return true;
+            }
+            // saveResource 的 output 相对 dataFolder，需含 Npcs/ 前缀
+            if (!this.rsNPC.saveResource("Npc.yml", "Npcs/" + name + ".yml", false)) {
+                this.rsNPC.getLogger().error("NPC 配置模板写入失败: " + targetFile);
+                sender.sendMessage("创建NPC失败！配置文件写入失败，请查看控制台错误信息！");
+                return true;
+            }
+            Config config = new Config(targetFile, Config.YAML);
+            // 显示名取相对路径的末尾段，避免 nameTag 出现 "分类A/NPC1"
+            config.set("name", new File(name).getName());
             Player player = (Player) sender;
             LinkedHashMap<String, Object> map = new LinkedHashMap<>();
             map.put("x", player.getX());
@@ -54,13 +77,23 @@ public class CreateSubCommand extends BaseSubCommand {
             map.put("yaw", Utils.getYaw(player));
             map.put("level", player.getLevel().getName());
             config.set("坐标", map);
-            config.save();
+            if (!config.save()) {
+                this.rsNPC.getLogger().error("NPC 配置文件保存失败: " + targetFile);
+                sender.sendMessage("创建NPC失败！配置文件保存失败，请查看控制台错误信息！");
+                //noinspection ResultOfMethodCallIgnored
+                targetFile.delete();
+                cleanupCategoryDirs(targetFile);
+                return true;
+            }
             RsNpcConfig rsNpcConfig;
             try {
-                rsNpcConfig = new RsNpcConfig(name, config);
+                rsNpcConfig = new RsNpcConfig(name, config, targetFile);
             } catch (Exception e) {
                 sender.sendMessage("创建NPC失败！请查看控制台错误信息！");
                 this.rsNPC.getLogger().error("创建NPC失败！", e);
+                //noinspection ResultOfMethodCallIgnored
+                targetFile.delete();
+                cleanupCategoryDirs(targetFile);
                 return true;
             }
             this.rsNPC.getNpcs().put(name, rsNpcConfig);
@@ -73,6 +106,11 @@ public class CreateSubCommand extends BaseSubCommand {
             sender.sendMessage(this.rsNPC.getLanguage().translateString("tips.nameRequired"));
         }
         return true;
+    }
+
+    private void cleanupCategoryDirs(File targetFile) {
+        Utils.cleanupEmptyParentDirs(targetFile.getParentFile(),
+                new File(this.rsNPC.getDataFolder(), "Npcs"));
     }
 
     @Override

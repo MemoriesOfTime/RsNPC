@@ -63,6 +63,10 @@ public class DialogManager {
     public void loadDialog(@NotNull String name, File file) {
         Config config = new Config(file, Config.YAML);
         ConfigUtils.addDescription(config, this.description);
+        if (this.dialogConfigs.containsKey(name)) {
+            // 对话框 key 为扁平文件名（不含子目录），跨子目录同名会覆盖，提示用户定位
+            this.rsNPC.getLogger().warning("对话框页面: " + name + " 配置重复（跨子目录同名），后加载的已覆盖前者！文件: " + file.getAbsolutePath());
+        }
         this.dialogConfigs.put(name, new DialogPages(name, config));
     }
 

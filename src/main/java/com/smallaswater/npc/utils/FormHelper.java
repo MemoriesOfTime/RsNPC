@@ -59,11 +59,21 @@ public class FormHelper {
 
         AdvancedFormWindowCustom custom = new AdvancedFormWindowCustom(language.translateString("gui.createNPC.title"));
 
-        custom.addElement(new ElementInput(language.translateString("gui.createNPC.input.npcNameText")));
+        custom.addElement(new ElementInput(language.translateString("gui.createNPC.input.npcNameText"),
+                "NPC1 或 分类A/NPC1"));
 
         custom.onResponded((formResponseCustom, cp) -> {
             String name = formResponseCustom.getInputResponse(0);
-            Server.getInstance().dispatchCommand(cp, "rsnpc create " + name);
+            // 命令按空格分词，名称含空格会被截断为错误名称，须在派发前拦截
+            if (name == null || name.trim().isEmpty()) {
+                cp.sendMessage(language.translateString("tips.nameRequired"));
+                return;
+            }
+            if (name.contains(" ")) {
+                cp.sendMessage("§cNPC 名称不能包含空格！（支持 分类A/NPC1 形式的子目录分类）");
+                return;
+            }
+            Server.getInstance().dispatchCommand(cp, "rsnpc create " + name.trim());
         });
         custom.onClosed(FormHelper::sendMain);
 
@@ -333,7 +343,9 @@ public class FormHelper {
         for (String id : rsNpcConfig.getEmoteIDs()) {
             ids.append(id).append(";");
         }
-        ids.deleteCharAt(ids.length() - 1);
+        if (ids.length() > 0) {
+            ids.deleteCharAt(ids.length() - 1);
+        }
         custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfigEmote.input.emoteID"), "",ids.toString())); //2
         custom.addElement(new ElementInput(language.translateString("gui.adminNPCConfigEmote.input.emoteInterval"), "", rsNpcConfig.getShowEmoteInterval() + "")); //3
 

@@ -63,43 +63,59 @@ public class ConfigUpdateUtils {
      * 从RsNPC 2.0.0--2.2.2 更新到 RsNPC-2.2.3
      */
     private static void updateRsNPC2_0_0_To_RsNPC2_2_3() {
-        File[] files = (new File(RsNPC.getInstance().getDataFolder() + "/Npcs")).listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (!file.isFile() && file.getName().endsWith(".yml")) {
-                    continue;
-                }
-                Config config = new Config(file, Config.YAML);
+        File npcsFolder = new File(RsNPC.getInstance().getDataFolder() + "/Npcs");
+        updateNpcConfigsFromDirectory(npcsFolder);
+    }
 
-                // key更新 configVersion -> RsNpcConfig.NPC_CONFIG_VERSION_KEY
-                boolean needSave = false;
-                if (config.exists("configVersion")) {
-                    if (!config.exists(RsNpcConfig.NPC_CONFIG_VERSION_KEY)) {
-                        config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, config.getString("configVersion"));
-                    }
-                    config.remove("configVersion");
-                    needSave = true;
-                }
-
-                if (VersionUtils.compareVersion(config.getString(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.0.0"), "2.2.3") >= 0) {
-                    if (needSave) {
-                        config.save();
-                    }
-                    continue;
-                }
-
-                // 表情动作.间隔(秒) -> 表情动作.间隔
-                HashMap<Object, Object> map = config.get("表情动作", new HashMap<>());
-                map.put("间隔", map.getOrDefault("间隔(秒)", 10));
-                map.remove("间隔(秒)");
-                config.set("表情动作", map);
-
-                config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.2.3");
-
-                config.save();
-
-                RsNPC.getInstance().getLogger().info("[ConfigUpdateUtils](updateRsNPC2_0_0_To_RsNPC2_2_3) 配置文件更新成功！");
+    /**
+     * 递归升级 NPC 配置，使子目录内的旧配置也能被升级。
+     */
+    private static void updateNpcConfigsFromDirectory(File directory) {
+        if (!directory.exists() || !directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                updateNpcConfigsFromDirectory(file);
+                continue;
             }
+            if (!file.isFile() || !file.getName().endsWith(".yml")) {
+                continue;
+            }
+            Config config = new Config(file, Config.YAML);
+
+            // key更新 configVersion -> RsNpcConfig.NPC_CONFIG_VERSION_KEY
+            boolean needSave = false;
+            if (config.exists("configVersion")) {
+                if (!config.exists(RsNpcConfig.NPC_CONFIG_VERSION_KEY)) {
+                    config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, config.getString("configVersion"));
+                }
+                config.remove("configVersion");
+                needSave = true;
+            }
+
+            if (VersionUtils.compareVersion(config.getString(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.0.0"), "2.2.3") >= 0) {
+                if (needSave) {
+                    config.save();
+                }
+                continue;
+            }
+
+            // 表情动作.间隔(秒) -> 表情动作.间隔
+            HashMap<Object, Object> map = config.get("表情动作", new HashMap<>());
+            map.put("间隔", map.getOrDefault("间隔(秒)", 10));
+            map.remove("间隔(秒)");
+            config.set("表情动作", map);
+
+            config.set(RsNpcConfig.NPC_CONFIG_VERSION_KEY, "2.2.3");
+
+            config.save();
+
+            RsNPC.getInstance().getLogger().info("[ConfigUpdateUtils](updateRsNPC2_0_0_To_RsNPC2_2_3) 配置文件更新成功：" + file.getAbsolutePath());
         }
     }
 

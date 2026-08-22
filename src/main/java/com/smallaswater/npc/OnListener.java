@@ -53,7 +53,15 @@ public class OnListener implements Listener {
             }
             if (entityRsNPC.getConfig().isEnabledDialogPages()) {
                 DialogPages dialogConfig = this.rsNPC.getDialogManager().getDialogConfig(entityRsNPC.getConfig().getDialogPagesName());
-                dialogConfig.getDefaultDialogPage().send(entityRsNPC, player);
+                if (dialogConfig != null) {
+                    dialogConfig.getDefaultDialogPage().send(entityRsNPC, player);
+                }else {
+                    String message = "§cNPC " + entityRsNPC.getConfig().getName() + " 配置错误！不存在名为 " + entityRsNPC.getConfig().getDialogPagesName() + " 的对话框页面！";
+                    this.rsNPC.getLogger().warning(message);
+                    if (player.isOp()) {
+                        player.sendMessage(message);
+                    }
+                }
             }
         }
     }
@@ -110,7 +118,9 @@ public class OnListener implements Listener {
                     for (RsNpcConfig config : this.rsNPC.getNpcs().values()) {
                         EntityRsNPC entityRsNpc = config.getEntityRsNpc();
                         if (entityRsNpc != null && entityRsNpc.getUniqueId() == entry.uuid) {
-                            entry.skin = this.rsNPC.getSkinByName("默认皮肤");
+                            // 隐藏自定义皮肤功能应固定使用内置默认皮肤，不走 getSkinByName 的回退匹配，
+                            // 避免存在末段名为"默认皮肤"的皮肤目录时给玩家换上自定义皮肤
+                            entry.skin = RsNPC.getDefaultSkin();
                             break;
                         }
                     }
